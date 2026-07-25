@@ -1,148 +1,182 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
-import type { SpriteFrame } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { usePixelStore } from '@/store/pixel-store';
+import { useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CanvasEngine } from '@/lib/pixel/canvas-engine';
+import type { CharacterSprite } from '@/lib/types';
 
 interface SpriteCanvasProps {
-  frame: SpriteFrame | null;
-  className?: string;
+  sprite: CharacterSprite;
+  onDownload?: () => void;
 }
 
-export default function SpriteCanvas({ frame, className }: SpriteCanvasProps) {
+export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { zoom, setZoom } = usePixelStore();
-
-  const renderFrame = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !frame) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const pixelSize = zoom;
-    const canvasWidth = frame.width * pixelSize;
-    const canvasHeight = frame.height * pixelSize;
-
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    // Clear with dark background
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Draw checkerboard for transparency indication
-    for (let y = 0; y < frame.height; y++) {
-      for (let x = 0; x < frame.width; x++) {
-        const isEven = (x + y) % 2 === 0;
-        if (isEven) {
-          ctx.fillStyle = '#1f1f23';
-        } else {
-          ctx.fillStyle = '#18181b';
-        }
-        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-      }
-    }
-
-    // Draw pixels
-    for (let y = 0; y < frame.pixels.length; y++) {
-      for (let x = 0; x < frame.pixels[y].length; x++) {
-        const color = frame.pixels[y][x];
-        // Skip transparent pixels
-        if (!color || color === '#00000000' || color === 'transparent') continue;
-
-        ctx.fillStyle = color;
-        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-      }
-    }
-
-    // Draw grid lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= frame.width; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * pixelSize, 0);
-      ctx.lineTo(x * pixelSize, canvasHeight);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= frame.height; y++) {
-      ctx.beginPath();
-      ctx.moveTo(0, y * pixelSize);
-      ctx.lineTo(canvasWidth, y * pixelSize);
-      ctx.stroke();
-    }
-  }, [frame, zoom]);
+  const [engine, setEngine] = useState<CanvasEngine | null>(null);
+  const [zoom, setZoom] = useState(8);
+  const [showGrid, setShowGrid] = useState(true);
 
   useEffect(() => {
-    renderFrame();
-  }, [renderFrame]);
+    if (!canvasRef.current) return;
 
-  function handleZoomIn() {
-    setZoom(Math.min(zoom + 2, 24));
-  }
+    const canvasEngine = new CanvasEngine(canvasRef.current, {
+      width: sprite.size * zoom,
+      height: sprite.size * zoom,
+      scale: zoom,
+      backgroundColor: '#0a0a0a',
+      gridEnabled: showGrid,
+      gridColor: '#222222',
+    });
 
-  function handleZoomOut() {
-    setZoom(Math.max(zoom - 2, 2));
-  }
+    setEngine(canvasEngine);
 
-  function handleZoomReset() {
-    setZoom(4);
-  }
+    // Load and draw sprite
+    const img = new Image();
+    img.onload = () => {
+      const ctx = canvasRef.current?.getContext('2d');
+      if (ctx) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, sprite.size * zoom, sprite.size * zoom);
+        ctx.drawImage(img, 0, 0, sprite.size * zoom, sprite.size * zoom);
+        
+        if (showGrid) {
+          canvasEngine.drawGrid();
+        }
+      }
+    };
+    img.src = sprite.imageData;
+
+    return () => {
+      // Cleanup
+    };
+  }, [sprite, zoom, showGrid]);
+
+  const handleZoomIn = () => {
+    if (zoom < 16) setZoom(zoom + 2);
+  };
+
+  const handleZoomOut = () => {
+    if (zoom > 4) setZoom(zoom - 2);
+  };
+
+  const handleDownload = () => {
+    if (onDownload) {
+      onDownload();
+    } else {
+      // Default download
+      const link = document.createElement('a');
+      link.href = sprite.imageData;
+      link.download = `sprite-${sprite.size}x${sprite.size}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      {/* Zoom Controls */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">
-          Zoom
-        </span>
-        <button
-          onClick={handleZoomOut}
-          className="px-2 py-1 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 transition-colors"
-        >
-          -
-        </button>
-        <span className="text-xs font-mono text-zinc-300 w-12 text-center">
-          {zoom}x
-        </span>
-        <button
-          onClick={handleZoomIn}
-          className="px-2 py-1 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 transition-colors"
-        >
-          +
-        </button>
-        <button
-          onClick={handleZoomReset}
-          className="px-2 py-1 text-[10px] font-bold tracking-wider border border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          1:1
-        </button>
-      </div>
-
-      {/* Canvas */}
-      <div className="relative border-2 border-zinc-800 bg-zinc-950 overflow-auto max-h-[600px] max-w-full">
-        {frame ? (
+    <Card>
+      <CardHeader>
+        <CardTitle>SPRITE PREVIEW</CardTitle>
+        <CardDescription>
+          {sprite.size}x{sprite.size} • {sprite.style} • {sprite.metadata.colorCount} colors
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Canvas Display */}
+        <div className="border border-[#222] bg-[#0a0a0a] p-4 flex items-center justify-center">
           <canvas
             ref={canvasRef}
-            className="block"
+            className="image-rendering-pixelated"
             style={{ imageRendering: 'pixelated' }}
           />
-        ) : (
-          <div className="flex items-center justify-center w-64 h-64 text-zinc-600 text-xs font-mono tracking-wider">
-            [ No sprite data ]
-          </div>
-        )}
-      </div>
-
-      {/* Frame Info */}
-      {frame && (
-        <div className="flex gap-4 text-[10px] font-mono text-zinc-600">
-          <span>Size: {frame.width}x{frame.height}</span>
-          <span>Frame ID: {frame.id.slice(0, 8)}</span>
-          <span>Duration: {frame.duration}ms</span>
         </div>
-      )}
-    </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-between gap-4">
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold tracking-wider text-neutral-400">ZOOM:</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomOut}
+              disabled={zoom <= 4}
+            >
+              -
+            </Button>
+            <span className="text-xs font-mono text-white w-12 text-center">{zoom}x</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleZoomIn}
+              disabled={zoom >= 16}
+            >
+              +
+            </Button>
+          </div>
+
+          {/* Grid Toggle */}
+          <button
+            onClick={() => setShowGrid(!showGrid)}
+            className={`px-3 py-1 text-xs font-bold tracking-wider border transition-colors ${
+              showGrid
+                ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88]'
+            }`}
+          >
+            GRID
+          </button>
+        </div>
+
+        {/* Sprite Info */}
+        <div className="pt-4 border-t border-[#222] space-y-2 text-xs">
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Size:</span>
+            <span className="text-white font-mono">{sprite.size}x{sprite.size}px</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Style:</span>
+            <span className="text-white">{sprite.style}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Colors:</span>
+            <span className="text-white">{sprite.metadata.colorCount}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-neutral-500">Transparent:</span>
+            <span className="text-white">{sprite.metadata.transparent ? 'Yes' : 'No'}</span>
+          </div>
+        </div>
+
+        {/* Color Palette */}
+        <div className="pt-4 border-t border-[#222]">
+          <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+            COLOR PALETTE
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {sprite.palette.map((color, i) => (
+              <div
+                key={i}
+                className="w-8 h-8 border border-[#222] cursor-pointer hover:scale-110 transition-transform"
+                style={{ backgroundColor: color }}
+                title={color}
+                onClick={() => {
+                  navigator.clipboard.writeText(color);
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Download Button */}
+        <Button
+          onClick={handleDownload}
+          className="w-full"
+        >
+          [ DOWNLOAD PNG ]
+        </Button>
+      </CardContent>
+    </Card>
   );
 }

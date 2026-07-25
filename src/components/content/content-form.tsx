@@ -1,182 +1,181 @@
 'use client';
 
 import { useState } from 'react';
-import type { Platform, Tone, Duration } from '@/lib/types';
-import { cn, PLATFORM_LABELS } from '@/lib/utils';
-import { useContentStore } from '@/store/content-store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { PLATFORMS, CONTENT_TONES, DURATIONS } from '@/lib/constants';
+import type { Platform, Tone } from '@/lib/types';
 
-const PLATFORMS: Platform[] = ['tiktok', 'instagram', 'youtube', 'twitter', 'linkedin'];
-const TONES: { value: Tone; label: string }[] = [
-  { value: 'casual', label: 'Casual' },
-  { value: 'professional', label: 'Professional' },
-  { value: 'humorous', label: 'Humorous' },
-  { value: 'dramatic', label: 'Dramatic' },
-  { value: 'educational', label: 'Educational' },
-];
-const DURATIONS: { value: Duration; label: string }[] = [
-  { value: '15s', label: '15 sec' },
-  { value: '30s', label: '30 sec' },
-  { value: '60s', label: '60 sec' },
-  { value: '3min', label: '3 min' },
-  { value: '5min', label: '5 min' },
-  { value: '10min', label: '10 min' },
-];
+interface ContentFormProps {
+  onGenerate: (data: ContentFormData) => void;
+  isGenerating?: boolean;
+  brandContext?: string;
+}
 
-export default function ContentForm() {
-  const { formData, setFormField, resetForm, setIsGenerating, isGenerating } = useContentStore();
+export interface ContentFormData {
+  topic: string;
+  platform: Platform;
+  tone: Tone;
+  duration: number;
+  brandContext?: string;
+}
+
+export function ContentForm({ onGenerate, isGenerating = false, brandContext }: ContentFormProps) {
+  const [formData, setFormData] = useState<ContentFormData>({
+    topic: '',
+    platform: 'tiktok',
+    tone: 'casual',
+    duration: 30,
+    brandContext,
+  });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  function validate(): boolean {
-    const e: Record<string, string> = {};
-    if (!formData.topic.trim()) e.topic = 'Topic is required';
-    if (!formData.audience.trim()) e.audience = 'Audience is required';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-    setIsGenerating(true);
-  }
+
+    // Validation
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.topic.trim()) {
+      newErrors.topic = 'Topic is required';
+    } else if (formData.topic.length < 10) {
+      newErrors.topic = 'Topic must be at least 10 characters';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    onGenerate(formData);
+  };
+
+  const selectedPlatform = PLATFORMS.find((p) => p.value === formData.platform);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Topic */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Topic
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          TOPIC / IDEA *
         </label>
-        <textarea
+        <Textarea
           value={formData.topic}
-          onChange={(e) => setFormField('topic', e.target.value)}
-          placeholder="How to build a personal brand on social media..."
-          rows={3}
-          className={cn(
-            'w-full bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 placeholder-zinc-600 font-mono',
-            'focus:outline-none focus:border-cyan-500 transition-colors resize-none',
-            errors.topic && 'border-red-500'
-          )}
+          onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+          placeholder="Describe your content idea (e.g., 'New pixel art game launch with retro aesthetics', 'How to create brand identity in 5 steps')"
+          rows={4}
+          disabled={isGenerating}
         />
         {errors.topic && (
-          <span className="text-xs text-red-400">{errors.topic}</span>
+          <p className="text-xs text-red-500">{errors.topic}</p>
         )}
       </div>
 
-      {/* Platform Dropdown */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Platform
+      {/* Platform */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          PLATFORM *
         </label>
-        <select
+        <Select
           value={formData.platform}
-          onChange={(e) => setFormField('platform', e.target.value as Platform)}
-          className={cn(
-            'bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 font-mono',
-            'focus:outline-none focus:border-cyan-500'
-          )}
+          onValueChange={(value) => setFormData({ ...formData, platform: value as Platform })}
+          disabled={isGenerating}
         >
-          {PLATFORMS.map((p) => (
-            <option key={p} value={p}>
-              {PLATFORM_LABELS[p]}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Audience */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Target Audience
-        </label>
-        <input
-          type="text"
-          value={formData.audience}
-          onChange={(e) => setFormField('audience', e.target.value)}
-          placeholder="Young professionals aged 25-35..."
-          className={cn(
-            'w-full bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 placeholder-zinc-600 font-mono',
-            'focus:outline-none focus:border-cyan-500 transition-colors',
-            errors.audience && 'border-red-500'
-          )}
-        />
-        {errors.audience && (
-          <span className="text-xs text-red-400">{errors.audience}</span>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PLATFORMS.map((platform) => (
+              <SelectItem key={platform.value} value={platform.value}>
+                {platform.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {selectedPlatform && (
+          <p className="text-xs text-neutral-600">
+            Max duration: {selectedPlatform.maxDuration}s • Aspect ratio: {selectedPlatform.aspectRatio}
+          </p>
         )}
       </div>
 
-      {/* Tone Dropdown */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Tone
+      {/* Tone */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          TONE *
         </label>
-        <select
-          value={formData.tone}
-          onChange={(e) => setFormField('tone', e.target.value as Tone)}
-          className={cn(
-            'bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 font-mono',
-            'focus:outline-none focus:border-cyan-500'
-          )}
-        >
-          {TONES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Duration Selector */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Duration
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {DURATIONS.map((d) => (
+        <div className="grid grid-cols-2 gap-2">
+          {CONTENT_TONES.map((tone) => (
             <button
-              key={d.value}
+              key={tone.value}
               type="button"
-              onClick={() => setFormField('duration', d.value)}
-              className={cn(
-                'px-3 py-1.5 text-xs font-bold tracking-wider border-2 transition-all',
-                formData.duration === d.value
-                  ? 'bg-cyan-600 border-cyan-500 text-white'
-                  : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-              )}
+              onClick={() => setFormData({ ...formData, tone: tone.value as Tone })}
+              disabled={isGenerating}
+              className={`px-4 py-3 text-left border transition-colors ${
+                formData.tone === tone.value
+                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+              }`}
             >
-              {d.label}
+              <div className="text-xs font-bold tracking-wider">{tone.label}</div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Submit */}
-      <div className="flex gap-3 mt-2">
-        <button
-          type="submit"
+      {/* Duration */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          DURATION *
+        </label>
+        <Select
+          value={formData.duration.toString()}
+          onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
           disabled={isGenerating}
-          className={cn(
-            'flex-1 px-6 py-3 text-sm font-bold tracking-widest uppercase',
-            'border-2 transition-all',
-            isGenerating
-              ? 'bg-zinc-800 border-zinc-700 text-zinc-500 cursor-not-allowed'
-              : 'bg-cyan-600 border-cyan-500 text-white hover:bg-cyan-500 active:bg-cyan-700'
-          )}
         >
-          {isGenerating ? '[ Generating... ]' : '[ Generate Content ]'}
-        </button>
-        <button
-          type="button"
-          onClick={resetForm}
-          className="px-4 py-3 text-xs font-bold tracking-wider border-2 border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          Reset
-        </button>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DURATIONS.map((duration) => (
+              <SelectItem key={duration.value} value={duration.value.toString()}>
+                {duration.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Brand Context (if available) */}
+      {brandContext && (
+        <div className="p-4 border border-[#222] bg-[#111]">
+          <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+            BRAND CONTEXT
+          </p>
+          <p className="text-xs text-neutral-500">
+            Using brand identity for consistent messaging
+          </p>
+        </div>
+      )}
+
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isGenerating}
+      >
+        {isGenerating ? '[ GENERATING SCRIPT... ]' : '[ GENERATE CONTENT SCRIPT ]'}
+      </Button>
     </form>
   );
 }

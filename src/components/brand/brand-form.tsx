@@ -1,205 +1,224 @@
 'use client';
 
 import { useState } from 'react';
-import { useBrandStore } from '@/store/brand-store';
-import { BRAND_VALUES, INDUSTRIES, MOODS } from '@/lib/constants';
-import { cn } from '@/lib/utils';
-import type { Industry, Mood } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { INDUSTRIES, BRAND_VALUES, MOOD_KEYWORDS } from '@/lib/constants';
+import type { MoodKeyword } from '@/lib/types';
 
-export function BrandForm() {
-  const {
-    input,
-    setName,
-    setIndustry,
-    toggleValue,
-    setAudience,
-    setMood,
-    generateBrand,
-    isGenerating,
-  } = useBrandStore();
+interface BrandFormProps {
+  onGenerate: (data: BrandFormData) => void;
+  isGenerating?: boolean;
+}
 
-  const [valueSearch, setValueSearch] = useState('');
+export interface BrandFormData {
+  name: string;
+  industry: string;
+  values: string[];
+  targetAudience: string;
+  mood?: MoodKeyword[];
+}
 
-  const filteredValues = BRAND_VALUES.filter((v) =>
-    v.toLowerCase().includes(valueSearch.toLowerCase())
-  );
+export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) {
+  const [formData, setFormData] = useState<BrandFormData>({
+    name: '',
+    industry: '',
+    values: [],
+    targetAudience: '',
+    mood: [],
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    generateBrand();
+
+    // Validation
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Brand name is required';
+    } else if (formData.name.length < 2) {
+      newErrors.name = 'Brand name must be at least 2 characters';
+    }
+
+    if (!formData.industry) {
+      newErrors.industry = 'Please select an industry';
+    }
+
+    if (formData.values.length === 0) {
+      newErrors.values = 'Please select at least one brand value';
+    }
+
+    if (!formData.targetAudience.trim()) {
+      newErrors.targetAudience = 'Target audience is required';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    onGenerate(formData);
+  };
+
+  const toggleValue = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      values: prev.values.includes(value)
+        ? prev.values.filter((v) => v !== value)
+        : [...prev.values, value],
+    }));
+  };
+
+  const toggleMood = (mood: MoodKeyword) => {
+    setFormData((prev) => ({
+      ...prev,
+      mood: prev.mood?.includes(mood)
+        ? prev.mood.filter((m) => m !== mood)
+        : [...(prev.mood || []), mood],
+    }));
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-6 w-full max-w-xl"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Brand Name */}
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="brand-name"
-          className="text-sm font-mono font-semibold tracking-wider uppercase text-white/70"
-        >
-          Brand Name
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          BRAND NAME *
         </label>
-        <input
-          id="brand-name"
-          type="text"
-          value={input.name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter brand name..."
-          className={cn(
-            'w-full px-4 py-3 bg-[#111] border-2 border-[#222] text-white',
-            'font-mono text-base placeholder:text-white/30',
-            'focus:outline-none focus:border-white/40 transition-colors',
-            'rounded-none'
-          )}
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="Enter your brand name"
+          disabled={isGenerating}
         />
+        {errors.name && (
+          <p className="text-xs text-red-500">{errors.name}</p>
+        )}
       </div>
 
       {/* Industry */}
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="industry"
-          className="text-sm font-mono font-semibold tracking-wider uppercase text-white/70"
-        >
-          Industry
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          INDUSTRY *
         </label>
-        <select
-          id="industry"
-          value={input.industry}
-          onChange={(e) => setIndustry(e.target.value as Industry)}
-          className={cn(
-            'w-full px-4 py-3 bg-[#111] border-2 border-[#222] text-white',
-            'font-mono text-base appearance-none cursor-pointer',
-            'focus:outline-none focus:border-white/40 transition-colors',
-            'rounded-none'
-          )}
+        <Select
+          value={formData.industry}
+          onValueChange={(value) => setFormData({ ...formData, industry: value })}
+          disabled={isGenerating}
         >
-          {INDUSTRIES.map((ind) => (
-            <option key={ind.value} value={ind.value}>
-              {ind.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select industry" />
+          </SelectTrigger>
+          <SelectContent>
+            {INDUSTRIES.map((industry) => (
+              <SelectItem key={industry.value} value={industry.value}>
+                {industry.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.industry && (
+          <p className="text-xs text-red-500">{errors.industry}</p>
+        )}
       </div>
 
       {/* Brand Values */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-mono font-semibold tracking-wider uppercase text-white/70">
-          Brand Values
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          BRAND VALUES * (Select 3-5)
         </label>
-        <input
-          type="text"
-          value={valueSearch}
-          onChange={(e) => setValueSearch(e.target.value)}
-          placeholder="Search values..."
-          className={cn(
-            'w-full px-4 py-2 bg-[#111] border-2 border-[#222] text-white',
-            'font-mono text-sm placeholder:text-white/30',
-            'focus:outline-none focus:border-white/40 transition-colors',
-            'rounded-none'
-          )}
-        />
-        <div className="flex flex-wrap gap-2 mt-1">
-          {filteredValues.map((value) => {
-            const selected = input.values.includes(value);
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => toggleValue(value)}
-                className={cn(
-                  'px-3 py-1.5 text-xs font-mono uppercase tracking-wide',
-                  'border-2 transition-colors rounded-none',
-                  selected
-                    ? 'bg-white text-black border-white'
-                    : 'bg-transparent text-white/60 border-[#222] hover:border-white/40 hover:text-white/80'
-                )}
-              >
-                {value}
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {BRAND_VALUES.map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => toggleValue(value)}
+              disabled={isGenerating}
+              className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
+                formData.values.includes(value)
+                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+              }`}
+            >
+              {value}
+            </button>
+          ))}
         </div>
-        {input.values.length > 0 && (
-          <p className="text-xs font-mono text-white/40 mt-1">
-            {input.values.length} selected: {input.values.join(', ')}
-          </p>
+        {errors.values && (
+          <p className="text-xs text-red-500">{errors.values}</p>
         )}
+        <p className="text-xs text-neutral-600">
+          Selected: {formData.values.length} / 5
+        </p>
       </div>
 
       {/* Target Audience */}
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="audience"
-          className="text-sm font-mono font-semibold tracking-wider uppercase text-white/70"
-        >
-          Target Audience
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          TARGET AUDIENCE *
         </label>
-        <input
-          id="audience"
-          type="text"
-          value={input.audience}
-          onChange={(e) => setAudience(e.target.value)}
-          placeholder="e.g. Young professionals, small business owners..."
-          className={cn(
-            'w-full px-4 py-3 bg-[#111] border-2 border-[#222] text-white',
-            'font-mono text-base placeholder:text-white/30',
-            'focus:outline-none focus:border-white/40 transition-colors',
-            'rounded-none'
-          )}
+        <Textarea
+          value={formData.targetAudience}
+          onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+          placeholder="Describe your target audience (e.g., Young professionals aged 25-35 who value sustainability)"
+          rows={3}
+          disabled={isGenerating}
         />
+        {errors.targetAudience && (
+          <p className="text-xs text-red-500">{errors.targetAudience}</p>
+        )}
       </div>
 
-      {/* Mood Selector */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-mono font-semibold tracking-wider uppercase text-white/70">
-          Brand Mood
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          {MOODS.map((mood) => {
-            const selected = input.mood === mood.value;
-            return (
+      {/* Mood Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>MOOD SYNC (OPTIONAL)</CardTitle>
+          <CardDescription>
+            Select mood keywords to influence the brand style
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {MOOD_KEYWORDS.map((mood) => (
               <button
                 key={mood.value}
                 type="button"
-                onClick={() => setMood(mood.value as Mood)}
-                className={cn(
-                  'px-4 py-3 text-left border-2 transition-colors rounded-none',
-                  selected
-                    ? 'bg-white/10 border-white text-white'
-                    : 'bg-[#111] border-[#222] text-white/60 hover:border-white/40 hover:text-white/80'
-                )}
+                onClick={() => toggleMood(mood.value as MoodKeyword)}
+                disabled={isGenerating}
+                className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
+                  formData.mood?.includes(mood.value as MoodKeyword)
+                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                }`}
               >
-                <span className="block text-sm font-mono font-semibold uppercase tracking-wide">
-                  {mood.label}
-                </span>
-                <span className="block text-xs font-mono text-white/40 mt-0.5">
-                  {mood.description}
-                </span>
+                <span className="mr-1">{mood.emoji}</span>
+                {mood.label.split(' / ')[0]}
               </button>
-            );
-          })}
-        </div>
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Generate Button */}
-      <button
+      {/* Submit Button */}
+      <Button
         type="submit"
-        disabled={!input.name.trim() || isGenerating}
-        className={cn(
-          'w-full py-4 px-6 font-mono text-sm uppercase tracking-widest',
-          'border-2 transition-colors rounded-none',
-          input.name.trim() && !isGenerating
-            ? 'bg-white text-black border-white hover:bg-white/90 cursor-pointer'
-            : 'bg-[#222] text-white/30 border-[#222] cursor-not-allowed'
-        )}
+        className="w-full"
+        disabled={isGenerating}
       >
-        {isGenerating ? 'Generating...' : 'Generate Brand Identity'}
-      </button>
+        {isGenerating ? '[ GENERATING... ]' : '[ GENERATE BRAND IDENTITY ]'}
+      </Button>
     </form>
   );
 }
-
-export default BrandForm;

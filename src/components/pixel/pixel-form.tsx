@@ -1,171 +1,195 @@
 'use client';
 
 import { useState } from 'react';
-import type { PixelStyle, PixelSize, PaletteSource } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { usePixelStore } from '@/store/pixel-store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PIXEL_STYLES, SPRITE_SIZES } from '@/lib/constants';
+import type { PixelStyle, SpriteSize } from '@/lib/types';
 
-const STYLES: { value: PixelStyle; label: string }[] = [
-  { value: '8bit', label: '8-BIT' },
-  { value: '16bit', label: '16-BIT' },
-  { value: 'modern', label: 'MODERN' },
-];
+interface PixelFormProps {
+  onGenerate: (data: PixelFormData) => void;
+  isGenerating?: boolean;
+  brandColors?: string[];
+}
 
-const SIZES: PixelSize[] = [16, 32, 48, 64];
+export interface PixelFormData {
+  description: string;
+  style: PixelStyle;
+  size: SpriteSize;
+  paletteMode: 'brand' | 'custom';
+  customPalette?: string[];
+}
 
-export default function PixelForm() {
-  const { formData, setFormField, resetForm, setIsGenerating, isGenerating } = usePixelStore();
+export function PixelForm({ onGenerate, isGenerating = false, brandColors }: PixelFormProps) {
+  const [formData, setFormData] = useState<PixelFormData>({
+    description: '',
+    style: '16-bit',
+    size: 32,
+    paletteMode: brandColors ? 'brand' : 'custom',
+  });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  function validate(): boolean {
-    const e: Record<string, string> = {};
-    if (!formData.description.trim()) e.description = 'Description is required';
-    if (formData.description.length > 500) e.description = 'Max 500 characters';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-    setIsGenerating(true);
-  }
+
+    // Validation
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Character description is required';
+    } else if (formData.description.length < 10) {
+      newErrors.description = 'Description must be at least 10 characters';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    onGenerate(formData);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full max-w-lg">
-      {/* Description */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Sprite Description
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Character Description */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          CHARACTER DESCRIPTION *
         </label>
-        <textarea
+        <Textarea
           value={formData.description}
-          onChange={(e) => setFormField('description', e.target.value)}
-          placeholder="A brave knight holding a glowing sword..."
-          rows={3}
-          className={cn(
-            'w-full bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 placeholder-zinc-600 font-mono',
-            'focus:outline-none focus:border-amber-500 transition-colors resize-none',
-            errors.description && 'border-red-500'
-          )}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          placeholder="Describe your character (e.g., 'A brave knight with a sword and shield', 'Cute robot with glowing eyes')"
+          rows={4}
+          disabled={isGenerating}
         />
         {errors.description && (
-          <span className="text-xs text-red-400">{errors.description}</span>
+          <p className="text-xs text-red-500">{errors.description}</p>
         )}
+        <p className="text-xs text-neutral-600">
+          Be specific about appearance, clothing, and accessories
+        </p>
       </div>
 
-      {/* Style Radio Buttons */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Pixel Style
+      {/* Pixel Art Style */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          PIXEL ART STYLE *
         </label>
-        <div className="flex gap-2">
-          {STYLES.map((s) => (
+        <div className="grid grid-cols-1 gap-2">
+          {PIXEL_STYLES.map((style) => (
             <button
-              key={s.value}
+              key={style.value}
               type="button"
-              onClick={() => setFormField('style', s.value)}
-              className={cn(
-                'px-4 py-2 text-xs font-bold tracking-wider border-2 transition-all',
-                formData.style === s.value
-                  ? 'bg-amber-500 border-amber-400 text-black'
-                  : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-              )}
+              onClick={() => setFormData({ ...formData, style: style.value as PixelStyle })}
+              disabled={isGenerating}
+              className={`px-4 py-3 text-left border transition-colors ${
+                formData.style === style.value
+                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+              }`}
             >
-              {s.label}
+              <div className="text-xs font-bold tracking-wider">{style.label}</div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Size Dropdown */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Canvas Size
+      {/* Sprite Size */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold tracking-wider text-neutral-400">
+          SPRITE SIZE *
         </label>
-        <select
-          value={formData.size}
-          onChange={(e) => setFormField('size', Number(e.target.value) as PixelSize)}
-          className={cn(
-            'bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 font-mono',
-            'focus:outline-none focus:border-amber-500'
-          )}
-        >
-          {SIZES.map((s) => (
-            <option key={s} value={s}>
-              {s} x {s} pixels
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Palette Source Toggle */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Palette Source
-        </label>
-        <div className="flex gap-2">
-          {(['auto', 'custom'] as PaletteSource[]).map((src) => (
-            <button
-              key={src}
-              type="button"
-              onClick={() => setFormField('paletteSource', src)}
-              className={cn(
-                'flex-1 px-4 py-2 text-xs font-bold tracking-wider border-2 transition-all uppercase',
-                formData.paletteSource === src
-                  ? 'bg-emerald-600 border-emerald-500 text-white'
-                  : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-              )}
-            >
-              {src}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Story Text */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
-          Story Text <span className="text-zinc-600">(optional)</span>
-        </label>
-        <textarea
-          value={formData.storyText}
-          onChange={(e) => setFormField('storyText', e.target.value)}
-          placeholder="Background lore or narrative context for the sprite..."
-          rows={2}
-          className={cn(
-            'w-full bg-zinc-900 border-2 border-zinc-700 rounded px-3 py-2',
-            'text-sm text-zinc-100 placeholder-zinc-600 font-mono',
-            'focus:outline-none focus:border-amber-500 transition-colors resize-none'
-          )}
-        />
-      </div>
-
-      {/* Submit */}
-      <div className="flex gap-3 mt-2">
-        <button
-          type="submit"
+        <Select
+          value={formData.size.toString()}
+          onValueChange={(value) => setFormData({ ...formData, size: parseInt(value) as SpriteSize })}
           disabled={isGenerating}
-          className={cn(
-            'flex-1 px-6 py-3 text-sm font-bold tracking-widest uppercase',
-            'border-2 transition-all',
-            isGenerating
-              ? 'bg-zinc-800 border-zinc-700 text-zinc-500 cursor-not-allowed'
-              : 'bg-amber-500 border-amber-400 text-black hover:bg-amber-400 active:bg-amber-600'
-          )}
         >
-          {isGenerating ? '[ Generating... ]' : '[ Generate Sprite ]'}
-        </button>
-        <button
-          type="button"
-          onClick={resetForm}
-          className="px-4 py-3 text-xs font-bold tracking-wider border-2 border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          Reset
-        </button>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SPRITE_SIZES.map((size) => (
+              <SelectItem key={size.value} value={size.value.toString()}>
+                {size.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Color Palette Mode */}
+      <Card>
+        <CardHeader>
+          <CardTitle>COLOR PALETTE</CardTitle>
+          <CardDescription>
+            Choose palette source for your sprite
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {brandColors && (
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, paletteMode: 'brand' })}
+                disabled={isGenerating}
+                className={`w-full px-4 py-3 text-left border transition-colors ${
+                  formData.paletteMode === 'brand'
+                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                }`}
+              >
+                <div className="text-xs font-bold tracking-wider mb-2">FROM BRAND COLORS</div>
+                <div className="flex gap-1">
+                  {brandColors.slice(0, 8).map((color, i) => (
+                    <div
+                      key={i}
+                      className="w-6 h-6 border border-[#222]"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </button>
+            )}
+            
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, paletteMode: 'custom' })}
+              disabled={isGenerating}
+              className={`w-full px-4 py-3 text-left border transition-colors ${
+                formData.paletteMode === 'custom'
+                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+              }`}
+            >
+              <div className="text-xs font-bold tracking-wider">STYLE DEFAULT PALETTE</div>
+              <div className="text-[10px] mt-1 opacity-70">
+                Use {formData.style} style colors
+              </div>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isGenerating}
+      >
+        {isGenerating ? '[ GENERATING SPRITE... ]' : '[ GENERATE CHARACTER ]'}
+      </Button>
     </form>
   );
 }

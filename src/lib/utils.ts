@@ -1,149 +1,23 @@
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { BrandInput, ColorSwatch, FontPairing, LogoVariation } from './types';
-import { SAMPLE_FONTS } from './constants';
 
-export function cn(...inputs: ClassValue[]): string {
-  return clsx(inputs);
+// ========================================
+// CLASS NAME UTILITIES
+// ========================================
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash);
-}
+// ========================================
+// COLOR UTILITIES
+// ========================================
 
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-function hueToHex(h: number, s: number, l: number): string {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color).toString(16).padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-export function generatePalette(input: BrandInput): ColorSwatch[] {
-  const seed = hashString(input.name + input.industry + input.mood);
-  const rand = seededRandom(seed);
-  const baseHue = rand() * 360;
-
-  const moodModifiers: Record<string, { satRange: [number, number]; lightRange: [number, number] }> = {
-    professional: { satRange: [30, 50], lightRange: [40, 55] },
-    playful: { satRange: [65, 90], lightRange: [50, 65] },
-    bold: { satRange: [70, 95], lightRange: [35, 50] },
-    elegant: { satRange: [20, 45], lightRange: [30, 50] },
-    minimal: { satRange: [10, 30], lightRange: [45, 60] },
-    warm: { satRange: [50, 75], lightRange: [45, 60] },
-    futuristic: { satRange: [60, 90], lightRange: [45, 60] },
-    organic: { satRange: [30, 55], lightRange: [35, 55] },
-  };
-
-  const mod = moodModifiers[input.mood] || moodModifiers.professional;
-  const randS = () => mod.satRange[0] + rand() * (mod.satRange[1] - mod.satRange[0]);
-  const randL = () => mod.lightRange[0] + rand() * (mod.lightRange[1] - mod.lightRange[0]);
-
-  return [
-    { hex: hueToHex(baseHue, randS(), randL()).toUpperCase(), name: 'Primary', role: 'primary' },
-    { hex: hueToHex((baseHue + 30 + rand() * 30) % 360, randS(), randL()).toUpperCase(), name: 'Secondary', role: 'secondary' },
-    { hex: hueToHex((baseHue + 150 + rand() * 60) % 360, randS() + 10, randL()).toUpperCase(), name: 'Accent', role: 'accent' },
-    { hex: hueToHex(baseHue, 5 + rand() * 10, 20 + rand() * 15).toUpperCase(), name: 'Neutral', role: 'neutral' },
-    { hex: hueToHex(baseHue, 5 + rand() * 5, 95 + rand() * 4).toUpperCase(), name: 'Background', role: 'background' },
-  ];
-}
-
-export function generateFonts(input: BrandInput): FontPairing {
-  const fonts = SAMPLE_FONTS[input.mood] || SAMPLE_FONTS.professional;
-  const seed = hashString(input.name + 'fonts');
-  const rand = seededRandom(seed);
-  const headingIdx = Math.floor(rand() * fonts.length);
-  let bodyIdx = Math.floor(rand() * fonts.length);
-  if (bodyIdx === headingIdx) bodyIdx = (bodyIdx + 1) % fonts.length;
-  return {
-    heading: fonts[headingIdx],
-    body: fonts[bodyIdx],
-    category: input.mood,
-  };
-}
-
-export function generateLogos(input: BrandInput, palette: ColorSwatch[]): LogoVariation[] {
-  const primary = palette[0]?.hex || '#ffffff';
-  const secondary = palette[1]?.hex || '#888888';
-  const accent = palette[2]?.hex || '#cccccc';
-  const bg = palette[4]?.hex || '#0a0a0a';
-  const initial = input.name.charAt(0).toUpperCase();
-
-  const textLogo = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 320 80">
-    <rect width="320" height="80" fill="${bg}"/>
-    <text x="160" y="52" text-anchor="middle" font-family="'${generateFonts(input).heading}', sans-serif" font-size="36" font-weight="700" fill="${primary}">${input.name}</text>
-  </svg>`;
-
-  const iconTextLogo = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 320 80">
-    <rect width="320" height="80" fill="${bg}"/>
-    <rect x="16" y="16" width="48" height="48" fill="${primary}"/>
-    <text x="28" y="50" text-anchor="middle" font-family="monospace" font-size="28" font-weight="700" fill="${bg}">${initial}</text>
-    <text x="80" y="52" font-family="'${generateFonts(input).heading}', sans-serif" font-size="28" font-weight="700" fill="${primary}">${input.name}</text>
-  </svg>`;
-
-  const seed = hashString(input.name + 'abstract');
-  const rand = seededRandom(seed);
-  const shapes = Array.from({ length: 5 }, () => {
-    const cx = 20 + rand() * 60;
-    const cy = 10 + rand() * 60;
-    const size = 10 + rand() * 30;
-    const colors = [primary, secondary, accent];
-    const fill = colors[Math.floor(rand() * colors.length)];
-    return `<rect x="${cx}" y="${cy}" width="${size}" height="${size}" fill="${fill}" opacity="${0.6 + rand() * 0.4}"/>`;
-  }).join('');
-
-  const abstractLogo = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 320 80">
-    <rect width="320" height="80" fill="${bg}"/>
-    ${shapes}
-    <text x="160" y="52" text-anchor="middle" font-family="'${generateFonts(input).heading}', sans-serif" font-size="20" font-weight="400" fill="${primary}">${input.name}</text>
-  </svg>`;
-
-  return [
-    { type: 'text', svg: textLogo, label: 'Text Logo' },
-    { type: 'icon-text', svg: iconTextLogo, label: 'Icon + Text' },
-    { type: 'abstract', svg: abstractLogo, label: 'Abstract Mark' },
-  ];
-}
-
-export function copyToClipboard(text: string): Promise<void> {
-  if (navigator.clipboard) {
-    return navigator.clipboard.writeText(text);
-  }
-  return Promise.reject(new Error('Clipboard API not available'));
-}
-
-// ===== Pixel / Content Utility Functions =====
-
-export function generateId(): string {
-  return Math.random().toString(36).substring(2, 11);
-}
-
-export function createEmptyPixelGrid(width: number, height: number): string[][] {
-  return Array.from({ length: height }, () =>
-    Array.from({ length: width }, () => '#00000000')
-  );
-}
-
+/**
+ * Convert HEX color to RGB
+ */
 export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
@@ -153,43 +27,530 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } | nul
     : null;
 }
 
+/**
+ * Convert RGB to HEX
+ */
 export function rgbToHex(r: number, g: number, b: number): string {
-  return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return '#' + [r, g, b].map((x) => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
 }
 
+/**
+ * Convert HEX to HSL
+ */
+export function hexToHsl(hex: string): { h: number; s: number; l: number } | null {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return null;
+
+  const r = rgb.r / 255;
+  const g = rgb.g / 255;
+  const b = rgb.b / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
+    }
+  }
+
+  return {
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100),
+  };
+}
+
+/**
+ * Convert HSL to HEX
+ */
+export function hslToHex(h: number, s: number, l: number): string {
+  h = h / 360;
+  s = s / 100;
+  l = l / 100;
+
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+
+  return rgbToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+}
+
+/**
+ * Lighten a color by percentage
+ */
+export function lightenColor(hex: string, percent: number): string {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return hex;
+
+  const newL = Math.min(100, hsl.l + percent);
+  return hslToHex(hsl.h, hsl.s, newL);
+}
+
+/**
+ * Darken a color by percentage
+ */
+export function darkenColor(hex: string, percent: number): string {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return hex;
+
+  const newL = Math.max(0, hsl.l - percent);
+  return hslToHex(hsl.h, hsl.s, newL);
+}
+
+/**
+ * Adjust color saturation
+ */
+export function adjustSaturation(hex: string, multiplier: number): string {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return hex;
+
+  const newS = Math.min(100, Math.max(0, hsl.s * multiplier));
+  return hslToHex(hsl.h, newS, hsl.l);
+}
+
+/**
+ * Shift color hue
+ */
+export function shiftHue(hex: string, degrees: number): string {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return hex;
+
+  let newH = hsl.h + degrees;
+  if (newH < 0) newH += 360;
+  if (newH > 360) newH -= 360;
+
+  return hslToHex(newH, hsl.s, hsl.l);
+}
+
+/**
+ * Check if color is light or dark
+ */
+export function isLightColor(hex: string): boolean {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return false;
+
+  // Calculate relative luminance
+  const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+  return luminance > 0.5;
+}
+
+/**
+ * Get contrasting text color (black or white)
+ */
+export function getContrastColor(hex: string): string {
+  return isLightColor(hex) ? '#000000' : '#ffffff';
+}
+
+/**
+ * Generate color shades
+ */
+export function generateShades(baseColor: string) {
+  return {
+    base: baseColor,
+    lighter: lightenColor(baseColor, 20),
+    light: lightenColor(baseColor, 10),
+    dark: darkenColor(baseColor, 10),
+    darker: darkenColor(baseColor, 20),
+  };
+}
+
+// ========================================
+// STRING UTILITIES
+// ========================================
+
+/**
+ * Capitalize first letter
+ */
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Convert to title case
+ */
+export function toTitleCase(str: string): string {
+  return str
+    .split(' ')
+    .map((word) => capitalize(word.toLowerCase()))
+    .join(' ');
+}
+
+/**
+ * Slugify string
+ */
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Truncate string
+ */
+export function truncate(str: string, length: number): string {
+  if (str.length <= length) return str;
+  return str.slice(0, length) + '...';
+}
+
+// ========================================
+// NUMBER UTILITIES
+// ========================================
+
+/**
+ * Clamp number between min and max
+ */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-export const DEFAULT_PALETTE: string[] = [
-  '#000000', '#1D2B53', '#7E2553', '#008751',
-  '#AB5236', '#5F574F', '#C2C3C7', '#FFF1E8',
-  '#FF004D', '#FFA300', '#FFEC27', '#00E436',
-  '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA',
-];
+/**
+ * Map value from one range to another
+ */
+export function mapRange(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number
+): number {
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+}
 
-export const PLATFORM_LABELS: Record<string, string> = {
-  tiktok: 'TikTok',
-  instagram: 'Instagram',
-  youtube: 'YouTube',
-  twitter: 'X / Twitter',
-  linkedin: 'LinkedIn',
-};
+/**
+ * Round to decimal places
+ */
+export function roundTo(value: number, decimals: number): number {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+}
 
-export const SHOT_TYPE_LABELS: Record<string, string> = {
-  wide: 'Wide Shot',
-  medium: 'Medium Shot',
-  'close-up': 'Close-Up',
-  'extreme-close': 'Extreme Close-Up',
-  'over-shoulder': 'Over-the-Shoulder',
-  'birds-eye': "Bird's Eye View",
-};
+// ========================================
+// ARRAY UTILITIES
+// ========================================
 
-export const SHOT_TYPE_ICONS: Record<string, string> = {
-  wide: '[WIDE]',
-  medium: '[MED]',
-  'close-up': '[CU]',
-  'extreme-close': '[ECU]',
-  'over-shoulder': '[OTS]',
-  'birds-eye': '[BEV]',
-};
+/**
+ * Shuffle array
+ */
+export function shuffle<T>(array: T[]): T[] {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
+
+/**
+ * Get random item from array
+ */
+export function randomItem<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+/**
+ * Chunk array into smaller arrays
+ */
+export function chunk<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
+// ========================================
+// DATE UTILITIES
+// ========================================
+
+/**
+ * Format date to readable string
+ */
+export function formatDate(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/**
+ * Get relative time string
+ */
+export function getRelativeTime(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  return 'just now';
+}
+
+// ========================================
+// FILE UTILITIES
+// ========================================
+
+/**
+ * Format file size
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+/**
+ * Get file extension
+ */
+export function getFileExtension(filename: string): string {
+  return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
+}
+
+/**
+ * Convert data URL to Blob
+ */
+export function dataURLtoBlob(dataURL: string): Blob {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)?.[1] || '';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new Blob([u8arr], { type: mime });
+}
+
+/**
+ * Download file from data URL
+ */
+export function downloadFile(dataURL: string, filename: string): void {
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ========================================
+// VALIDATION UTILITIES
+// ========================================
+
+/**
+ * Validate email
+ */
+export function isValidEmail(email: string): boolean {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+/**
+ * Validate URL
+ */
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate HEX color
+ */
+export function isValidHex(hex: string): boolean {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+}
+
+// ========================================
+// CANVAS UTILITIES
+// ========================================
+
+/**
+ * Create canvas element
+ */
+export function createCanvas(width: number, height: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  return canvas;
+}
+
+/**
+ * Get canvas context
+ */
+export function getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Could not get canvas context');
+  return ctx;
+}
+
+/**
+ * Clear canvas
+ */
+export function clearCanvas(canvas: HTMLCanvasElement): void {
+  const ctx = getCanvasContext(canvas);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/**
+ * Canvas to data URL
+ */
+export function canvasToDataURL(canvas: HTMLCanvasElement, type = 'image/png'): string {
+  return canvas.toDataURL(type);
+}
+
+/**
+ * Canvas to Blob
+ */
+export async function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  type = 'image/png'
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Could not convert canvas to blob'));
+    }, type);
+  });
+}
+
+// ========================================
+// ASYNC UTILITIES
+// ========================================
+
+/**
+ * Sleep/delay function
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Debounce function
+ */
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      timeout = null;
+      func(...args);
+    };
+
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/**
+ * Throttle function
+ */
+export function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  limit: number
+): (...args: Parameters<T>) => void {
+  let inThrottle: boolean;
+
+  return function executedFunction(...args: Parameters<T>) {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+
+// ========================================
+// LOCAL STORAGE UTILITIES
+// ========================================
+
+/**
+ * Save to local storage
+ */
+export function saveToLocalStorage<T>(key: string, value: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+  }
+}
+
+/**
+ * Load from local storage
+ */
+export function loadFromLocalStorage<T>(key: string): T | null {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.error('Error loading from localStorage:', error);
+    return null;
+  }
+}
+
+/**
+ * Remove from local storage
+ */
+export function removeFromLocalStorage(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.error('Error removing from localStorage:', error);
+  }
+}

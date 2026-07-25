@@ -1,189 +1,188 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
-import type { SpriteFrame } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { usePixelStore } from '@/store/pixel-store';
+import { useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import type { PoseSet } from '@/lib/types';
 
 interface AnimationPreviewProps {
-  frames: SpriteFrame[];
-  className?: string;
+  poses: PoseSet;
+  spriteSize: number;
 }
 
-export default function AnimationPreview({ frames, className }: AnimationPreviewProps) {
+export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const {
-    isPlaying,
-    setIsPlaying,
-    animationSpeed,
-    setAnimationSpeed,
-    currentFrameIndex,
-    setCurrentFrameIndex,
-  } = usePixelStore();
+  const [currentPose, setCurrentPose] = useState<keyof PoseSet>('idle');
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [fps, setFps] = useState(8);
+  const animationRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number>(0);
 
-  const renderFrame = useCallback(
-    (frame: SpriteFrame) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+  const poseOptions: { key: keyof PoseSet; label: string; icon: string }[] = [
+    { key: 'idle', label: 'IDLE', icon: 'I' },
+    { key: 'walk', label: 'WALK', icon: 'W' },
+    { key: 'run', label: 'RUN', icon: 'R' },
+    { key: 'attack', label: 'ATTACK', icon: 'A' },
+    { key: 'jump', label: 'JUMP', icon: 'J' },
+  ];
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      const scale = 6;
-      const w = frame.width * scale;
-      const h = frame.height * scale;
-
-      canvas.width = w;
-      canvas.height = h;
-
-      ctx.fillStyle = '#18181b';
-      ctx.fillRect(0, 0, w, h);
-
-      for (let y = 0; y < frame.pixels.length; y++) {
-        for (let x = 0; x < frame.pixels[y].length; x++) {
-          const color = frame.pixels[y][x];
-          if (!color || color === '#00000000' || color === 'transparent') continue;
-          ctx.fillStyle = color;
-          ctx.fillRect(x * scale, y * scale, scale, scale);
-        }
-      }
-    },
-    []
-  );
-
-  // Animation loop
   useEffect(() => {
-    if (!isPlaying || frames.length === 0) {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      return;
-    }
+    if (!canvasRef.current || !isPlaying) return;
 
-    const currentFrame = frames[currentFrameIndex];
-    if (currentFrame) {
-      renderFrame(currentFrame);
-    }
+    const frames = poses[currentPose];
+    if (!frames || frames.length === 0) return;
 
-    timerRef.current = setTimeout(() => {
-      const nextIndex = (currentFrameIndex + 1) % frames.length;
-      setCurrentFrameIndex(nextIndex);
-    }, currentFrame?.duration || animationSpeed);
+    const animate = (timestamp: number) => {
+      if (!lastFrameTimeRef.current) {
+        lastFrameTimeRef.current = timestamp;
+      }
+
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      const frameDelay = 1000 / fps;
+
+      if (elapsed >= frameDelay) {
+        setCurrentFrame((prev) => (prev + 1) % frames.length);
+        lastFrameTimeRef.current = timestamp;
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [isPlaying, currentFrameIndex, frames, animationSpeed, renderFrame, setCurrentFrameIndex]);
+  }, [poses, currentPose, isPlaying, fps]);
 
-  // Render current frame when paused
   useEffect(() => {
-    if (!isPlaying && frames[currentFrameIndex]) {
-      renderFrame(frames[currentFrameIndex]);
-    }
-  }, [currentFrameIndex, frames, isPlaying, renderFrame]);
+    if (!canvasRef.current) return;
 
-  function handlePlayPause() {
-    if (frames.length === 0) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const frames = poses[currentPose];
+    if (!frames || frames.length === 0) return;
+
+    const scale = 8;
+    canvas.width = spriteSize * scale;
+    canvas.height = spriteSize * scale;
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = frames[currentFrame];
+  }, [poses, currentPose, currentFrame, spriteSize]);
+
+  const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
-  }
+    if (!isPlaying) {
+      lastFrameTimeRef.current = 0;
+    }
+  };
 
-  function handlePrevFrame() {
-    if (frames.length === 0) return;
-    setIsPlaying(false);
-    const prev = (currentFrameIndex - 1 + frames.length) % frames.length;
-    setCurrentFrameIndex(prev);
-  }
-
-  function handleNextFrame() {
-    if (frames.length === 0) return;
-    setIsPlaying(false);
-    const next = (currentFrameIndex + 1) % frames.length;
-    setCurrentFrameIndex(next);
-  }
-
-  function handleSpeedChange(delta: number) {
-    setAnimationSpeed(Math.max(50, Math.min(2000, animationSpeed + delta)));
-  }
+  const handleReset = () => {
+    setCurrentFrame(0);
+    lastFrameTimeRef.current = 0;
+  };
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      <div className="text-xs font-bold tracking-widest text-zinc-500 uppercase">
-        Animation Preview
-      </div>
-
-      {/* Canvas */}
-      <div className="border-2 border-zinc-800 bg-zinc-950 inline-block">
-        {frames.length > 0 ? (
+    <Card>
+      <CardHeader>
+        <CardTitle>ANIMATION PREVIEW</CardTitle>
+        <CardDescription>
+          Preview character poses and animations
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Canvas Display */}
+        <div className="border border-[#222] bg-[#0a0a0a] p-8 flex items-center justify-center">
           <canvas
             ref={canvasRef}
-            className="block"
+            className="image-rendering-pixelated"
             style={{ imageRendering: 'pixelated' }}
           />
-        ) : (
-          <div className="flex items-center justify-center w-48 h-48 text-zinc-600 text-xs font-mono">
-            [ No frames ]
-          </div>
-        )}
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handlePrevFrame}
-          disabled={frames.length === 0}
-          className="px-3 py-2 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 transition-colors disabled:opacity-30"
-        >
-          &lt;&lt;
-        </button>
-        <button
-          onClick={handlePlayPause}
-          disabled={frames.length === 0}
-          className={cn(
-            'px-5 py-2 text-xs font-bold tracking-wider border-2 transition-all',
-            isPlaying
-              ? 'bg-red-600 border-red-500 text-white hover:bg-red-500'
-              : 'bg-emerald-600 border-emerald-500 text-white hover:bg-emerald-500',
-            frames.length === 0 && 'opacity-30 cursor-not-allowed'
-          )}
-        >
-          {isPlaying ? 'PAUSE' : 'PLAY'}
-        </button>
-        <button
-          onClick={handleNextFrame}
-          disabled={frames.length === 0}
-          className="px-3 py-2 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 transition-colors disabled:opacity-30"
-        >
-          &gt;&gt;
-        </button>
-      </div>
-
-      {/* Speed Controls */}
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
-          Speed
-        </span>
-        <button
-          onClick={() => handleSpeedChange(-50)}
-          className="px-2 py-1 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 transition-colors"
-        >
-          F
-        </button>
-        <span className="text-xs font-mono text-zinc-300 w-16 text-center">
-          {animationSpeed}ms
-        </span>
-        <button
-          onClick={() => handleSpeedChange(50)}
-          className="px-2 py-1 text-xs font-bold border border-zinc-700 text-zinc-400 hover:border-zinc-500 transition-colors"
-        >
-          S
-        </button>
-      </div>
-
-      {/* Frame indicator */}
-      {frames.length > 0 && (
-        <div className="text-[10px] font-mono text-zinc-600">
-          Frame {currentFrameIndex + 1} / {frames.length}
         </div>
-      )}
-    </div>
+
+        {/* Pose Selector */}
+        <div className="space-y-2">
+          <p className="text-xs font-bold tracking-wider text-neutral-400">SELECT POSE</p>
+          <div className="grid grid-cols-5 gap-2">
+            {poseOptions.map((pose) => (
+              <button
+                key={pose.key}
+                onClick={() => {
+                  setCurrentPose(pose.key);
+                  setCurrentFrame(0);
+                  lastFrameTimeRef.current = 0;
+                }}
+                className={`px-3 py-2 border transition-colors ${
+                  currentPose === pose.key
+                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                }`}
+              >
+                <div className="text-xs font-bold">{pose.icon}</div>
+                <div className="text-[10px] mt-1">{pose.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Animation Controls */}
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-[#222]">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePlayPause}
+            >
+              {isPlaying ? '⏸' : '▶'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+            >
+              ⏹
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold tracking-wider text-neutral-400">FPS:</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setFps(Math.max(4, fps - 2))}
+              disabled={fps <= 4}
+            >
+              -
+            </Button>
+            <span className="text-xs font-mono text-white w-8 text-center">{fps}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setFps(Math.min(16, fps + 2))}
+              disabled={fps >= 16}
+            >
+              +
+            </Button>
+          </div>
+        </div>
+
+        {/* Frame Info */}
+        <div className="text-xs text-neutral-500 text-center">
+          Frame {currentFrame + 1} / {poses[currentPose]?.length || 0}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

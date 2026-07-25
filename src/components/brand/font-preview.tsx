@@ -1,130 +1,152 @@
 'use client';
 
-import { useBrandStore } from '@/store/brand-store';
-import { GOOGLE_FONTS_URL } from '@/lib/constants';
+import { useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import type { TypographySystem } from '@/lib/types';
 
-const sampleText = {
-  heading: 'The Quick Brown Fox',
-  subheading: 'Jumps Over The Lazy Dog',
-  body: 'SpectraCanvas generates cohesive brand identities tailored to your vision. Every element is crafted to work together harmoniously, from typography to color to logo design.',
-  caption: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789',
-};
-
-function FontLoadLink({ font }: { font: string }) {
-  const formatted = font.replace(/ /g, '+');
-  return (
-    <link
-      href={`${GOOGLE_FONTS_URL}?family=${formatted}:wght@400;600;700&display=swap`}
-      rel="stylesheet"
-    />
-  );
+interface FontPreviewProps {
+  typography: TypographySystem;
 }
 
-export function FontPreview() {
-  const { result, input } = useBrandStore();
+export function FontPreview({ typography }: FontPreviewProps) {
+  useEffect(() => {
+    // Load Google Fonts dynamically
+    const link = document.createElement('link');
+    link.href = typography.heading.url || '';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
 
-  if (!result) {
-    return (
-      <div className="w-full border-2 border-[#222] bg-[#111] p-8">
-        <p className="text-sm font-mono text-white/30 text-center uppercase tracking-wider">
-          Generate a brand to preview fonts
-        </p>
-      </div>
-    );
-  }
+    const link2 = document.createElement('link');
+    link2.href = typography.body.url || '';
+    link2.rel = 'stylesheet';
+    document.head.appendChild(link2);
 
-  const { heading, body, category } = result.fonts;
-  const brandName = input.name || 'Brand';
-  const primaryColor = result.palette[0]?.hex || '#ffffff';
+    return () => {
+      document.head.removeChild(link);
+      document.head.removeChild(link2);
+    };
+  }, [typography]);
 
   return (
-    <div className="w-full flex flex-col gap-4">
-      {/* Load Google Fonts */}
-      <FontLoadLink font={heading} />
-      <FontLoadLink font={body} />
-
-      <h3 className="text-sm font-mono font-semibold uppercase tracking-wider text-white/70">
-        Font Pairing
-      </h3>
-
-      {/* Font info */}
-      <div className="flex gap-4">
-        <div className="flex-1 border-2 border-[#222] bg-[#111] p-4">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-1">
-            Heading Font
-          </p>
-          <p
-            className="text-lg font-semibold text-white"
-            style={{ fontFamily: `'${heading}', sans-serif` }}
+    <Card>
+      <CardHeader>
+        <CardTitle>TYPOGRAPHY SYSTEM</CardTitle>
+        <CardDescription>
+          Font pairing optimized for your brand personality
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Heading Font */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold tracking-wider text-neutral-400">
+              HEADING FONT
+            </p>
+            <p className="text-xs text-neutral-500 font-mono">
+              {typography.heading.name}
+            </p>
+          </div>
+          <div
+            className="p-4 border border-[#222] bg-[#0a0a0a]"
+            style={{ fontFamily: typography.heading.family }}
           >
-            {heading}
-          </p>
-          <p className="text-[10px] font-mono text-white/30 mt-1 uppercase">
-            Style: {category}
-          </p>
+            <h1 className="text-4xl font-bold mb-2">The Quick Brown Fox</h1>
+            <h2 className="text-3xl font-bold mb-2">Jumps Over The Lazy Dog</h2>
+            <h3 className="text-2xl font-bold">ABCDEFGHIJKLMNOPQRSTUVWXYZ</h3>
+          </div>
+          <div className="flex gap-2 text-xs text-neutral-500">
+            <span>Weights:</span>
+            {typography.heading.weights.map((weight) => (
+              <span
+                key={weight}
+                className="px-2 py-1 bg-[#111] border border-[#222]"
+                style={{ fontFamily: typography.heading.family, fontWeight: weight }}
+              >
+                {weight}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex-1 border-2 border-[#222] bg-[#111] p-4">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-1">
-            Body Font
-          </p>
-          <p
-            className="text-lg text-white"
-            style={{ fontFamily: `'${body}', sans-serif` }}
+
+        {/* Body Font */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold tracking-wider text-neutral-400">
+              BODY FONT
+            </p>
+            <p className="text-xs text-neutral-500 font-mono">
+              {typography.body.name}
+            </p>
+          </div>
+          <div
+            className="p-4 border border-[#222] bg-[#0a0a0a]"
+            style={{ fontFamily: typography.body.family }}
           >
-            {body}
-          </p>
-          <p className="text-[10px] font-mono text-white/30 mt-1 uppercase">
-            Style: {category}
-          </p>
+            <p className="text-base mb-2">
+              The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.
+            </p>
+            <p className="text-sm mb-2">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+            <p className="text-xs">
+              abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+            </p>
+          </div>
+          <div className="flex gap-2 text-xs text-neutral-500">
+            <span>Weights:</span>
+            {typography.body.weights.map((weight) => (
+              <span
+                key={weight}
+                className="px-2 py-1 bg-[#111] border border-[#222]"
+                style={{ fontFamily: typography.body.family, fontWeight: weight }}
+              >
+                {weight}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Sample rendering */}
-      <div className="border-2 border-[#222] bg-[#0a0a0a] p-6 flex flex-col gap-4">
-        <p
-          className="text-3xl font-bold"
-          style={{
-            fontFamily: `'${heading}', sans-serif`,
-            color: primaryColor,
-          }}
-        >
-          {sampleText.heading}
-        </p>
-        <p
-          className="text-xl font-semibold text-white/80"
-          style={{ fontFamily: `'${heading}', sans-serif` }}
-        >
-          {sampleText.subheading}
-        </p>
-        <p
-          className="text-base leading-relaxed text-white/60"
-          style={{ fontFamily: `'${body}', sans-serif` }}
-        >
-          {sampleText.body}
-        </p>
-        <p
-          className="text-xs tracking-[0.2em] text-white/30"
-          style={{ fontFamily: `'${body}', sans-serif` }}
-        >
-          {sampleText.caption}
-        </p>
-      </div>
+        {/* Type Scale */}
+        <div className="space-y-3 pt-4 border-t border-[#222]">
+          <p className="text-xs font-bold tracking-wider text-neutral-400">
+            TYPE SCALE
+          </p>
+          <div className="space-y-2">
+            {Object.entries(typography.scale).map(([level, size]) => (
+              <div
+                key={level}
+                className="flex items-center justify-between text-neutral-500"
+              >
+                <span className="text-xs font-mono">{level.toUpperCase()}</span>
+                <span className="text-xs font-mono">{size}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      {/* Brand name in heading font */}
-      <div className="border-2 border-[#222] bg-[#111] p-6 text-center">
-        <p className="text-[10px] font-mono uppercase tracking-wider text-white/40 mb-3">
-          Your Brand in Heading Font
-        </p>
-        <p
-          className="text-5xl font-bold"
-          style={{
-            fontFamily: `'${heading}', sans-serif`,
-            color: primaryColor,
-          }}
-        >
-          {brandName}
-        </p>
-      </div>
-    </div>
+        {/* Combined Preview */}
+        <div className="space-y-3 pt-4 border-t border-[#222]">
+          <p className="text-xs font-bold tracking-wider text-neutral-400">
+            COMBINED PREVIEW
+          </p>
+          <div className="p-4 border border-[#222] bg-[#0a0a0a]">
+            <h2
+              className="text-2xl font-bold mb-3"
+              style={{ fontFamily: typography.heading.family }}
+            >
+              Your Brand Headline
+            </h2>
+            <p
+              className="text-base leading-relaxed"
+              style={{ fontFamily: typography.body.family }}
+            >
+              This is how your body text will look. It's designed to be highly readable
+              and pair perfectly with your heading font. The combination creates a
+              professional and cohesive visual identity.
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

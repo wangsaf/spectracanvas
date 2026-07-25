@@ -1,203 +1,376 @@
-export type Industry =
-  | 'technology'
-  | 'healthcare'
-  | 'finance'
-  | 'education'
-  | 'retail'
-  | 'food'
-  | 'fitness'
-  | 'creative'
-  | 'legal'
-  | 'realestate'
-  | 'nonprofit'
-  | 'other';
+// ========================================
+// CORE TYPES
+// ========================================
 
-export type Mood =
-  | 'professional'
-  | 'playful'
-  | 'bold'
-  | 'elegant'
-  | 'minimal'
-  | 'warm'
-  | 'futuristic'
-  | 'organic';
-
-export interface BrandInput {
+export interface Project {
+  id: string;
   name: string;
-  industry: Industry;
+  createdAt: string;
+  updatedAt: string;
+  brand?: BrandIdentity;
+  pixel?: PixelArtAssets;
+  content?: ContentAssets;
+  mood?: MoodProfile;
+}
+
+// ========================================
+// BRAND MODULE TYPES
+// ========================================
+
+export interface BrandIdentity {
+  name: string;
+  industry: string;
   values: string[];
-  audience: string;
-  mood: Mood;
+  targetAudience: string;
+  personality: BrandPersonality;
+  logo: LogoVariations;
+  colors: ColorSystem;
+  typography: TypographySystem;
+  mockups: Mockup[];
+  guidelines?: string; // PDF URL
 }
 
-export interface ColorSwatch {
-  hex: string;
+export interface BrandPersonality {
+  tone: string;
+  style: string;
+  keywords: string[];
+}
+
+export interface LogoVariations {
+  textOnly: string; // SVG string
+  iconText: string; // SVG string
+  abstract: string; // SVG string
+}
+
+export interface ColorSystem {
+  primary: ColorShades;
+  secondary: ColorShades;
+  accent: ColorShades;
+  neutral: ColorShades;
+  darkMode?: ColorSystem;
+}
+
+export interface ColorShades {
+  base: string; // HEX
+  light: string;
+  lighter: string;
+  dark: string;
+  darker: string;
+}
+
+export interface TypographySystem {
+  heading: FontDefinition;
+  body: FontDefinition;
+  accent?: FontDefinition;
+  scale: {
+    h1: string;
+    h2: string;
+    h3: string;
+    h4: string;
+    h5: string;
+    h6: string;
+    body: string;
+    small: string;
+  };
+}
+
+export interface FontDefinition {
   name: string;
-  role: 'primary' | 'secondary' | 'accent' | 'neutral' | 'background';
+  family: string;
+  weights: number[];
+  url?: string; // Google Fonts URL
 }
 
-export interface FontPairing {
-  heading: string;
-  body: string;
-  category: string;
+export interface Mockup {
+  type: 'business-card' | 'social-profile' | 'website-hero' | 'merchandise';
+  imageUrl: string; // PNG data URL
 }
 
-export interface LogoVariation {
-  type: 'text' | 'icon-text' | 'abstract';
-  svg: string;
-  label: string;
+// ========================================
+// PIXEL ART MODULE TYPES
+// ========================================
+
+export interface PixelArtAssets {
+  character?: CharacterSprite;
+  poses?: PoseSet;
+  expressions?: ExpressionSet;
+  spriteSheet?: SpriteSheet;
+  comic?: ComicStrip;
+  assetKit?: AssetKit;
+  background?: BackgroundLayers;
 }
 
-export interface BrandResult {
-  logos: LogoVariation[];
-  palette: ColorSwatch[];
-  fonts: FontPairing;
-}
-
-export interface BusinessCardData {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  website: string;
-  palette: ColorSwatch[];
-  fonts: FontPairing;
-  brandName: string;
-}
-
-export interface SocialProfileData {
-  platform: string;
-  displayName: string;
-  handle: string;
-  bio: string;
-  palette: ColorSwatch[];
-  brandName: string;
-}
-
-// ===== Pixel Art Types =====
-
-export type PixelStyle = '8bit' | '16bit' | 'modern';
-export type PixelSize = 16 | 32 | 48 | 64;
-export type PaletteSource = 'auto' | 'custom';
-
-export interface PixelFormData {
+export interface CharacterSprite {
   description: string;
   style: PixelStyle;
-  size: PixelSize;
-  paletteSource: PaletteSource;
-  storyText: string;
+  size: SpriteSize;
+  palette: string[]; // HEX colors
+  imageData: string; // PNG data URL
+  metadata: SpriteMetadata;
 }
 
-export interface ColorPalette {
-  id: string;
-  name: string;
-  colors: string[];
-}
+export type PixelStyle = '8-bit' | '16-bit' | 'modern';
+export type SpriteSize = 16 | 32 | 48 | 64;
 
-export interface SpriteFrame {
-  id: string;
-  pixels: string[][];
+export interface SpriteMetadata {
   width: number;
   height: number;
-  duration: number;
+  colorCount: number;
+  transparent: boolean;
+}
+
+export interface PoseSet {
+  idle: string[]; // PNG data URLs
+  walk: string[];
+  run: string[];
+  attack: string[];
+  jump: string[];
+}
+
+export interface ExpressionSet {
+  happy: string;
+  sad: string;
+  angry: string;
+  surprised: string;
+  neutral: string;
+  custom?: Record<string, string>;
 }
 
 export interface SpriteSheet {
-  id: string;
-  name: string;
-  frames: SpriteFrame[];
-  palette: ColorPalette;
-  createdAt: string;
+  imageUrl: string; // Combined PNG
+  layout: SpriteSheetLayout;
+  metadata: string; // JSON metadata
 }
 
-export interface ComicBubble {
-  id: string;
-  text: string;
+export interface SpriteSheetLayout {
+  columns: number;
+  rows: number;
+  cellWidth: number;
+  cellHeight: number;
+  frames: FramePosition[];
+}
+
+export interface FramePosition {
+  name: string;
   x: number;
   y: number;
   width: number;
   height: number;
-  type: 'speech' | 'thought' | 'narration' | 'shout';
 }
 
-export interface ComicPanelData {
-  id: string;
-  frame: SpriteFrame;
-  bubbles: ComicBubble[];
-  label: string;
+export interface ComicStrip {
+  story: string;
+  panels: ComicPanel[];
+  layout: ComicLayout;
 }
 
-// ===== Content Types =====
-
-export type Platform = 'tiktok' | 'instagram' | 'youtube' | 'twitter' | 'linkedin';
-export type Tone = 'casual' | 'professional' | 'humorous' | 'dramatic' | 'educational';
-export type Duration = '15s' | '30s' | '60s' | '3min' | '5min' | '10min';
-
-export interface ContentFormData {
-  topic: string;
-  platform: Platform;
-  audience: string;
-  tone: Tone;
-  duration: Duration;
+export interface ComicPanel {
+  imageUrl: string;
+  dialogue?: string;
+  emotion?: string;
+  shotType?: 'close-up' | 'medium' | 'wide';
 }
 
-export interface ScriptSection {
-  id: string;
-  label: string;
-  content: string;
-  timestamp?: string;
+export type ComicLayout = '2x2' | '3x3' | 'strip';
+
+export interface AssetKit {
+  ui: string[]; // UI element PNGs
+  tileset: string[]; // Tile PNGs
+  items: string[]; // Item PNGs
+  icons: string[]; // Icon PNGs
+}
+
+export interface BackgroundLayers {
+  sky: string;
+  midground: string;
+  foreground: string;
+}
+
+// ========================================
+// CONTENT MODULE TYPES
+// ========================================
+
+export interface ContentAssets {
+  scripts: ContentScript[];
+  storyboards: Storyboard[];
+  captions: Caption[];
+  calendar?: ContentCalendar;
 }
 
 export interface ContentScript {
-  id: string;
-  title: string;
-  hook: string;
-  sections: ScriptSection[];
-  ctas: string[];
+  topic: string;
   platform: Platform;
-  duration: Duration;
+  tone: Tone;
+  duration: number; // seconds
+  hook: string[];
+  body: ScriptSection[];
+  cta: string[];
+  wordCount: number;
+}
+
+export type Platform = 'tiktok' | 'instagram' | 'youtube-shorts' | 'twitter';
+export type Tone = 'casual' | 'professional' | 'educational' | 'energetic' | 'inspirational';
+
+export interface ScriptSection {
+  timestamp: string; // "0:00-0:03"
+  content: string;
+  brollSuggestion?: string;
+  textOverlay?: string;
+}
+
+export interface Storyboard {
+  scriptId: string;
+  frames: StoryboardFrame[];
 }
 
 export interface StoryboardFrame {
-  id: string;
-  shotType: 'wide' | 'medium' | 'close-up' | 'extreme-close' | 'over-shoulder' | 'birds-eye';
-  description: string;
-  dialogue?: string;
+  frameNumber: number;
+  timestamp: string;
+  shotType: 'close-up' | 'medium' | 'wide' | 'pov';
+  cameraMovement: 'static' | 'pan' | 'zoom' | 'tilt';
+  textOverlay?: string;
   duration: number;
-  cameraMovement: string;
-  notes?: string;
 }
 
-export interface CaptionVariation {
-  id: string;
-  text: string;
-  style: 'short' | 'medium' | 'long';
-}
-
-export interface CaptionData {
-  id: string;
-  primary: string;
-  variations: CaptionVariation[];
+export interface Caption {
+  scriptId: string;
+  platform: Platform;
+  mainText: string;
   hashtags: string[];
-  platform: Platform;
+  emojis: string[];
+  variations: string[];
 }
 
-export interface CalendarEntry {
-  id: string;
+export interface ContentCalendar {
+  weekPlan: DayPlan[];
+}
+
+export interface DayPlan {
   day: string;
-  time: string;
-  title: string;
+  contentType: 'educational' | 'entertaining' | 'promotional';
+  theme: string;
+  bestTime: string;
+}
+
+// ========================================
+// MOOD MODULE TYPES
+// ========================================
+
+export interface MoodProfile {
+  source: 'audio' | 'keywords';
+  audioAnalysis?: AudioAnalysis;
+  keywords?: MoodKeyword[];
+  designParams: DesignParameters;
+}
+
+export interface AudioAnalysis {
+  bpm: number;
+  energy: number; // 0-100
+  valence: number; // 0-100 (sad to happy)
+  dominantFrequency: number;
+  genre?: string;
+  mood: MoodClassification;
+}
+
+export type MoodKeyword = 
+  | 'chill'
+  | 'energetic'
+  | 'dark'
+  | 'happy'
+  | 'professional'
+  | 'retro'
+  | 'futuristic'
+  | 'organic';
+
+export type MoodClassification = MoodKeyword;
+
+export interface DesignParameters {
+  colorShift: ColorShift;
+  typographyStyle: TypographyStyle;
+  animationSpeed: AnimationSpeed;
+  saturation: number; // 0-100
+  brightness: number; // 0-100
+}
+
+export interface ColorShift {
+  hueShift: number; // -180 to 180
+  saturationMultiplier: number; // 0.5 to 1.5
+  brightnessMultiplier: number; // 0.5 to 1.5
+}
+
+export interface TypographyStyle {
+  weight: 'light' | 'normal' | 'bold';
+  style: 'rounded' | 'sharp' | 'geometric';
+}
+
+export interface AnimationSpeed {
+  multiplier: number; // 0.5 to 2.0
+  easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'bounce';
+}
+
+// ========================================
+// API TYPES
+// ========================================
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export interface GenerateBrandRequest {
+  name: string;
+  industry: string;
+  values: string[];
+  targetAudience: string;
+  mood?: MoodKeyword[];
+}
+
+export interface GeneratePixelRequest {
+  description: string;
+  style: PixelStyle;
+  size: SpriteSize;
+  palette?: string[];
+  brandColors?: string[];
+}
+
+export interface GenerateContentRequest {
+  topic: string;
   platform: Platform;
-  type: 'post' | 'story' | 'reel' | 'video' | 'live';
-  status: 'draft' | 'scheduled' | 'published';
+  tone: Tone;
+  duration: number;
+  brandContext?: BrandIdentity;
 }
 
-export interface CalendarDay {
-  date: string;
-  dayName: string;
-  entries: CalendarEntry[];
+export interface AnalyzeMoodRequest {
+  audioFile?: File;
+  keywords?: MoodKeyword[];
 }
 
-export type PixelSize = 16 | 32 | 48 | 64;
-export type PaletteSource = "auto" | "custom";
-export type CalendarDay = ContentCalendar;
+// ========================================
+// UI COMPONENT TYPES
+// ========================================
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export interface ChipOption {
+  id: string;
+  label: string;
+  selected: boolean;
+}
+
+export interface CanvasConfig {
+  width: number;
+  height: number;
+  scale: number;
+  backgroundColor: string;
+}
+
+export interface ExportOptions {
+  format: 'png' | 'svg' | 'pdf' | 'zip' | 'json';
+  quality?: number;
+  includeMetadata?: boolean;
+}

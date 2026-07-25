@@ -1,119 +1,193 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
-import type { SpriteFrame } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { usePixelStore } from '@/store/pixel-store';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import type { PoseSet } from '@/lib/types';
+import { composeSpriteSheet, generateSpriteSheetMetadata } from '@/lib/pixel/pose-generator';
 
 interface SpriteSheetProps {
-  frames: SpriteFrame[];
-  columns?: number;
-  className?: string;
+  poses: PoseSet;
+  spriteSize: number;
 }
 
-export default function SpriteSheet({ frames, columns = 4, className }: SpriteSheetProps) {
-  const { setCurrentFrame, currentFrameIndex } = usePixelStore();
+export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
+  const [sheetImage, setSheetImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [columns, setColumns] = useState(4);
 
-  const rows = Math.ceil(frames.length / columns);
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    try {
+      // Collect all frames
+      const allFrames: string[] = [];
+      const poseNames: string[] = [];
 
-  return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">
-          Sprite Sheet
-        </span>
-        <span className="text-[10px] font-mono text-zinc-600">
-          {frames.length} frames / {columns}x{rows} grid
-        </span>
-      </div>
+      Object.entries(poses).forEach(([poseName, frames]) => {
+        frames.forEach((frame, index) => {
+          allFrames.push(frame);
+          poseNames.push(`${poseName}_${index}`);
+        });
+      });
 
-      <div
-        className="grid gap-1 bg-zinc-950 border-2 border-zinc-800 p-2"
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-      >
-        {frames.map((frame, index) => (
-          <SpriteSheetCell
-            key={frame.id}
-            frame={frame}
-            index={index}
-            isSelected={index === currentFrameIndex}
-            onClick={() => {
-              setCurrentFrame(frame);
-              usePixelStore.getState().setCurrentFrameIndex(index);
-            }}
-          />
-        ))}
-
-        {/* Empty grid cells */}
-        {Array.from({ length: columns * rows - frames.length }).map((_, i) => (
-          <div
-            key={`empty-${i}`}
-            className="aspect-square border border-dashed border-zinc-800 bg-zinc-900/50"
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-interface SpriteSheetCellProps {
-  frame: SpriteFrame;
-  index: number;
-  isSelected: boolean;
-  onClick: () => void;
-}
-
-function SpriteSheetCell({ frame, index, isSelected, onClick }: SpriteSheetCellProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const renderMiniature = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const cellSize = 80;
-    const scale = Math.floor(cellSize / Math.max(frame.width, frame.height));
-
-    canvas.width = frame.width * scale;
-    canvas.height = frame.height * scale;
-
-    ctx.fillStyle = '#18181b';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    for (let y = 0; y < frame.pixels.length; y++) {
-      for (let x = 0; x < frame.pixels[y].length; x++) {
-        const color = frame.pixels[y][x];
-        if (!color || color === '#00000000' || color === 'transparent') continue;
-        ctx.fillStyle = color;
-        ctx.fillRect(x * scale, y * scale, scale, scale);
-      }
+      // Generate sprite sheet
+      const sheet = await composeSpriteSheet(allFrames, columns, spriteSize);
+      setSheetImage(sheet);
+    } catch (error) {
+      console.error('Error generating sprite sheet:', error);
+    } finally {
+      setIsGenerating(false);
     }
-  }, [frame]);
+  };
 
-  useEffect(() => {
-    renderMiniature();
-  }, [renderMiniature]);
+  const handleDownload = () => {
+    if (!sheetImage) return;
+
+    const link = document.createElement('a');
+    link.href = sheetImage;
+    link.download = 'spritesheet.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadMetadata = () => {
+    // Collect all frames
+    const allFrames: string[] = [];
+    const poseNames: string[] = [];
+
+    Object.entries(poses).forEach(([poseName, frames]) => {
+      frames.forEach((frame, index) => {
+        allFrames.push(frame);
+        poseNames.push(`${poseName}_${index}`);
+      });
+    });
+
+    const metadata = generateSpriteSheetMetadata(
+      allFrames.length,
+      columns,
+      spriteSize,
+      poseNames
+    );
+
+    const blob = new Blob([JSON.stringify(metadata, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'spritesheet.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const totalFrames = Object.values(poses).reduce(
+    (sum, frames) => sum + frames.length,
+    0
+  );
 
   return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'flex flex-col items-center gap-1 p-1 border-2 transition-all',
-        isSelected
-          ? 'border-amber-500 bg-zinc-900'
-          : 'border-transparent hover:border-zinc-700 bg-zinc-950'
-      )}
-    >
-      <canvas
-        ref={canvasRef}
-        className="block w-full aspect-square"
-        style={{ imageRendering: 'pixelated' }}
-      />
-      <span className="text-[9px] font-mono text-zinc-500">
-        F{index + 1}
-      </span>
-    </button>
+    <Card>
+      <CardHeader>
+        <CardTitle>SPRITE SHEET COMPOSER</CardTitle>
+        <CardDescription>
+          Combine all poses into a single sprite sheet
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Configuration */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold tracking-wider text-neutral-400">
+              COLUMNS:
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setColumns(Math.max(2, columns - 1))}
+                disabled={columns <= 2}
+              >
+                -
+              </Button>
+              <span className="text-xs font-mono text-white w-8 text-center">
+                {columns}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setColumns(Math.min(8, columns + 1))}
+                disabled={columns >= 8}
+              >
+                +
+              </Button>
+            </div>
+          </div>
+
+          <div className="text-xs text-neutral-500">
+            Total frames: {totalFrames} • Grid: {columns} × {Math.ceil(totalFrames / columns)}
+          </div>
+        </div>
+
+        {/* Generate Button */}
+        {!sheetImage && (
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating}
+            className="w-full"
+          >
+            {isGenerating ? '[ GENERATING... ]' : '[ GENERATE SPRITE SHEET ]'}
+          </Button>
+        )}
+
+        {/* Preview */}
+        {sheetImage && (
+          <>
+            <div className="border border-[#222] bg-[#0a0a0a] p-4 overflow-auto max-h-96">
+              <img
+                src={sheetImage}
+                alt="Sprite Sheet"
+                className="image-rendering-pixelated"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
+
+            {/* Download Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" onClick={handleDownload}>
+                [ DOWNLOAD PNG ]
+              </Button>
+              <Button variant="outline" onClick={handleDownloadMetadata}>
+                [ DOWNLOAD JSON ]
+              </Button>
+            </div>
+
+            {/* Regenerate */}
+            <Button
+              variant="ghost"
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="w-full"
+            >
+              [ REGENERATE ]
+            </Button>
+          </>
+        )}
+
+        {/* Info */}
+        <div className="pt-4 border-t border-[#222] text-xs text-neutral-500">
+          <p className="mb-2">The sprite sheet includes:</p>
+          <ul className="space-y-1 ml-4">
+            {Object.entries(poses).map(([pose, frames]) => (
+              <li key={pose}>
+                • {pose.toUpperCase()}: {frames.length} frame{frames.length > 1 ? 's' : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
