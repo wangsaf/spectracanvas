@@ -1,21 +1,9 @@
-import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-import Navbar from '@/components/shared/navbar';
-import './globals.css';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-});
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'SpectraCanvas',
-  description: 'Your Creative Spectrum, One Canvas',
+  title: "SpectraCanvas",
+  description: "Your Creative Spectrum, One Canvas - AI Creative Suite",
 };
 
 export default function RootLayout({
@@ -24,10 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-[#0a0a0a] text-white font-sans min-h-screen">
-        <Navbar />
-        <main>{children}</main>
+    <html lang="en">
+      <body className="bg-[#0a0a0a] text-white antialiased">
+        {children}
       </body>
     </html>
   );
