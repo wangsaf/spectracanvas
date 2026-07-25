@@ -94,10 +94,11 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Brand Name */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="brand-name" className="text-xs font-bold tracking-wider text-neutral-400">
           BRAND NAME *
         </label>
         <Input
+          id="brand-name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter your brand name"
@@ -110,7 +111,7 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
 
       {/* Industry */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="industry" className="text-xs font-bold tracking-wider text-neutral-400">
           INDUSTRY *
         </label>
         <Select
@@ -159,17 +160,18 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
         {errors.values && (
           <p className="text-xs text-red-500">{errors.values}</p>
         )}
-        <p className="text-xs text-neutral-600">
+        <p className="text-xs text-neutral-500">
           Selected: {formData.values.length} / 5
         </p>
       </div>
 
       {/* Target Audience */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="target-audience" className="text-xs font-bold tracking-wider text-neutral-400">
           TARGET AUDIENCE *
         </label>
         <Textarea
+          id="target-audience"
           value={formData.targetAudience}
           onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
           placeholder="Describe your target audience (e.g., Young professionals aged 25-35 who value sustainability)"
@@ -203,7 +205,6 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
                     : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
                 }`}
               >
-                <span className="mr-1">{mood.emoji}</span>
                 {mood.label.split(' / ')[0]}
               </button>
             ))}

@@ -77,7 +77,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
         {errors.description && (
           <p className="text-xs text-red-500">{errors.description}</p>
         )}
-        <p className="text-xs text-neutral-600">
+        <p className="text-xs text-neutral-500">
           Be specific about appearance, clothing, and accessories
         </p>
       </div>

@@ -59,12 +59,12 @@ export default function DashboardPage() {
           brandFolder.file('typography.json', JSON.stringify(brand.typography, null, 2));
           
           // Add logos
-          if (brand.logos) {
+          if (brand.logo) {
             const logosFolder = brandFolder.folder('logos');
             if (logosFolder) {
-              Object.entries(brand.logos).forEach(([key, logo]) => {
-                if (logo.svg) {
-                  logosFolder.file(`${key}.svg`, logo.svg);
+              Object.entries(brand.logo).forEach(([key, svgContent]) => {
+                if (typeof svgContent === 'string' && svgContent) {
+                  logosFolder.file(`${key}.svg`, svgContent);
                 }
               });
             }
@@ -138,7 +138,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#121010]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -164,8 +164,9 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 <button
                   onClick={() => setIsEditing(true)}
                   className="text-neutral-500 hover:text-white transition-colors"
+                  aria-label="Edit project name"
                 >
-                  ✏️
+                  [EDIT]
                 </button>
               </div>
             )}
@@ -204,18 +205,18 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   <div>
                     <p className="text-xs text-neutral-500 mb-2">COLORS</p>
                     <div className="flex gap-1">
-                      {brand.colors.primary.slice(0, 5).map((color, i) => (
+                      {Object.values(brand.colors.primary).slice(0, 5).map((color, i) => (
                         <div
                           key={i}
                           className="w-8 h-8 border border-[#222]"
-                          style={{ backgroundColor: color }}
+                          style={{ backgroundColor: color as string }}
                         />
                       ))}
                     </div>
                   </div>
                   <div>
                     <p className="text-xs text-neutral-500 mb-1">TYPOGRAPHY</p>
-                    <p className="text-sm text-white">{brand.typography.primary.name}</p>
+                    <p className="text-sm text-white">{brand.typography.heading.name}</p>
                   </div>
                   <Button
                     onClick={() => router.push('/create/brand')}

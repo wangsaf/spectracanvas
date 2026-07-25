@@ -61,7 +61,7 @@ export default function BrandStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#121010]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -99,7 +99,7 @@ export default function BrandStudioPage() {
             {!brand && !isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-600">🎨</span>
+                  <span className="text-2xl text-neutral-500">[ ]</span>
                 </div>
                 <p className="text-sm text-neutral-500">
                   Fill in your brand details and click generate to see your identity
@@ -110,7 +110,7 @@ export default function BrandStudioPage() {
             {isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">⚡</span>
+                  <span className="text-2xl text-[#00ff88]">[*]</span>
                 </div>
                 <p className="text-sm text-[#00ff88] font-bold tracking-wider">
                   GENERATING BRAND...
@@ -125,7 +125,7 @@ export default function BrandStudioPage() {
               <>
                 <ColorPalette colors={brand.colors} />
                 <FontPreview typography={brand.typography} />
-                <LogoPreview logos={brand.logos} brandName={brand.name} />
+                <LogoPreview logo={brand.logo} brandName={brand.name} />
               </>
             )}
           </div>

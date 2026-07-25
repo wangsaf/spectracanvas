@@ -18,7 +18,7 @@ export default function CreateLayout({ children }: { children: React.ReactNode }
         <Link href="/dashboard" className="text-xs text-neutral-500 hover:text-white block mb-4">
           ← DASHBOARD
         </Link>
-        <div className="text-xs text-neutral-600 mb-3">// STUDIO</div>
+        <div className="text-xs text-neutral-500 mb-3">// STUDIO</div>
         {links.map(link => (
           <Link
             key={link.href}

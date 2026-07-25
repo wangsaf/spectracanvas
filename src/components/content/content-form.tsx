@@ -103,7 +103,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
           </SelectContent>
         </Select>
         {selectedPlatform && (
-          <p className="text-xs text-neutral-600">
+          <p className="text-xs text-neutral-500">
             Max duration: {selectedPlatform.maxDuration}s • Aspect ratio: {selectedPlatform.aspectRatio}
           </p>
         )}

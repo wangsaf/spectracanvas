@@ -14,6 +14,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Length validation
+    if (body.topic.length > 200) {
+      return NextResponse.json(
+        { success: false, error: 'Topic exceeds maximum length (200 chars)' },
+        { status: 400 }
+      );
+    }
+
     // Generate script
     let script: ContentScript = generateContentScript(
       body.topic,

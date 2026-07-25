@@ -14,6 +14,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Length validation
+    if (body.description.length > 500) {
+      return NextResponse.json(
+        { success: false, error: 'Description exceeds maximum length (500 chars)' },
+        { status: 400 }
+      );
+    }
+
     // Determine palette
     let palette = body.palette;
     if (!palette && body.brandColors && body.brandColors.length > 0) {

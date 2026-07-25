@@ -16,6 +16,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Length validation
+    if (body.name.length > 100 || body.targetAudience.length > 1000 || body.values.length > 10) {
+      return NextResponse.json(
+        { success: false, error: 'Input exceeds maximum length' },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize brand name (strip HTML)
+    const sanitizedName = body.name.replace(/<[^>]*>/g, '').trim();
+    if (!sanitizedName) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid brand name' },
+        { status: 400 }
+      );
+    }
+
     // Generate brand personality
     const personality = generateBrandPersonality(body.values, body.targetAudience);
 
@@ -38,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Create brand identity
     const brandIdentity: BrandIdentity = {
-      name: body.name,
+      name: sanitizedName,
       industry: body.industry,
       values: body.values,
       targetAudience: body.targetAudience,

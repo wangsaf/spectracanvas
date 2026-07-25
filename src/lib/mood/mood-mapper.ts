@@ -7,51 +7,67 @@ import { MOOD_DESIGN_MAP } from '@/lib/constants';
 
 /**
  * Analyze audio and map to mood keywords
- * In production, this would use Meyda for actual audio analysis
+ * Placeholder: returns default moods
  */
-export function analyzeMood(audioData?: Float32Array): MoodKeyword[] {
-  // Placeholder: Return default moods
-  // In production, analyze tempo, energy, spectral features
+export function analyzeMood(_audioData?: Float32Array): MoodKeyword[] {
   return ['energetic', 'professional'];
 }
 
 /**
  * Map mood keywords to visual parameters
+ * Returns aggregated design parameters from selected moods
  */
 export function mapMoodToVisuals(moods: MoodKeyword[]): {
-  colors: string[];
-  filters: string[];
-  transitions: string[];
+  colorShift: { hueShift: number; saturationMultiplier: number; brightnessMultiplier: number };
+  typographyStyle: { weight: string; style: string };
+  animationSpeed: { multiplier: number; easing: string };
+  saturation: number;
+  brightness: number;
   pacing: 'slow' | 'medium' | 'fast';
 } {
-  const moodData = moods.map((mood) => MOOD_DESIGN_MAP[mood]);
-  
-  // Aggregate colors from all moods
-  const colors = Array.from(
-    new Set(moodData.flatMap((m) => m.colors))
-  );
+  const moodData = moods.map((mood) => MOOD_DESIGN_MAP[mood]).filter(Boolean);
 
-  // Aggregate filters
-  const filters = Array.from(
-    new Set(moodData.flatMap((m) => m.filters))
-  );
+  if (moodData.length === 0) {
+    return {
+      colorShift: { hueShift: 0, saturationMultiplier: 1, brightnessMultiplier: 1 },
+      typographyStyle: { weight: 'normal', style: 'geometric' },
+      animationSpeed: { multiplier: 1, easing: 'ease' },
+      saturation: 70,
+      brightness: 70,
+      pacing: 'medium',
+    };
+  }
 
-  // Aggregate transitions
-  const transitions = Array.from(
-    new Set(moodData.flatMap((m) => m.transitions))
-  );
+  // Aggregate color shifts (average)
+  const avgHueShift = moodData.reduce((s, m) => s + m.colorShift.hueShift, 0) / moodData.length;
+  const avgSatMul = moodData.reduce((s, m) => s + m.colorShift.saturationMultiplier, 0) / moodData.length;
+  const avgBriMul = moodData.reduce((s, m) => s + m.colorShift.brightnessMultiplier, 0) / moodData.length;
 
-  // Determine pacing (use most common)
-  const pacingCounts = moodData.reduce((acc, m) => {
-    acc[m.pacing] = (acc[m.pacing] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  // Use most common typography style
+  const typeStyles = moodData.map((m) => `${m.typographyStyle.weight}-${m.typographyStyle.style}`);
+  const mostCommonType = typeStyles.sort((a, b) =>
+    typeStyles.filter((v) => v === b).length - typeStyles.filter((v) => v === a).length
+  )[0];
+  const [tWeight, tStyle] = mostCommonType.split('-');
 
-  const pacing = Object.entries(pacingCounts).sort(
-    ([, a], [, b]) => b - a
-  )[0][0] as 'slow' | 'medium' | 'fast';
+  // Use average animation speed
+  const avgAnimMul = moodData.reduce((s, m) => s + m.animationSpeed.multiplier, 0) / moodData.length;
 
-  return { colors, filters, transitions, pacing };
+  // Average saturation and brightness
+  const avgSat = moodData.reduce((s, m) => s + m.saturation, 0) / moodData.length;
+  const avgBri = moodData.reduce((s, m) => s + m.brightness, 0) / moodData.length;
+
+  // Determine pacing from animation speed
+  const pacing: 'slow' | 'medium' | 'fast' = avgAnimMul < 0.8 ? 'slow' : avgAnimMul > 1.2 ? 'fast' : 'medium';
+
+  return {
+    colorShift: { hueShift: Math.round(avgHueShift), saturationMultiplier: avgSatMul, brightnessMultiplier: avgBriMul },
+    typographyStyle: { weight: tWeight, style: tStyle },
+    animationSpeed: { multiplier: avgAnimMul, easing: moodData[0].animationSpeed.easing },
+    saturation: Math.round(avgSat),
+    brightness: Math.round(avgBri),
+    pacing,
+  };
 }
 
 /**
@@ -64,43 +80,35 @@ export function syncBrandWithMood(
   adjustedColors: string[];
   recommendations: string[];
 } {
-  const moodVisuals = mapMoodToVisuals(moods);
-  const adjustedColors = [...brand.colors.primary];
+  const visuals = mapMoodToVisuals(moods);
+  const brandColorValues = Object.values(brand.colors.primary) as string[];
+  const adjustedColors = [...brandColorValues];
   const recommendations: string[] = [];
 
-  // Check if brand colors align with mood
-  const moodColorSet = new Set(moodVisuals.colors);
-  const brandColorSet = new Set(brand.colors.primary);
-
-  const overlap = [...brandColorSet].filter((c) => moodColorSet.has(c));
-
-  if (overlap.length === 0) {
-    recommendations.push(
-      `Consider adding ${moodVisuals.colors[0]} to align with ${moods.join(', ')} mood`
-    );
-  }
-
-  // Suggest filters
-  if (moodVisuals.filters.length > 0) {
-    recommendations.push(
-      `Apply ${moodVisuals.filters[0]} filter for ${moods.join(', ')} aesthetic`
-    );
-  }
-
-  // Suggest pacing
   recommendations.push(
-    `Use ${moodVisuals.pacing} pacing for ${moods.join(', ')} energy`
+    `Shift hue by ${visuals.colorShift.hueShift} degrees for ${moods.join(', ')} mood`
+  );
+  recommendations.push(
+    `Use ${visuals.pacing} pacing for ${moods.join(', ')} energy`
   );
 
   return { adjustedColors, recommendations };
 }
 
 /**
- * Generate mood-based color palette
+ * Generate mood-based color palette (hex strings)
  */
 export function generateMoodPalette(moods: MoodKeyword[]): string[] {
-  const moodVisuals = mapMoodToVisuals(moods);
-  return moodVisuals.colors.slice(0, 5);
+  const visuals = mapMoodToVisuals(moods);
+  // Generate some representative colors based on mood params
+  const baseHues = moods.map((m) => {
+    const hueMap: Record<MoodKeyword, number> = {
+      chill: 200, energetic: 0, dark: 260, happy: 50,
+      professional: 210, retro: 30, futuristic: 180, organic: 120,
+    };
+    return hueMap[m] ?? 0;
+  });
+  return baseHues.map((h) => `hsl(${h}, ${visuals.saturation}%, ${visuals.brightness}%)`);
 }
 
 /**
@@ -126,14 +134,14 @@ export function getMoodDescription(mood: MoodKeyword): string {
  */
 export function suggestContentAdjustments(
   moods: MoodKeyword[],
-  platform: string
+  _platform: string
 ): {
   visualStyle: string;
   musicSuggestion: string;
   textStyle: string;
   pacing: string;
 } {
-  const moodVisuals = mapMoodToVisuals(moods);
+  const visuals = mapMoodToVisuals(moods);
 
   const suggestions = {
     visualStyle: '',
@@ -176,10 +184,10 @@ export function suggestContentAdjustments(
   }
 
   // Pacing
-  suggestions.pacing = `${moodVisuals.pacing.toUpperCase()} pacing - ${
-    moodVisuals.pacing === 'fast'
+  suggestions.pacing = `${visuals.pacing.toUpperCase()} pacing - ${
+    visuals.pacing === 'fast'
       ? 'Quick cuts, rapid transitions'
-      : moodVisuals.pacing === 'slow'
+      : visuals.pacing === 'slow'
       ? 'Smooth transitions, longer shots'
       : 'Balanced mix of cuts and holds'
   }`;

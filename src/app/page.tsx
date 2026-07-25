@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-mono">
+    <div className="min-h-screen bg-[#121010] text-white" style={{fontFamily: "'Space Grotesk', system-ui, sans-serif"}}>
       {/* Hero */}
       <div className="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
         <pre className="text-[#00ff88] text-xs md:text-sm leading-tight mb-8 opacity-80">
@@ -47,7 +47,7 @@ export default function Home() {
               href={f.href}
               className="border border-[#222] bg-[#111] p-6 hover:border-[#00ff88] transition-colors group"
             >
-              <div className="w-12 h-12 border-2 border-[#00ff88] flex items-center justify-center mb-4 group-bg-[#00ff88] group-text-black">
+              <div className="w-12 h-12 border-2 border-[#00ff88] flex items-center justify-center mb-4 group-hover:bg-[#00ff88] group-hover:text-black">
                 <span className="text-[#00ff88] text-xl font-bold">{f.icon}</span>
               </div>
               <h3 className="text-sm font-bold tracking-wider mb-1">{f.title}</h3>
@@ -83,7 +83,7 @@ export default function Home() {
 
       {/* Footer */}
       <div className="border-t border-[#222] py-8 text-center">
-        <p className="text-xs text-neutral-600">
+        <p className="text-xs text-neutral-500">
           Team Spectriad &mdash; Three Mind One Solution &mdash; IBM AI Builders Challenge 2026
         </p>
       </div>

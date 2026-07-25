@@ -30,8 +30,8 @@ export default function PixelStudioPage() {
           description: formData.description,
           style: formData.style,
           size: formData.size,
-          palette: formData.paletteMode === 'custom' ? undefined : formData.customPalette,
-          brandColors: formData.paletteMode === 'brand' && brand ? brand.colors.primary : undefined,
+          palette: formData.paletteMode === 'custom' ? formData.customPalette : undefined,
+          brandColors: formData.paletteMode === 'brand' && brand ? Object.values(brand.colors.primary) as string[] : undefined,
         }),
       });
 
@@ -65,7 +65,7 @@ export default function PixelStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#121010]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -104,7 +104,7 @@ export default function PixelStudioPage() {
               <PixelForm 
                 onGenerate={handleGenerate} 
                 isGenerating={isGenerating}
-                brandColors={brand?.colors.primary}
+                brandColors={brand ? Object.values(brand.colors.primary) as string[] : undefined}
               />
               
               {error && (
@@ -121,7 +121,7 @@ export default function PixelStudioPage() {
             {!sprite && !isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-600">👾</span>
+                  <span className="text-2xl text-neutral-500">[ ]</span>
                 </div>
                 <p className="text-sm text-neutral-500">
                   Describe your character and click generate to see your pixel art sprite
@@ -132,7 +132,7 @@ export default function PixelStudioPage() {
             {isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">⚡</span>
+                  <span className="text-2xl text-[#00ff88]">[*]</span>
                 </div>
                 <p className="text-sm text-[#00ff88] font-bold tracking-wider">
                   GENERATING SPRITE...

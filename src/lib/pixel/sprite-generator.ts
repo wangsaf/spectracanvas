@@ -46,9 +46,9 @@ export function generateBasicSprite(
 function getStylePalette(style: PixelStyle): string[] {
   switch (style) {
     case '8-bit':
-      return PIXEL_ART_PALETTES['8-bit'];
+      return [...PIXEL_ART_PALETTES['8-bit']];
     case '16-bit':
-      return PIXEL_ART_PALETTES['16-bit'];
+      return [...PIXEL_ART_PALETTES['16-bit']];
     case 'modern':
       // Modern style uses more colors
       return [
@@ -59,7 +59,7 @@ function getStylePalette(style: PixelStyle): string[] {
         '#333c57', '#8b9bb4', '#c0cbdc', '#ffffff',
       ];
     default:
-      return PIXEL_ART_PALETTES['16-bit'];
+      return [...PIXEL_ART_PALETTES['16-bit']];
   }
 }
 
@@ -336,28 +336,128 @@ function generateGenericSprite(size: SpriteSize, palette: string[]): string[][] 
 }
 
 /**
- * Convert pixel data to data URL
+ * Convert pixel data to data URL using pure JS (no canvas needed — works server-side)
  */
 function pixelDataToDataURL(data: string[][], size: SpriteSize): string {
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  
-  if (!ctx) return '';
-  
-  // Draw pixels
+  // Build raw RGBA pixel buffer
+  const rawPixels = new Uint8Array(size * size * 4);
   for (let y = 0; y < data.length; y++) {
     for (let x = 0; x < data[y].length; x++) {
       const color = data[y][x];
+      const idx = (y * size + x) * 4;
       if (color && color !== 'transparent') {
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, 1, 1);
+        const rgb = hexToRgbLocal(color);
+        rawPixels[idx] = rgb.r;
+        rawPixels[idx + 1] = rgb.g;
+        rawPixels[idx + 2] = rgb.b;
+        rawPixels[idx + 3] = 255;
       }
+      // else leave as 0,0,0,0 (transparent)
     }
   }
-  
-  return canvas.toDataURL('image/png');
+  // Encode as minimal PNG
+  const pngBuffer = encodePNG(size, size, rawPixels);
+  const base64 = Buffer.from(pngBuffer).toString('base64');
+  return `data:image/png;base64,${base64}`;
+}
+
+function hexToRgbLocal(hex: string): { r: number; g: number; b: number } {
+  const h = hex.replace('#', '');
+  return {
+    r: parseInt(h.substring(0, 2), 16),
+    g: parseInt(h.substring(2, 4), 16),
+    b: parseInt(h.substring(4, 6), 16),
+  };
+}
+
+/**
+ * Minimal PNG encoder (uncompressed, no external deps)
+ */
+function encodePNG(width: number, height: number, rgba: Uint8Array): Uint8Array {
+  function crc32(buf: Uint8Array): number {
+    let crc = 0xffffffff;
+    for (let i = 0; i < buf.length; i++) {
+      crc ^= buf[i];
+      for (let j = 0; j < 8; j++) {
+        crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+      }
+    }
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
+  function adler32(buf: Uint8Array): number {
+    let a = 1, b = 0;
+    for (let i = 0; i < buf.length; i++) {
+      a = (a + buf[i]) % 65521;
+      b = (b + a) % 65521;
+    }
+    return ((b << 16) | a) >>> 0;
+  }
+
+  // Build raw scanlines with filter byte 0 (None)
+  const raw = new Uint8Array(height * (1 + width * 4));
+  for (let y = 0; y < height; y++) {
+    raw[y * (1 + width * 4)] = 0; // filter None
+    raw.set(rgba.subarray(y * width * 4, (y + 1) * width * 4), y * (1 + width * 4) + 1);
+  }
+
+  // zlib deflate (store mode — no compression)
+  const blocks: Uint8Array[] = [];
+  const BLOCK = 65535;
+  for (let i = 0; i < raw.length; i += BLOCK) {
+    const end = Math.min(i + BLOCK, raw.length);
+    const chunk = raw.subarray(i, end);
+    const isLast = end === raw.length;
+    const len = end - i;
+    const block = new Uint8Array(5 + len);
+    block[0] = isLast ? 1 : 0;
+    block[1] = len & 0xff;
+    block[2] = (len >> 8) & 0xff;
+    block[3] = ~len & 0xff;
+    block[4] = (~len >> 8) & 0xff;
+    block.set(chunk, 5);
+    blocks.push(block);
+  }
+  const deflatedLen = blocks.reduce((s, b) => s + b.length, 0);
+  const zlib = new Uint8Array(2 + deflatedLen + 4);
+  zlib[0] = 0x78; zlib[1] = 0x01;
+  let off = 2;
+  for (const b of blocks) { zlib.set(b, off); off += b.length; }
+  const adler = adler32(raw);
+  zlib[off] = (adler >> 24) & 0xff;
+  zlib[off + 1] = (adler >> 16) & 0xff;
+  zlib[off + 2] = (adler >> 8) & 0xff;
+  zlib[off + 3] = adler & 0xff;
+
+  // Build PNG
+  function chunk(type: string, data: Uint8Array): Uint8Array {
+    const t = new Uint8Array([type.charCodeAt(0), type.charCodeAt(1), type.charCodeAt(2), type.charCodeAt(3)]);
+    const len = new Uint8Array([(data.length >> 24) & 0xff, (data.length >> 16) & 0xff, (data.length >> 8) & 0xff, data.length & 0xff]);
+    const combined = new Uint8Array(t.length + len.length + data.length);
+    combined.set(len, 0); combined.set(t, 4); combined.set(data, 8);
+    const c = crc32(combined.subarray(4));
+    const crcB = new Uint8Array([(c >> 24) & 0xff, (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff]);
+    const result = new Uint8Array(combined.length + 4);
+    result.set(combined, 0); result.set(crcB, combined.length);
+    return result;
+  }
+
+  const sig = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+  const ihdr = new Uint8Array(13);
+  ihdr[0] = (width >> 24) & 0xff; ihdr[1] = (width >> 16) & 0xff; ihdr[2] = (width >> 8) & 0xff; ihdr[3] = width & 0xff;
+  ihdr[4] = (height >> 24) & 0xff; ihdr[5] = (height >> 16) & 0xff; ihdr[6] = (height >> 8) & 0xff; ihdr[7] = height & 0xff;
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 6; // RGBA
+  const IHDR = chunk('IHDR', ihdr);
+  const IDAT = chunk('IDAT', zlib);
+  const IEND = chunk('IEND', new Uint8Array(0));
+
+  const png = new Uint8Array(sig.length + IHDR.length + IDAT.length + IEND.length);
+  png.set(sig, 0);
+  png.set(IHDR, sig.length);
+  png.set(IDAT, sig.length + IHDR.length);
+  png.set(IEND, sig.length + IHDR.length + IDAT.length);
+  return png;
 }
 
 /**

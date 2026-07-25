@@ -339,7 +339,7 @@ export interface GenerateContentRequest {
   platform: Platform;
   tone: Tone;
   duration: number;
-  brandContext?: BrandIdentity;
+  brandContext?: string;
 }
 
 export interface AnalyzeMoodRequest {

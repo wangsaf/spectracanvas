@@ -24,7 +24,7 @@ export default function ContentStudioPage() {
     setError(null);
 
     try {
-      const response = await fetch(API_ROUTES.content.generate, {
+      const response = await fetch(API_ROUTES.content.script, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function ContentStudioPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#121010]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -141,7 +141,7 @@ export default function ContentStudioPage() {
             {!script && !isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-600">📝</span>
+                  <span className="text-2xl text-neutral-500">[ ]</span>
                 </div>
                 <p className="text-sm text-neutral-500">
                   Describe your content idea and click generate to create your script
@@ -152,7 +152,7 @@ export default function ContentStudioPage() {
             {isGenerating && (
               <div className="border border-[#222] bg-[#111] p-12 text-center">
                 <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">⚡</span>
+                  <span className="text-2xl text-[#00ff88]">[*]</span>
                 </div>
                 <p className="text-sm text-[#00ff88] font-bold tracking-wider">
                   GENERATING SCRIPT...
@@ -202,18 +202,16 @@ export default function ContentStudioPage() {
                 {/* Additional Tools */}
                 <div className="grid grid-cols-2 gap-4">
                   <button
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-400 hover:border-[#00ff88] hover:text-white transition-colors text-xs font-bold tracking-wider"
-                    onClick={() => {
-                      alert('Storyboard generator coming soon!');
-                    }}
+                    disabled
+                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider"
+                    title="Coming soon"
                   >
                     [ STORYBOARD ]
                   </button>
                   <button
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-400 hover:border-[#00ff88] hover:text-white transition-colors text-xs font-bold tracking-wider"
-                    onClick={() => {
-                      alert('Caption generator coming soon!');
-                    }}
+                    disabled
+                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider"
+                    title="Coming soon"
                   >
                     [ CAPTIONS ]
                   </button>

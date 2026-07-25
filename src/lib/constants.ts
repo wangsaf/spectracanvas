@@ -129,14 +129,14 @@ export const CAMERA_MOVEMENTS = [
 // ========================================
 
 export const MOOD_KEYWORDS = [
-  { value: 'chill', label: 'Chill / Relaxing', emoji: '😌' },
-  { value: 'energetic', label: 'Energetic / Hype', emoji: '⚡' },
-  { value: 'dark', label: 'Dark / Moody', emoji: '🌑' },
-  { value: 'happy', label: 'Happy / Bright', emoji: '😊' },
-  { value: 'professional', label: 'Professional / Clean', emoji: '💼' },
-  { value: 'retro', label: 'Retro / Nostalgic', emoji: '📼' },
-  { value: 'futuristic', label: 'Futuristic / Sci-fi', emoji: '🚀' },
-  { value: 'organic', label: 'Organic / Natural', emoji: '🌿' },
+  { value: 'chill', label: 'Chill / Relaxing' },
+  { value: 'energetic', label: 'Energetic / Hype' },
+  { value: 'dark', label: 'Dark / Moody' },
+  { value: 'happy', label: 'Happy / Bright' },
+  { value: 'professional', label: 'Professional / Clean' },
+  { value: 'retro', label: 'Retro / Nostalgic' },
+  { value: 'futuristic', label: 'Futuristic / Sci-fi' },
+  { value: 'organic', label: 'Organic / Natural' },
 ] as const;
 
 // Mood to Design Parameter Mapping
