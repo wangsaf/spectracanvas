@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
 
 // Floating geometric shapes
 const floatingShapes = [
@@ -18,6 +20,369 @@ const headlineWords = [
   { text: 'Design.', color: '#f0e8dc' },
   { text: 'Ship.', color: '#d9453b' },
 ];
+
+// ─── Brain 3D Component ────────────────────────────────────────────────────────
+
+function fibonacciSphere(count: number, radius: number, center: [number, number, number]): THREE.Vector3[] {
+  const points: THREE.Vector3[] = [];
+  const phi = (1 + Math.sqrt(5)) / 2; // golden ratio
+
+  for (let i = 0; i < count; i++) {
+    const y = 1 - (i / (count - 1)) * 2; // y goes from 1 to -1
+    const radiusAtY = Math.sqrt(1 - y * y);
+    const theta = 2 * Math.PI * i / phi;
+
+    const x = Math.cos(theta) * radiusAtY;
+    const z = Math.sin(theta) * radiusAtY;
+
+    points.push(new THREE.Vector3(
+      x * radius + center[0],
+      y * radius + center[1],
+      z * radius + center[2]
+    ));
+  }
+  return points;
+}
+
+function generateBrainPoints(): THREE.Vector3[] {
+  const leftHemisphere = fibonacciSphere(50, 1.0, [-0.4, 0.1, 0]);
+  const rightHemisphere = fibonacciSphere(50, 1.0, [0.4, 0.1, 0]);
+  const cerebellum = fibonacciSphere(15, 0.5, [0, -0.3, -0.3]);
+
+  // Brain stem - a few points in a cylinder shape
+  const brainStem: THREE.Vector3[] = [];
+  for (let i = 0; i < 8; i++) {
+    const angle = (i / 8) * Math.PI * 2;
+    const r = 0.15;
+    brainStem.push(new THREE.Vector3(
+      Math.cos(angle) * r,
+      -0.5 - (i * 0.08),
+      -0.2 + Math.sin(angle) * r * 0.5
+    ));
+  }
+
+  return [...leftHemisphere, ...rightHemisphere, ...cerebellum, ...brainStem];
+}
+
+function generateConnections(points: THREE.Vector3[], maxDist: number, maxConnections: number): [number, number][] {
+  const connections: [number, number][] = [];
+  const leftPoints: number[] = [];
+  const rightPoints: number[] = [];
+
+  // Separate points into hemispheres (roughly)
+  points.forEach((p, i) => {
+    if (p.x < 0) leftPoints.push(i);
+    else rightPoints.push(i);
+  });
+
+  // Connect within each hemisphere only
+  const hemispheres = [leftPoints, rightPoints];
+
+  for (const hemisphere of hemispheres) {
+    for (let i = 0; i < hemisphere.length && connections.length < maxConnections; i++) {
+      for (let j = i + 1; j < hemisphere.length && connections.length < maxConnections; j++) {
+        const dist = points[hemisphere[i]].distanceTo(points[hemisphere[j]]);
+        if (dist < maxDist && Math.random() < 0.3) { // Sparse selection
+          connections.push([hemisphere[i], hemisphere[j]]);
+        }
+      }
+    }
+  }
+
+  return connections.slice(0, maxConnections);
+}
+
+// ─── Neural Firing System ──────────────────────────────────────────────────────
+
+interface FiringEvent {
+  connectionIndex: number;
+  startTime: number;
+  duration: number;
+}
+
+interface NodePulse {
+  nodeIndex: number;
+  startTime: number;
+  duration: number;
+}
+
+function BrainVisualization() {
+  const groupRef = useRef<THREE.Group>(null);
+  const pointsRef = useRef<THREE.Points>(null);
+  const linesRef = useRef<THREE.LineSegments>(null);
+  const firingDotRef = useRef<THREE.Points>(null);
+
+  const [firingEvents, setFiringEvents] = useState<FiringEvent[]>([]);
+  const [nodePulses, setNodePulses] = useState<NodePulse[]>([]);
+  const lastFiringTime = useRef(0);
+  const lastPulseTime = useRef(0);
+
+  const brainData = useMemo(() => {
+    const points = generateBrainPoints();
+    const connections = generateConnections(points, 0.4, 80);
+
+    // Create buffer geometries
+    const nodePositions = new Float32Array(points.length * 3);
+    const nodeColors = new Float32Array(points.length * 3);
+    const nodeSizes = new Float32Array(points.length);
+
+    points.forEach((p, i) => {
+      nodePositions[i * 3] = p.x;
+      nodePositions[i * 3 + 1] = p.y;
+      nodePositions[i * 3 + 2] = p.z;
+      nodeColors[i * 3] = 0.85; // #d9453b normalized
+      nodeColors[i * 3 + 1] = 0.27;
+      nodeColors[i * 3 + 2] = 0.23;
+      nodeSizes[i] = 0.015;
+    });
+
+    // Create line geometries for connections
+    const linePositions = new Float32Array(connections.length * 6);
+    const lineColors = new Float32Array(connections.length * 6);
+
+    connections.forEach(([a, b], i) => {
+      linePositions[i * 6] = points[a].x;
+      linePositions[i * 6 + 1] = points[a].y;
+      linePositions[i * 6 + 2] = points[a].z;
+      linePositions[i * 6 + 3] = points[b].x;
+      linePositions[i * 6 + 4] = points[b].y;
+      linePositions[i * 6 + 5] = points[b].z;
+
+      // Default line color (dim)
+      lineColors[i * 6] = 0.85;
+      lineColors[i * 6 + 1] = 0.27;
+      lineColors[i * 6 + 2] = 0.23;
+      lineColors[i * 6 + 3] = 0.85;
+      lineColors[i * 6 + 4] = 0.27;
+      lineColors[i * 6 + 5] = 0.23;
+    });
+
+    return { points, connections, nodePositions, nodeColors, nodeSizes, linePositions, lineColors };
+  }, []);
+
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    // Slow rotation
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.02 * delta;
+    }
+
+    // Spawn new firing events
+    if (time - lastFiringTime.current > 0.8 + Math.random() * 0.7) {
+      if (firingEvents.length < 5) {
+        const connectionIndex = Math.floor(Math.random() * brainData.connections.length);
+        setFiringEvents(prev => [...prev, {
+          connectionIndex,
+          startTime: time,
+          duration: 0.3 + Math.random() * 0.2
+        }]);
+        lastFiringTime.current = time;
+      }
+    }
+
+    // Spawn node pulses
+    if (time - lastPulseTime.current > 1.0 + Math.random() * 1.0) {
+      if (nodePulses.length < 3) {
+        const nodeIndex = Math.floor(Math.random() * brainData.points.length);
+        setNodePulses(prev => [...prev, {
+          nodeIndex,
+          startTime: time,
+          duration: 0.5
+        }]);
+        lastPulseTime.current = time;
+      }
+    }
+
+    // Clean up expired events
+    setFiringEvents(prev => prev.filter(e => time - e.startTime < e.duration));
+    setNodePulses(prev => prev.filter(p => time - p.startTime < p.duration));
+
+    // Update node colors and sizes based on pulses
+    if (pointsRef.current) {
+      const colors = pointsRef.current.geometry.attributes.color.array as Float32Array;
+      const sizes = pointsRef.current.geometry.attributes.size.array as Float32Array;
+
+      // Reset all nodes to default
+      for (let i = 0; i < brainData.points.length; i++) {
+        colors[i * 3] = 0.85;
+        colors[i * 3 + 1] = 0.27;
+        colors[i * 3 + 2] = 0.23;
+        sizes[i] = 0.015;
+      }
+
+      // Apply pulses
+      nodePulses.forEach(pulse => {
+        const progress = (time - pulse.startTime) / pulse.duration;
+        const intensity = Math.sin(progress * Math.PI); // Fade in then out
+
+        colors[pulse.nodeIndex * 3] = 1.0; // #ff6b5a
+        colors[pulse.nodeIndex * 3 + 1] = 0.42;
+        colors[pulse.nodeIndex * 3 + 2] = 0.35;
+        sizes[pulse.nodeIndex] = 0.015 + intensity * 0.01;
+      });
+
+      pointsRef.current.geometry.attributes.color.needsUpdate = true;
+      pointsRef.current.geometry.attributes.size.needsUpdate = true;
+    }
+
+    // Update line colors based on firing
+    if (linesRef.current) {
+      const colors = linesRef.current.geometry.attributes.color.array as Float32Array;
+
+      // Reset all lines to dim
+      for (let i = 0; i < brainData.connections.length * 6; i++) {
+        colors[i] = 0.85 * 0.15; // Very dim
+        if (i % 3 === 1) colors[i] = 0.27 * 0.15;
+        if (i % 3 === 2) colors[i] = 0.23 * 0.15;
+      }
+
+      // Brighten firing connections
+      firingEvents.forEach(event => {
+        const progress = (time - event.startTime) / event.duration;
+        const brightness = Math.sin(progress * Math.PI) * 0.8;
+
+        const idx = event.connectionIndex * 6;
+        colors[idx] = 0.85 * brightness;
+        colors[idx + 1] = 0.27 * brightness;
+        colors[idx + 2] = 0.23 * brightness;
+        colors[idx + 3] = 0.85 * brightness;
+        colors[idx + 4] = 0.27 * brightness;
+        colors[idx + 5] = 0.23 * brightness;
+      });
+
+      linesRef.current.geometry.attributes.color.needsUpdate = true;
+    }
+
+    // Update firing dots (moving bright points along connections)
+    if (firingDotRef.current && firingEvents.length > 0) {
+      const dotPositions = new Float32Array(firingEvents.length * 3);
+      const dotColors = new Float32Array(firingEvents.length * 3);
+
+      firingEvents.forEach((event, i) => {
+        const [a, b] = brainData.connections[event.connectionIndex];
+        const progress = (time - event.startTime) / event.duration;
+
+        // Move from point A to point B
+        dotPositions[i * 3] = brainData.points[a].x + (brainData.points[b].x - brainData.points[a].x) * progress;
+        dotPositions[i * 3 + 1] = brainData.points[a].y + (brainData.points[b].y - brainData.points[a].y) * progress;
+        dotPositions[i * 3 + 2] = brainData.points[a].z + (brainData.points[b].z - brainData.points[a].z) * progress;
+
+        // Bright red
+        dotColors[i * 3] = 1.0;
+        dotColors[i * 3 + 1] = 0.42;
+        dotColors[i * 3 + 2] = 0.35;
+      });
+
+      firingDotRef.current.geometry.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
+      firingDotRef.current.geometry.setAttribute('color', new THREE.BufferAttribute(dotColors, 3));
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={[2, 0, 0]} rotation={[0.26, 0, 0]}>
+      {/* Brain glow (subtle ambient sphere) */}
+      <mesh>
+        <sphereGeometry args={[1.8, 32, 32]} />
+        <meshBasicMaterial
+          color="#d9453b"
+          transparent
+          opacity={0.02}
+          side={THREE.BackSide}
+        />
+      </mesh>
+
+      {/* Nodes (instanced points) */}
+      <points ref={pointsRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={brainData.nodePositions}
+            count={brainData.points.length}
+            itemSize={3}
+          />
+          <bufferAttribute
+            attach="attributes-color"
+            array={brainData.nodeColors}
+            count={brainData.points.length}
+            itemSize={3}
+          />
+          <bufferAttribute
+            attach="attributes-size"
+            array={brainData.nodeSizes}
+            count={brainData.points.length}
+            itemSize={1}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.015}
+          vertexColors
+          transparent
+          opacity={0.9}
+          sizeAttenuation
+          depthWrite={false}
+        />
+      </points>
+
+      {/* Connection lines */}
+      <lineSegments ref={linesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={brainData.linePositions}
+            count={brainData.connections.length * 2}
+            itemSize={3}
+          />
+          <bufferAttribute
+            attach="attributes-color"
+            array={brainData.lineColors}
+            count={brainData.connections.length * 2}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial
+          vertexColors
+          transparent
+          opacity={0.6}
+          depthWrite={false}
+        />
+      </lineSegments>
+
+      {/* Firing dots (bright moving points) */}
+      <points ref={firingDotRef}>
+        <bufferGeometry />
+        <pointsMaterial
+          size={0.04}
+          vertexColors
+          transparent
+          opacity={0.9}
+          sizeAttenuation
+          depthWrite={false}
+        />
+      </points>
+    </group>
+  );
+}
+
+function BrainCanvas() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 5 }}
+    >
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 50 }}
+        gl={{ alpha: true, antialias: true }}
+        style={{ background: 'transparent' }}
+      >
+        <ambientLight intensity={0.5} />
+        <BrainVisualization />
+      </Canvas>
+    </div>
+  );
+}
+
+// ─── Main Hero Component ───────────────────────────────────────────────────────
 
 export function GlobeHero() {
   const [headlineRevealed, setHeadlineRevealed] = useState(false);
@@ -90,6 +455,9 @@ export function GlobeHero() {
           }}
         />
       ))}
+
+      {/* 3D Brain Visualization */}
+      <BrainCanvas />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-20 md:pt-36 md:pb-28">
