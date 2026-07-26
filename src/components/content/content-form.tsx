@@ -163,7 +163,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
             BRAND CONTEXT
           </p>
           <p className="text-xs text-[#6b5f52]">
-            Using brand identity for consistent messaging
+            Using {brandContext} for consistent messaging
           </p>
         </div>
       )}

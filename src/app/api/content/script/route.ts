@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateWithAI, extractJSON } from '@/lib/ai/watsonx';
 
 
+function stripEmoji(text: string): string {
+  return text
+    .replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g, '')
+    .replace(/[\u2600-\u27BF]/g, '')
+    .replace(/[\uFE00-\uFE0F]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function generateFallbackScript(input: any) {
   const topic = input.topic;
   const platform = input.platform;
@@ -75,9 +84,24 @@ Return ONLY JSON:
     
     let script = generateFallbackScript(input);
     if (aiResult) {
-      const aiData = extractJSON(aiResult);
-      if (aiData && aiData.hooks && aiData.body && aiData.ctas) {
-        script = { ...script, ...aiData, aiGenerated: true };
+      const aiData = extractJSON(aiResult) as Record<string, unknown> | null;
+      if (aiData && Array.isArray(aiData.hooks) && Array.isArray(aiData.body) && Array.isArray(aiData.ctas)) {
+        const hooks = (aiData.hooks as Array<Record<string, unknown>>).map((h) => ({
+          type: String(h.type || ''),
+          text: stripEmoji(String(h.text || '')),
+          duration: Number(h.duration) || 3,
+        }));
+        const body = (aiData.body as Array<Record<string, unknown>>).map((b) => ({
+          text: stripEmoji(String(b.text || '')),
+          timestamp: String(b.timestamp || ''),
+          bRoll: String(b.bRoll || ''),
+          overlay: b.overlay ? stripEmoji(String(b.overlay)) : '',
+        }));
+        const ctas = (aiData.ctas as Array<Record<string, unknown>>).map((c) => ({
+          type: String(c.type || ''),
+          text: stripEmoji(String(c.text || '')),
+        }));
+        script = { ...script, hooks, body, ctas, aiGenerated: true };
       }
     }
 

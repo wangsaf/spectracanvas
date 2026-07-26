@@ -238,7 +238,7 @@ export default function ContentStudioPage() {
                         <div className="flex flex-wrap gap-2">
                           {caption.hashtags.map((tag: string, i: number) => (
                             <span key={i} className="text-xs px-2 py-1 border border-[#3a322a] text-neutral-400 rounded">
-                              #{tag}
+                              {tag.startsWith('#') ? tag : `#${tag}`}
                             </span>
                           ))}
                         </div>
@@ -277,7 +277,7 @@ export default function ContentStudioPage() {
                         <tbody>
                           {calendar.map((entry: any, i: number) => (
                             <tr key={i} className="border-b border-[#3a322a]/50">
-                              <td className="py-2 pr-4 text-neutral-300">{entry.date || '—'}</td>
+                              <td className="py-2 pr-4 text-neutral-300">{entry.day || entry.date || '—'}</td>
                               <td className="py-2 pr-4 text-neutral-300">{entry.platform || '—'}</td>
                               <td className="py-2 pr-4 text-neutral-300">{entry.topic || '—'}</td>
                               <td className="py-2 text-neutral-300">{entry.type || entry.contentType || '—'}</td>
