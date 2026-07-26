@@ -5,6 +5,7 @@ import { BrandForm, type BrandFormData } from '@/components/brand/brand-form';
 import { ColorPalette } from '@/components/brand/color-palette';
 import { FontPreview } from '@/components/brand/font-preview';
 import { LogoPreview } from '@/components/brand/logo-preview';
+import { PersonalityPreview } from '@/components/brand/personality-preview';
 import type { BrandIdentity } from '@/lib/types';
 import { API_ROUTES } from '@/lib/constants';
 import { useProjectStore } from '@/lib/store/project-store';
@@ -126,6 +127,9 @@ export default function BrandStudioPage() {
                 <ColorPalette colors={brand.colors} />
                 <FontPreview typography={brand.typography} />
                 <LogoPreview logo={brand.logo} brandName={brand.name} />
+                {brand.personality && (
+                  <PersonalityPreview personality={brand.personality} />
+                )}
               </>
             )}
           </div>

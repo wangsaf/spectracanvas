@@ -34,6 +34,8 @@ export interface BrandPersonality {
   tone: string;
   style: string;
   keywords: string[];
+  positioning?: string;
+  tagline?: string;
 }
 
 export interface LogoVariations {
