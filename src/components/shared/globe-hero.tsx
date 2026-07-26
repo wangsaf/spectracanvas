@@ -45,9 +45,9 @@ function fibonacciSphere(count: number, radius: number, center: [number, number,
 }
 
 function generateBrainPoints(): THREE.Vector3[] {
-  const leftHemisphere = fibonacciSphere(50, 1.0, [-0.4, 0.1, 0]);
-  const rightHemisphere = fibonacciSphere(50, 1.0, [0.4, 0.1, 0]);
-  const cerebellum = fibonacciSphere(15, 0.5, [0, -0.3, -0.3]);
+  const leftHemisphere = fibonacciSphere(50, 1.6, [-0.6, 0.1, 0]);
+  const rightHemisphere = fibonacciSphere(50, 1.6, [0.6, 0.1, 0]);
+  const cerebellum = fibonacciSphere(15, 0.8, [0, -0.5, -0.3]);
 
   // Brain stem - a few points in a cylinder shape
   const brainStem: THREE.Vector3[] = [];
@@ -371,7 +371,7 @@ function BrainCanvas() {
       style={{ zIndex: 5 }}
     >
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
+        camera={{ position: [0, 0, 4], fov: 55 }}
         gl={{ alpha: true, antialias: true }}
         style={{ background: 'transparent' }}
       >
