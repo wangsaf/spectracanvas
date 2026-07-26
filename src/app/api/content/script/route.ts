@@ -30,14 +30,14 @@ function generateFallbackScript(input: any) {
       { type: 'bold-statement', text: `${topic} will never be the same after this.`, duration: 3 },
     ],
     body: [
-      { text: `Here's the thing about ${topic} that nobody talks about.`, timestamp: '0:03-0:08', bRoll: 'Close-up of product/demo', overlay: topic },
-      { text: `Most people struggle because they don't have the right tools.`, timestamp: '0:08-0:15', bRoll: 'Problem visualization', overlay: 'The Problem' },
-      { text: `That's where AI changes everything. One click, complete creative output.`, timestamp: '0:15-0:22', bRoll: 'Demo of SpectraCanvas', overlay: 'AI-Powered' },
-      { text: `Brand identity, pixel art, content scripts — all generated in seconds.`, timestamp: `0:22-0:${Math.min(duration - 5, 28)}`, bRoll: 'Show multiple outputs', overlay: 'All-in-One' },
+      { text: `So here's the deal with ${topic} — most people overcomplicate it.`, timestamp: '0:03-0:08', bRoll: 'Close-up shot, eye contact with camera', overlay: topic },
+      { text: `I used to struggle with this too, until I figured out one simple approach.`, timestamp: '0:08-0:15', bRoll: 'B-roll of the process or concept', overlay: 'The Key Insight' },
+      { text: `Once you understand ${topic} at its core, everything clicks into place.`, timestamp: '0:15-0:22', bRoll: 'Examples or demonstrations', overlay: 'How It Works' },
+      { text: `And the results speak for themselves — let me show you what I mean.`, timestamp: `0:22-0:${Math.min(duration - 5, 28)}`, bRoll: 'Results or outcomes', overlay: 'The Results' },
     ],
     ctas: [
-      { type: 'soft', text: 'Follow for more AI creative tips!' },
-      { type: 'hard', text: 'Try SpectraCanvas free — link in bio!' },
+      { type: 'soft', text: `Follow for more ${topic} tips and breakdowns!` },
+      { type: 'hard', text: `Drop a comment if you want the full guide — link in bio!` },
     ],
     wordCount: 65,
     estimatedDuration: duration,
@@ -47,15 +47,16 @@ function generateFallbackScript(input: any) {
 
 function generateFallbackCaption(input: any) {
   const topic = input.topic;
+  const industry = input.industry || 'Tech';
   return {
-    main: `Transform your creative process with ${topic}! AI-powered tools that make creation faster, smarter, and more consistent than ever before.`,
-    hashtags: ['#AI', '#CreativeAI', '#ContentCreation', '#DigitalArt', '#AIArt', '#Creative', '#Design', '#Innovation', '#SpectraCanvas', '#FutureOfCreative', '#AICreativity', `#${input.industry || 'Tech'}`],
+    main: `Breaking down ${topic} so you can actually use it. No fluff, just the good stuff.`,
+    hashtags: [`#${topic.replace(/\s+/g, '')}`, `#${industry}`, '#ContentCreator', '#TipsAndTricks', '#LearnOnSocial', '#CreatorLife', '#HowTo', '#Tutorial', '#Explainer', '#Tips'],
     variations: [
-      `Your creative workflow just got a major upgrade. ${topic} + AI = game over.`,
-      `What used to take hours now takes seconds. The future of ${topic} is here.`,
-      `Why struggle when AI can do it for you? ${topic} has never been easier.`,
+      `${topic} demystified — here's what you actually need to know.`,
+      `I wish someone had explained ${topic} to me like this sooner.`,
+      `The real talk about ${topic} that nobody else is giving you.`,
     ],
-    emojis: ['[sparkles]', '[art]', '[rocket]', '[lightning]', '[fire]'],
+    emojis: ['[point_up]', '[eyes]', '[bulb]', '[memo]', '[check_mark]'],
     aiGenerated: false,
   };
 }
@@ -105,7 +106,44 @@ Return ONLY JSON:
       }
     }
 
-    const caption = generateFallbackCaption(input);
+    // Try AI caption generation
+    let caption;
+    const captionPrompt = `Write a social media caption for a ${input.platform} post about: ${input.topic}
+Tone: ${input.tone || 'casual'}
+Audience: ${input.audience || 'general'}
+Industry: ${input.industry || 'general'}
+
+Return ONLY JSON with these fields:
+{
+  "main": "the full caption text (no emoji)",
+  "hashtags": ["#relevant", "#hashtags", "#about", "#the", "#topic"],
+  "variations": ["shorter variation 1", "shorter variation 2", "shorter variation 3"]
+}
+
+Rules:
+- Write about the TOPIC, not about AI tools or creation process
+- Hashtags should be relevant to the specific topic
+- Do NOT include emoji in the text
+- Keep it natural and engaging
+- Include 8-12 hashtags`;
+
+    const captionAI = await generateWithAI(captionPrompt);
+    if (captionAI) {
+      const captionData = extractJSON(captionAI) as Record<string, unknown> | null;
+      if (captionData && typeof captionData.main === 'string') {
+        caption = {
+          main: stripEmoji(String(captionData.main)),
+          hashtags: Array.isArray(captionData.hashtags) ? captionData.hashtags.map((h: any) => stripEmoji(String(h))) : [],
+          variations: Array.isArray(captionData.variations) ? captionData.variations.map((v: any) => stripEmoji(String(v))) : [],
+          emojis: ['[point_up]', '[eyes]', '[bulb]', '[memo]', '[check_mark]'],
+          aiGenerated: true,
+        };
+      } else {
+        caption = generateFallbackCaption(input);
+      }
+    } else {
+      caption = generateFallbackCaption(input);
+    }
 
     const calendar = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, i) => ({
       day: day.substring(0, 3),

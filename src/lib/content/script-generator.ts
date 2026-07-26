@@ -178,9 +178,9 @@ function generateBody(
   // Hook section (first 3 seconds)
   sections.push({
     timestamp: '0:00-0:03',
-    content: 'Open with your chosen hook to grab attention immediately.',
+    content: `Alright, let's talk about ${topic} — stick around, this one's worth it.`,
     brollSuggestion: 'Close-up shot, eye contact with camera',
-    textOverlay: 'Hook text overlay',
+    textOverlay: topic,
   });
 
   // Calculate remaining time for body
@@ -195,40 +195,40 @@ function generateBody(
 
     sections.push({
       timestamp: `0:${String(bodyStart).padStart(2, '0')}-0:${String(bodyStart + pointDuration).padStart(2, '0')}`,
-      content: `Point 1: Introduce the main concept of ${topic}. Explain what it is and why it matters.`,
+      content: `So with ${topic}, the biggest thing people get wrong is they skip the fundamentals. Here's what actually matters —`,
       brollSuggestion: 'Medium shot, gestures to emphasize points',
-      textOverlay: 'Key point #1',
+      textOverlay: 'The Fundamentals',
     });
 
     sections.push({
       timestamp: `0:${String(bodyStart + pointDuration).padStart(2, '0')}-0:${String(bodyStart + pointDuration * 2).padStart(2, '0')}`,
-      content: `Point 2: Share a specific example or benefit of ${topic}. Make it relatable.`,
+      content: `Let me give you a real example. When I first got into ${topic}, I made this exact mistake — and once I fixed it, everything changed.`,
       brollSuggestion: 'B-roll footage showing example',
-      textOverlay: 'Key point #2',
+      textOverlay: 'Real Example',
     });
 
     sections.push({
       timestamp: `0:${String(bodyStart + pointDuration * 2).padStart(2, '0')}-0:${String(bodyEnd).padStart(2, '0')}`,
-      content: `Point 3: Provide actionable takeaway or next step related to ${topic}.`,
+      content: `So here's what I'd do differently: start with this one thing, and you'll see results way faster than I did.`,
       brollSuggestion: 'Wide shot, confident pose',
-      textOverlay: 'Key point #3',
+      textOverlay: 'Your Next Step',
     });
   } else {
     // Short form - single focused message
     sections.push({
       timestamp: `0:${String(bodyStart).padStart(2, '0')}-0:${String(bodyEnd).padStart(2, '0')}`,
-      content: `Deliver your main message about ${topic}. Keep it focused and impactful. One clear takeaway.`,
+      content: `Here's the thing about ${topic} that took me way too long to figure out. Once you see it this way, it all clicks.`,
       brollSuggestion: 'Dynamic shots, quick cuts',
-      textOverlay: 'Main message',
+      textOverlay: 'The Key Insight',
     });
   }
 
   // CTA section (last 3-5 seconds)
   sections.push({
     timestamp: `0:${String(bodyEnd).padStart(2, '0')}-0:${String(duration).padStart(2, '0')}`,
-    content: 'End with your chosen call-to-action.',
+    content: `If that helped, smash that follow button — I break down ${topic} like this all the time.`,
     brollSuggestion: 'Direct to camera, clear CTA',
-    textOverlay: 'CTA text',
+    textOverlay: 'Follow for More',
   });
 
   return sections;
