@@ -14,13 +14,14 @@ export function generateBasicSprite(
   description: string,
   style: PixelStyle,
   size: SpriteSize,
-  palette?: string[]
+  palette?: string[],
+  archetype?: string
 ): CharacterSprite {
   // Use style-specific palette if not provided
   const colors = palette || getStylePalette(style);
   
   // Generate pixel data based on description keywords
-  const pixelData = generatePixelDataFromDescription(description, size, colors);
+  const pixelData = generatePixelDataFromDescription(description, size, colors, archetype);
   
   // Convert to data URL
   const imageData = pixelDataToDataURL(pixelData, size);
@@ -69,16 +70,17 @@ function getStylePalette(style: PixelStyle): string[] {
 function generatePixelDataFromDescription(
   description: string,
   size: SpriteSize,
-  palette: string[]
+  palette: string[],
+  archetype?: string
 ): string[][] {
   const data = createEmptyPixelData(size, size);
   const desc = description.toLowerCase();
   
   // Determine character type
   const isHuman = desc.includes('human') || desc.includes('person') || desc.includes('character');
-  const isKnight = desc.includes('knight') || desc.includes('warrior');
-  const isRobot = desc.includes('robot') || desc.includes('mech');
-  const isAnimal = desc.includes('animal') || desc.includes('cat') || desc.includes('dog');
+  const isKnight = archetype === 'knight' || desc.includes('knight') || desc.includes('warrior');
+  const isRobot = archetype === 'robot' || desc.includes('robot') || desc.includes('mech');
+  const isAnimal = archetype === 'animal' || desc.includes('animal') || desc.includes('cat') || desc.includes('dog');
   
   if (isKnight) {
     return generateKnightSprite(size, palette);

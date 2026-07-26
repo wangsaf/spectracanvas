@@ -1,39 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateWithAI, extractJSON } from '@/lib/ai/watsonx';
 
-async function getWatsonxToken(): Promise<string | null> {
-  const apiKey = process.env.WATSONX_API_KEY;
-  if (!apiKey) return null;
-  try {
-    const resp = await fetch('https://iam.cloud.ibm.com/identity/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${apiKey}`,
-    });
-    const data = await resp.json();
-    return data.access_token || null;
-  } catch { return null; }
-}
-
-async function generateWithAI(prompt: string): Promise<string | null> {
-  const token = await getWatsonxToken();
-  const projectId = process.env.WATSONX_PROJECT_ID;
-  if (!token || !projectId) return null;
-  try {
-    const resp = await fetch('https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2024-05-01', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: prompt,
-        model_id: 'ibm/granite-3-8b-instruct',
-        parameters: { max_new_tokens: 800, decoding_method: 'greedy' },
-        project_id: projectId,
-      }),
-    });
-    const data = await resp.json();
-    return data.results?.[0]?.generated_text || null;
-  } catch { return null; }
-}
 
 function generateFallbackScript(input: any) {
   const topic = input.topic;
@@ -108,15 +75,10 @@ Return ONLY JSON:
     
     let script = generateFallbackScript(input);
     if (aiResult) {
-      try {
-        const jsonMatch = aiResult.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const aiData = JSON.parse(jsonMatch[0]);
-          if (aiData.hooks && aiData.body && aiData.ctas) {
-            script = { ...script, ...aiData, aiGenerated: true };
-          }
-        }
-      } catch {}
+      const aiData = extractJSON(aiResult);
+      if (aiData && aiData.hooks && aiData.body && aiData.ctas) {
+        script = { ...script, ...aiData, aiGenerated: true };
+      }
     }
 
     const caption = generateFallbackCaption(input);
