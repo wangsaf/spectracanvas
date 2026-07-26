@@ -1,19 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PixelForm, type PixelFormData } from '@/components/pixel/pixel-form';
 import { SpriteCanvas } from '@/components/pixel/sprite-canvas';
+import { SpriteSheet } from '@/components/pixel/sprite-sheet';
+import { AnimationPreview } from '@/components/pixel/animation-preview';
+import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import type { CharacterSprite } from '@/lib/types';
+import type { PoseSet } from '@/lib/types';
 import { API_ROUTES } from '@/lib/constants';
 import { useProjectStore } from '@/lib/store/project-store';
 import { Button } from '@/components/ui/button';
+import { generatePosesAsync, generatePoses } from '@/lib/pixel/pose-generator';
+import { useToast } from '@/components/ui/toast';
 
 export default function PixelStudioPage() {
   const router = useRouter();
   const { brand, sprites: savedSprites, addSprite } = useProjectStore();
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingPoses, setIsGeneratingPoses] = useState(false);
   const [sprite, setSprite] = useState<CharacterSprite | null>(null);
+  const [poses, setPoses] = useState<PoseSet | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async (formData: PixelFormData) => {
@@ -57,7 +66,7 @@ export default function PixelStudioPage() {
   const handleSaveSprite = () => {
     if (sprite) {
       addSprite(sprite);
-      alert('Sprite saved to project!');
+      toast({ title: 'Sprite saved to project!', variant: 'success' });
     }
   };
 
@@ -67,6 +76,27 @@ export default function PixelStudioPage() {
       router.push('/dashboard');
     }
   };
+
+  // Generate poses with real canvas-based pixel variations when a sprite is created
+  useEffect(() => {
+    if (!sprite) {
+      setPoses(null);
+      return;
+    }
+    setIsGeneratingPoses(true);
+    generatePosesAsync(sprite)
+      .then((generatedPoses) => {
+        setPoses(generatedPoses);
+      })
+      .catch((err) => {
+        console.error('Pose generation failed, using template poses:', err);
+        // Fallback to synchronous template poses
+        setPoses(generatePoses(sprite));
+      })
+      .finally(() => {
+        setIsGeneratingPoses(false);
+      });
+  }, [sprite]);
 
   return (
     <div className="min-h-screen bg-[#1c1915]">
@@ -135,12 +165,7 @@ export default function PixelStudioPage() {
 
             {isGenerating && (
               <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
-                <div className="w-16 h-16 rounded border-2 border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#d9453b]">[*]</span>
-                </div>
-                <p className="text-sm text-[#d9453b] font-bold tracking-wider">
-                  GENERATING SPRITE...
-                </p>
+                <LoadingSpinner size="lg" label="GENERATING SPRITE..." className="mb-2" />
                 <p className="text-xs text-[#6b5f52] mt-2">
                   Creating your pixel art character
                 </p>
@@ -158,7 +183,22 @@ export default function PixelStudioPage() {
                   <p className="text-sm text-[#a09484]">{sprite.description}</p>
                 </div>
 
+                {/* Pose Generation Loading */}
+                {isGeneratingPoses && (
+                  <div className="rounded border border-[#3a322a] bg-[#241f1a] p-8 text-center">
+                    <LoadingSpinner size="md" label="GENERATING POSES..." />
+                  </div>
+                )}
 
+                {/* Animation Preview */}
+                {poses && (
+                  <AnimationPreview poses={poses} spriteSize={sprite.size} />
+                )}
+
+                {/* Sprite Sheet Composer */}
+                {poses && (
+                  <SpriteSheet poses={poses} spriteSize={sprite.size} />
+                )}
               </>
             )}
           </div>

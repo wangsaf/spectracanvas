@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useProjectStore, calculateProjectCompletion, exportProjectData } from '@/lib/store/project-store';
+import { ExportButton } from '@/components/shared/export-button';
+import { useToast } from '@/components/ui/toast';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -24,7 +26,7 @@ export default function DashboardPage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(projectName);
-  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
 
   const completion = calculateProjectCompletion(useProjectStore.getState());
 
@@ -44,58 +46,56 @@ export default function DashboardPage() {
   };
 
   const handleExportZIP = async () => {
-    setIsExporting(true);
-    try {
-      const zip = new JSZip();
+    const zip = new JSZip();
 
-      // Add project metadata
-      zip.file('project.json', exportProjectData(useProjectStore.getState()));
+    // Add project metadata
+    zip.file('project.json', exportProjectData(useProjectStore.getState()));
 
-      // Add brand assets
-      if (brand) {
-        const brandFolder = zip.folder('brand');
-        if (brandFolder) {
-          brandFolder.file('colors.json', JSON.stringify(brand.colors, null, 2));
-          brandFolder.file('typography.json', JSON.stringify(brand.typography, null, 2));
-          
-          // Add logos
-          if (brand.logo) {
-            const logosFolder = brandFolder.folder('logos');
-            if (logosFolder) {
-              Object.entries(brand.logo).forEach(([key, svgContent]) => {
-                if (typeof svgContent === 'string' && svgContent) {
-                  logosFolder.file(`${key}.svg`, svgContent);
-                }
-              });
-            }
+    // Add brand assets
+    if (brand) {
+      const brandFolder = zip.folder('brand');
+      if (brandFolder) {
+        brandFolder.file('colors.json', JSON.stringify(brand.colors, null, 2));
+        brandFolder.file('typography.json', JSON.stringify(brand.typography, null, 2));
+        
+        // Add logos
+        if (brand.logo) {
+          const logosFolder = brandFolder.folder('logos');
+          if (logosFolder) {
+            Object.entries(brand.logo).forEach(([key, svgContent]) => {
+              if (typeof svgContent === 'string' && svgContent) {
+                logosFolder.file(`${key}.svg`, svgContent);
+              }
+            });
           }
         }
       }
+    }
 
-      // Add sprites
-      if (sprites.length > 0) {
-        const spritesFolder = zip.folder('sprites');
-        if (spritesFolder) {
-          sprites.forEach((sprite, index) => {
-            // Convert data URL to blob
-            const base64Data = sprite.imageData.split(',')[1];
-            spritesFolder.file(`sprite-${index + 1}.png`, base64Data, { base64: true });
-            spritesFolder.file(`sprite-${index + 1}.json`, JSON.stringify({
-              description: sprite.description,
-              style: sprite.style,
-              size: sprite.size,
-              palette: sprite.palette,
-            }, null, 2));
-          });
-        }
+    // Add sprites
+    if (sprites.length > 0) {
+      const spritesFolder = zip.folder('sprites');
+      if (spritesFolder) {
+        sprites.forEach((sprite, index) => {
+          // Convert data URL to blob
+          const base64Data = sprite.imageData.split(',')[1];
+          spritesFolder.file(`sprite-${index + 1}.png`, base64Data, { base64: true });
+          spritesFolder.file(`sprite-${index + 1}.json`, JSON.stringify({
+            description: sprite.description,
+            style: sprite.style,
+            size: sprite.size,
+            palette: sprite.palette,
+          }, null, 2));
+        });
       }
+    }
 
-      // Add scripts
-      if (scripts.length > 0) {
-        const scriptsFolder = zip.folder('scripts');
-        if (scriptsFolder) {
-          scripts.forEach((script, index) => {
-            const scriptText = `
+    // Add scripts
+    if (scripts.length > 0) {
+      const scriptsFolder = zip.folder('scripts');
+      if (scriptsFolder) {
+        scripts.forEach((script, index) => {
+          const scriptText = `
 CONTENT SCRIPT ${index + 1}
 ====================
 
@@ -112,22 +112,16 @@ ${script.body.map((s) => `${s.timestamp}: ${s.content}`).join('\n\n')}
 
 CTAs:
 ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
-            `.trim();
-            
-            scriptsFolder.file(`script-${index + 1}.txt`, scriptText);
-          });
-        }
+          `.trim();
+          
+          scriptsFolder.file(`script-${index + 1}.txt`, scriptText);
+        });
       }
-
-      // Generate and download ZIP
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, `${projectName.replace(/\s+/g, '-')}.zip`);
-    } catch (error) {
-      console.error('Export error:', error);
-      alert('Failed to export project');
-    } finally {
-      setIsExporting(false);
     }
+
+    // Generate and download ZIP
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, `${projectName.replace(/\s+/g, '-')}.zip`);
   };
 
   const handleNewProject = () => {
@@ -328,19 +322,17 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button
-                onClick={handleExportJSON}
-                variant="outline"
+              <ExportButton
+                onExport={handleExportJSON}
+                format="JSON"
+                label="[ EXPORT JSON ]"
                 disabled={completion === 0}
-              >
-                [ EXPORT JSON ]
-              </Button>
-              <Button
-                onClick={handleExportZIP}
-                disabled={completion === 0 || isExporting}
-              >
-                {isExporting ? '[ EXPORTING... ]' : '[ EXPORT ZIP ]'}
-              </Button>
+              />
+              <ExportButton
+                onExport={handleExportZIP}
+                format="ZIP"
+                disabled={completion === 0}
+              />
             </div>
             <p className="text-xs text-[#6b5f52] mt-4">
               ZIP includes: Brand assets (colors, fonts, logos), Sprite PNGs, Content scripts

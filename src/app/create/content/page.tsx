@@ -10,10 +10,13 @@ import { API_ROUTES } from '@/lib/constants';
 import { suggestContentAdjustments } from '@/lib/mood/mood-mapper';
 import { useProjectStore } from '@/lib/store/project-store';
 import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/shared/loading-spinner';
+import { useToast } from '@/components/ui/toast';
 
 export default function ContentStudioPage() {
   const router = useRouter();
   const { brand, scripts: savedScripts, addScript, setMoods } = useProjectStore();
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [script, setScript] = useState<ContentScript | null>(null);
   const [selectedMoods, setSelectedMoods] = useState<MoodKeyword[]>([]);
@@ -82,7 +85,7 @@ export default function ContentStudioPage() {
   const handleSaveScript = () => {
     if (script) {
       addScript(script);
-      alert('Script saved to project!');
+      toast({ title: 'Script saved to project!', variant: 'success' });
     }
   };
 
@@ -172,12 +175,7 @@ export default function ContentStudioPage() {
 
             {isGenerating && (
               <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
-                <div className="w-16 h-16 border-2 border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse rounded">
-                  <span className="text-2xl text-[#d9453b]">[*]</span>
-                </div>
-                <p className="text-sm text-[#d9453b] font-bold tracking-wider">
-                  GENERATING SCRIPT...
-                </p>
+                <LoadingSpinner size="lg" label="GENERATING SCRIPT..." className="mb-2" />
                 <p className="text-xs text-[#6b5f52] mt-2">
                   Creating your content script with hooks, body, and CTAs
                 </p>
