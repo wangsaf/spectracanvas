@@ -78,7 +78,7 @@ function generateWireframeLines(radius: number) {
 
 function GlobeDots() {
   const groupRef = useRef<THREE.Group>(null);
-  const radius = 2.4;
+  const radius = 1.6;
   const points = useMemo(() => generateGlobePoints(radius), [radius]);
   const wireframeLines = useMemo(() => generateWireframeLines(radius), [radius]);
 
