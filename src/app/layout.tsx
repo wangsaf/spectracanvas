@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "SpectraCanvas - Your Creative Spectrum, One Canvas",
-  description: "AI-powered creative suite that transforms ideas into brand identity, pixel art, and content scripts",
+  description: "Creative suite that transforms ideas into brand identity, pixel art, and content scripts",
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-[#121010] text-white antialiased" style={{fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif"}}>
+      <body className="antialiased" style={{ background: '#1c1915', color: '#f0e8dc', fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
         <Navbar />
         {children}
       </body>

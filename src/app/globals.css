@@ -1,14 +1,27 @@
 @import "tailwindcss";
 
+:root {
+  --bg: #1c1915;
+  --bg-card: #241f1a;
+  --bg-card-hover: #2e2720;
+  --border: #3a322a;
+  --text: #f0e8dc;
+  --text-dim: #a09484;
+  --text-muted: #6b5f52;
+  --accent: #d9453b;
+  --accent-hover: #b8382f;
+  --accent-glow: #d9453b33;
+}
+
 body {
-  background: #0a0a0a;
-  color: #ffffff;
-  font-family: 'Courier New', monospace;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', 'Space Grotesk', system-ui, sans-serif;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #333 #0a0a0a;
+  scrollbar-color: var(--border) var(--bg);
 }
 
 *::-webkit-scrollbar {
@@ -16,14 +29,37 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: var(--bg);
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--border);
 }
 
 ::selection {
-  background: #00ff88;
-  color: #0a0a0a;
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Pixel art border helper */
+.pixel-border {
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 
+    2px 0 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    2px 2px 0 0 var(--border);
+}
+
+/* Warm glow for cards */
+.card-glow:hover {
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* Pixel font for labels */
+.pixel-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
