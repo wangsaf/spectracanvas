@@ -13,33 +13,39 @@ function stripEmoji(text: string): string {
 
 function generateFallbackScript(input: any) {
   const topic = input.topic;
-  const platform = input.platform;
-  const tone = input.tone;
   const duration = input.duration || 30;
-  
-  const toneAdj: Record<string, string> = {
-    casual: 'awesome', professional: 'powerful', educational: 'incredible',
-    hype: 'game-changing', inspirational: 'transformative',
-  };
-  const adj = toneAdj[tone] || 'amazing';
   
   return {
     hooks: [
-      { type: 'pattern-interrupt', text: `Stop scrolling! ${topic} just got ${adj}!`, duration: 3 },
-      { type: 'question', text: `Did you know ${topic} could be this easy?`, duration: 3 },
-      { type: 'bold-statement', text: `${topic} will never be the same after this.`, duration: 3 },
+      { type: 'pattern-interrupt', text: `Okay, ${topic} — let's actually talk about this.`, duration: 3 },
+      { type: 'question', text: `So what's the real deal with ${topic}? Let me break it down.`, duration: 3 },
+      { type: 'bold-statement', text: `${topic} — here's what most people get wrong.`, duration: 3 },
     ],
     body: [
-      { text: `So here's the deal with ${topic} — most people overcomplicate it.`, timestamp: '0:03-0:08', bRoll: 'Close-up shot, eye contact with camera', overlay: topic },
-      { text: `I used to struggle with this too, until I figured out one simple approach.`, timestamp: '0:08-0:15', bRoll: 'B-roll of the process or concept', overlay: 'The Key Insight' },
-      { text: `Once you understand ${topic} at its core, everything clicks into place.`, timestamp: '0:15-0:22', bRoll: 'Examples or demonstrations', overlay: 'How It Works' },
-      { text: `And the results speak for themselves — let me show you what I mean.`, timestamp: `0:22-0:${Math.min(duration - 5, 28)}`, bRoll: 'Results or outcomes', overlay: 'The Results' },
+      { 
+        text: `First thing you need to know about ${topic}: it's not as complicated as people make it seem. I've been doing this for a while now and the biggest mistake I see is people overthinking it from the start.`, 
+        timestamp: '0:03-0:12', 
+        bRoll: 'You talking to camera, maybe pointing at something', 
+        overlay: 'The Basics' 
+      },
+      { 
+        text: `Here's what actually works: start small, test it out, see what happens. Don't try to do everything at once — that's how you burn out and give up. Pick one thing from ${topic} and just focus on that.`, 
+        timestamp: '0:12-0:22', 
+        bRoll: 'Screen recording or demo of the concept', 
+        overlay: 'Start Here' 
+      },
+      { 
+        text: `And honestly? The results come faster than you think. Once you get the hang of it, you'll wonder why you didn't start sooner. Trust me on this one.`, 
+        timestamp: '0:22-0:30', 
+        bRoll: 'Results, before/after, or outcome', 
+        overlay: 'The Payoff' 
+      },
     ],
     ctas: [
-      { type: 'soft', text: `Follow for more ${topic} tips and breakdowns!` },
-      { type: 'hard', text: `Drop a comment if you want the full guide — link in bio!` },
+      { type: 'soft', text: `Follow for more ${topic} content like this!` },
+      { type: 'hard', text: `Comment "guide" if you want the full breakdown — I'll send it to you.` },
     ],
-    wordCount: 65,
+    wordCount: 120,
     estimatedDuration: duration,
     aiGenerated: false,
   };
@@ -69,15 +75,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Try AI generation
-    const aiPrompt = `Write a ${input.platform} video script about: ${input.topic}
-Tone: ${input.tone}
-Duration: ${input.duration || 30} seconds
-Audience: ${input.audience || 'general'}
+    const aiPrompt = `You are a ${input.platform} content creator. Write a ${input.duration || 30}-second video script about: ${input.topic}
+
+Tone: ${input.tone || 'casual'}
+
+RULES:
+- Write like you're talking to a friend, not reading a textbook
+- Each body section should be 2-3 sentences, not one vague sentence
+- Include specific details, not generic hype words
+- Hooks should be attention-grabbing and specific to the topic
+- CTAs should be natural, not salesy
 
 Return ONLY JSON:
 {
   "hooks": [{"type":"pattern-interrupt","text":"...","duration":3},{"type":"question","text":"...","duration":3},{"type":"bold-statement","text":"...","duration":3}],
-  "body": [{"text":"...","timestamp":"0:03-0:10","overlay":"..."}],
+  "body": [{"text":"2-3 sentences of actual content here","timestamp":"0:03-0:10","bRoll":"specific visual suggestion","overlay":"text overlay"}],
   "ctas": [{"type":"soft","text":"..."},{"type":"hard","text":"..."}]
 }`;
 
