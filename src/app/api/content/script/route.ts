@@ -75,21 +75,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Try AI generation
-    const aiPrompt = `You are a ${input.platform} content creator. Write a ${input.duration || 30}-second video script about: ${input.topic}
+    const aiPrompt = `You are a real ${input.platform} creator making a video about: "${input.topic}"
 
-Tone: ${input.tone || 'casual'}
+Write a ${input.duration || 30}-second script that sounds like YOU'RE ACTUALLY TALKING to the camera.
 
-RULES:
-- Write like you're talking to a friend, not reading a textbook
-- Each body section should be 2-3 sentences, not one vague sentence
-- Include specific details, not generic hype words
-- Hooks should be attention-grabbing and specific to the topic
-- CTAs should be natural, not salesy
+TONE: ${input.tone || 'casual'} — like you're chatting with a friend, not presenting a TED talk.
+
+CRITICAL RULES:
+1. Write EXACTLY how you'd speak — use "like", "honestly", "okay so", "listen", contractions ("it's", "don't", "you're")
+2. Each body section = 3-4 sentences minimum. REAL sentences with substance, not vague hype.
+3. Include SPECIFIC details: name the game/app/product, mention features, give your honest reaction
+4. Hooks must grab attention in 2 seconds — be direct, not generic
+5. CTAs should feel natural: "comment below", "save this for later", "follow if you want more"
+6. NO corporate speak, NO "dive into", NO "game-changer", NO "transform your"
+7. B-roll suggestions should be VERY specific: "show the main menu screen", "zoom into the pixel art character", "scroll through the app store listing"
+
+EXAMPLE of GOOD body text:
+"Okay so I've been playing this for like 3 hours straight and I'm obsessed. The pixel art style is 16-bit SNES era and honestly? It looks better than most AAA games. The combat system is turn-based but with this cool timing mechanic where you can dodge attacks if you press the button at the right moment."
 
 Return ONLY JSON:
 {
   "hooks": [{"type":"pattern-interrupt","text":"...","duration":3},{"type":"question","text":"...","duration":3},{"type":"bold-statement","text":"...","duration":3}],
-  "body": [{"text":"2-3 sentences of actual content here","timestamp":"0:03-0:10","bRoll":"specific visual suggestion","overlay":"text overlay"}],
+  "body": [{"text":"3-4 sentences of REAL content with specific details","timestamp":"0:03-0:12","bRoll":"very specific visual suggestion","overlay":"short punchy text"}],
   "ctas": [{"type":"soft","text":"..."},{"type":"hard","text":"..."}]
 }`;
 
