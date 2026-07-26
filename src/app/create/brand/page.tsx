@@ -61,13 +61,13 @@ export default function BrandStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#121010]">
+    <div className="min-h-screen bg-[#1c1915]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-wider mb-2">BRAND STUDIO</h1>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-[#6b5f52] text-sm">
               Generate your complete brand identity with AI
             </p>
           </div>
@@ -97,25 +97,25 @@ export default function BrandStudioPage() {
           {/* Right Column - Preview */}
           <div className="space-y-6">
             {!brand && !isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-500">[ ]</span>
+              <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
+                <div className="w-16 h-16 border-2 rounded border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl text-[#6b5f52]">[ ]</span>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-[#6b5f52]">
                   Fill in your brand details and click generate to see your identity
                 </p>
               </div>
             )}
 
             {isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">[*]</span>
+              <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
+                <div className="w-16 h-16 border-2 rounded border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse">
+                  <span className="text-2xl text-[#d9453b]">[*]</span>
                 </div>
-                <p className="text-sm text-[#00ff88] font-bold tracking-wider">
+                <p className="text-sm text-[#d9453b] font-bold tracking-wider">
                   GENERATING BRAND...
                 </p>
-                <p className="text-xs text-neutral-500 mt-2">
+                <p className="text-xs text-[#6b5f52] mt-2">
                   Creating colors, typography, and logos
                 </p>
               </div>

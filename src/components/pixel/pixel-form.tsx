@@ -64,7 +64,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Character Description */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           CHARACTER DESCRIPTION *
         </label>
         <Textarea
@@ -77,14 +77,14 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
         {errors.description && (
           <p className="text-xs text-red-500">{errors.description}</p>
         )}
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-[#6b5f52]">
           Be specific about appearance, clothing, and accessories
         </p>
       </div>
 
       {/* Pixel Art Style */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           PIXEL ART STYLE *
         </label>
         <div className="grid grid-cols-1 gap-2">
@@ -94,10 +94,10 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               type="button"
               onClick={() => setFormData({ ...formData, style: style.value as PixelStyle })}
               disabled={isGenerating}
-              className={`px-4 py-3 text-left border transition-colors ${
+              className={`px-4 py-3 rounded text-left border transition-colors ${
                 formData.style === style.value
-                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">{style.label}</div>
@@ -108,7 +108,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
 
       {/* Sprite Size */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           SPRITE SIZE *
         </label>
         <Select
@@ -144,10 +144,10 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
                 type="button"
                 onClick={() => setFormData({ ...formData, paletteMode: 'brand' })}
                 disabled={isGenerating}
-                className={`w-full px-4 py-3 text-left border transition-colors ${
+                className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                   formData.paletteMode === 'brand'
-                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                    ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                    : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
                 }`}
               >
                 <div className="text-xs font-bold tracking-wider mb-2">FROM BRAND COLORS</div>
@@ -155,7 +155,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
                   {brandColors.slice(0, 8).map((color, i) => (
                     <div
                       key={i}
-                      className="w-6 h-6 border border-[#222]"
+                      className="w-6 h-6 rounded border border-[#3a322a]"
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -167,10 +167,10 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               type="button"
               onClick={() => setFormData({ ...formData, paletteMode: 'custom' })}
               disabled={isGenerating}
-              className={`w-full px-4 py-3 text-left border transition-colors ${
+              className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                 formData.paletteMode === 'custom'
-                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">STYLE DEFAULT PALETTE</div>

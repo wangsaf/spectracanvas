@@ -39,27 +39,27 @@ export function FontPreview({ typography }: FontPreviewProps) {
         {/* Heading Font */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold tracking-wider text-neutral-400">
+            <p className="text-xs font-bold tracking-wider text-[#a09484]">
               HEADING FONT
             </p>
-            <p className="text-xs text-neutral-500 font-mono">
+            <p className="text-xs text-[#6b5f52] font-mono">
               {typography.heading.name}
             </p>
           </div>
           <div
-            className="p-4 border border-[#222] bg-[#0a0a0a]"
+            className="p-4 border rounded border-[#3a322a] bg-[#1c1915]"
             style={{ fontFamily: typography.heading.family }}
           >
             <h1 className="text-4xl font-bold mb-2">The Quick Brown Fox</h1>
             <h2 className="text-3xl font-bold mb-2">Jumps Over The Lazy Dog</h2>
             <h3 className="text-2xl font-bold">ABCDEFGHIJKLMNOPQRSTUVWXYZ</h3>
           </div>
-          <div className="flex gap-2 text-xs text-neutral-500">
+          <div className="flex gap-2 text-xs text-[#6b5f52]">
             <span>Weights:</span>
             {typography.heading.weights.map((weight) => (
               <span
                 key={weight}
-                className="px-2 py-1 bg-[#111] border border-[#222]"
+                className="px-2 py-1 bg-[#241f1a] border rounded border-[#3a322a]"
                 style={{ fontFamily: typography.heading.family, fontWeight: weight }}
               >
                 {weight}
@@ -71,15 +71,15 @@ export function FontPreview({ typography }: FontPreviewProps) {
         {/* Body Font */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold tracking-wider text-neutral-400">
+            <p className="text-xs font-bold tracking-wider text-[#a09484]">
               BODY FONT
             </p>
-            <p className="text-xs text-neutral-500 font-mono">
+            <p className="text-xs text-[#6b5f52] font-mono">
               {typography.body.name}
             </p>
           </div>
           <div
-            className="p-4 border border-[#222] bg-[#0a0a0a]"
+            className="p-4 border rounded border-[#3a322a] bg-[#1c1915]"
             style={{ fontFamily: typography.body.family }}
           >
             <p className="text-base mb-2">
@@ -92,12 +92,12 @@ export function FontPreview({ typography }: FontPreviewProps) {
               abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
             </p>
           </div>
-          <div className="flex gap-2 text-xs text-neutral-500">
+          <div className="flex gap-2 text-xs text-[#6b5f52]">
             <span>Weights:</span>
             {typography.body.weights.map((weight) => (
               <span
                 key={weight}
-                className="px-2 py-1 bg-[#111] border border-[#222]"
+                className="px-2 py-1 bg-[#241f1a] border rounded border-[#3a322a]"
                 style={{ fontFamily: typography.body.family, fontWeight: weight }}
               >
                 {weight}
@@ -107,15 +107,15 @@ export function FontPreview({ typography }: FontPreviewProps) {
         </div>
 
         {/* Type Scale */}
-        <div className="space-y-3 pt-4 border-t border-[#222]">
-          <p className="text-xs font-bold tracking-wider text-neutral-400">
+        <div className="space-y-3 pt-4 border-t border-[#3a322a]">
+          <p className="text-xs font-bold tracking-wider text-[#a09484]">
             TYPE SCALE
           </p>
           <div className="space-y-2">
             {Object.entries(typography.scale).map(([level, size]) => (
               <div
                 key={level}
-                className="flex items-center justify-between text-neutral-500"
+                className="flex items-center justify-between text-[#6b5f52]"
               >
                 <span className="text-xs font-mono">{level.toUpperCase()}</span>
                 <span className="text-xs font-mono">{size}</span>
@@ -125,11 +125,11 @@ export function FontPreview({ typography }: FontPreviewProps) {
         </div>
 
         {/* Combined Preview */}
-        <div className="space-y-3 pt-4 border-t border-[#222]">
-          <p className="text-xs font-bold tracking-wider text-neutral-400">
+        <div className="space-y-3 pt-4 border-t border-[#3a322a]">
+          <p className="text-xs font-bold tracking-wider text-[#a09484]">
             COMBINED PREVIEW
           </p>
-          <div className="p-4 border border-[#222] bg-[#0a0a0a]">
+          <div className="p-4 border rounded border-[#3a322a] bg-[#1c1915]">
             <h2
               className="text-2xl font-bold mb-3"
               style={{ fontFamily: typography.heading.family }}

@@ -138,7 +138,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-[#121010]">
+    <div className="min-h-screen bg-[#1c1915]" style={{ fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -163,7 +163,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 <h1 className="text-3xl font-bold tracking-wider">{projectName}</h1>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="text-neutral-500 hover:text-white transition-colors"
+                  className="text-[#6b5f52] hover:text-[#f0e8dc] transition-colors"
                   aria-label="Edit project name"
                 >
                   [EDIT]
@@ -174,16 +174,16 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               [ NEW PROJECT ]
             </Button>
           </div>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-[#6b5f52] text-sm">
             Project ID: {projectId} • {completion}% Complete
           </p>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="h-2 bg-[#222] overflow-hidden">
+          <div className="h-2 bg-[#3a322a] rounded overflow-hidden">
             <div
-              className="h-full bg-[#00ff88] transition-all duration-500"
+              className="h-full bg-[#d9453b] transition-all duration-500"
               style={{ width: `${completion}%` }}
             />
           </div>
@@ -203,20 +203,20 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               {brand ? (
                 <>
                   <div>
-                    <p className="text-xs text-neutral-500 mb-2">COLORS</p>
+                    <p className="text-xs text-[#6b5f52] mb-2">COLORS</p>
                     <div className="flex gap-1">
                       {Object.values(brand.colors.primary).slice(0, 5).map((color, i) => (
                         <div
                           key={i}
-                          className="w-8 h-8 border border-[#222]"
+                          className="w-8 h-8 border border-[#3a322a] rounded"
                           style={{ backgroundColor: color as string }}
                         />
                       ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 mb-1">TYPOGRAPHY</p>
-                    <p className="text-sm text-white">{brand.typography.heading.name}</p>
+                    <p className="text-xs text-[#6b5f52] mb-1">TYPOGRAPHY</p>
+                    <p className="text-sm text-[#f0e8dc]">{brand.typography.heading.name}</p>
                   </div>
                   <Button
                     onClick={() => router.push('/create/brand')}
@@ -250,7 +250,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 <>
                   <div className="grid grid-cols-3 gap-2">
                     {sprites.slice(0, 3).map((sprite, i) => (
-                      <div key={i} className="border border-[#222] p-2 bg-[#0a0a0a]">
+                      <div key={i} className="border border-[#3a322a] rounded p-2 bg-[#1c1915]">
                         <img
                           src={sprite.imageData}
                           alt={`Sprite ${i + 1}`}
@@ -292,9 +292,9 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 <>
                   <div className="space-y-2">
                     {scripts.slice(0, 2).map((script, i) => (
-                      <div key={i} className="border border-[#222] p-3">
-                        <p className="text-xs text-neutral-500">{script.platform}</p>
-                        <p className="text-sm text-white truncate">{script.topic}</p>
+                      <div key={i} className="border border-[#3a322a] rounded p-3">
+                        <p className="text-xs text-[#6b5f52]">{script.platform}</p>
+                        <p className="text-sm text-[#f0e8dc] truncate">{script.topic}</p>
                       </div>
                     ))}
                   </div>
@@ -342,7 +342,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 {isExporting ? '[ EXPORTING... ]' : '[ EXPORT ZIP ]'}
               </Button>
             </div>
-            <p className="text-xs text-neutral-500 mt-4">
+            <p className="text-xs text-[#6b5f52] mt-4">
               ZIP includes: Brand assets (colors, fonts, logos), Sprite PNGs, Content scripts
             </p>
           </CardContent>
@@ -362,7 +362,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 {selectedMoods.map((mood) => (
                   <span
                     key={mood}
-                    className="px-3 py-1 bg-[#00ff88] text-black text-xs font-bold tracking-wider"
+                    className="px-3 py-1 bg-[#d9453b] text-white text-xs font-bold tracking-wider"
                   >
                     {mood.toUpperCase()}
                   </span>

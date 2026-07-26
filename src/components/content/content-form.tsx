@@ -66,7 +66,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Topic */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           TOPIC / IDEA *
         </label>
         <Textarea
@@ -83,7 +83,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
 
       {/* Platform */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           PLATFORM *
         </label>
         <Select
@@ -103,7 +103,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
           </SelectContent>
         </Select>
         {selectedPlatform && (
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-[#6b5f52]">
             Max duration: {selectedPlatform.maxDuration}s • Aspect ratio: {selectedPlatform.aspectRatio}
           </p>
         )}
@@ -111,7 +111,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
 
       {/* Tone */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           TONE *
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -121,10 +121,10 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
               type="button"
               onClick={() => setFormData({ ...formData, tone: tone.value as Tone })}
               disabled={isGenerating}
-              className={`px-4 py-3 text-left border transition-colors ${
+              className={`px-4 py-3 text-left border transition-colors rounded ${
                 formData.tone === tone.value
-                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">{tone.label}</div>
@@ -135,7 +135,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
 
       {/* Duration */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           DURATION *
         </label>
         <Select
@@ -158,11 +158,11 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
 
       {/* Brand Context (if available) */}
       {brandContext && (
-        <div className="p-4 border border-[#222] bg-[#111]">
-          <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+        <div className="p-4 border border-[#3a322a] bg-[#241f1a] rounded">
+          <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
             BRAND CONTEXT
           </p>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-[#6b5f52]">
             Using brand identity for consistent messaging
           </p>
         </div>

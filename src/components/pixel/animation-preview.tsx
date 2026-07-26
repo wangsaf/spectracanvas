@@ -104,7 +104,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Canvas Display */}
-        <div className="border border-[#222] bg-[#0a0a0a] p-8 flex items-center justify-center">
+        <div className="rounded border border-[#3a322a] bg-[#1c1915] p-8 flex items-center justify-center">
           <canvas
             ref={canvasRef}
             className="image-rendering-pixelated"
@@ -114,7 +114,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
 
         {/* Pose Selector */}
         <div className="space-y-2">
-          <p className="text-xs font-bold tracking-wider text-neutral-400">SELECT POSE</p>
+          <p className="text-xs font-bold tracking-wider text-[#a09484]">SELECT POSE</p>
           <div className="grid grid-cols-5 gap-2">
             {poseOptions.map((pose) => (
               <button
@@ -124,10 +124,10 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
                   setCurrentFrame(0);
                   lastFrameTimeRef.current = 0;
                 }}
-                className={`px-3 py-2 border transition-colors ${
+                className={`px-3 py-2 rounded border transition-colors ${
                   currentPose === pose.key
-                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                    ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                    : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
                 }`}
               >
                 <div className="text-xs font-bold">{pose.icon}</div>
@@ -138,7 +138,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
         </div>
 
         {/* Animation Controls */}
-        <div className="flex items-center justify-between gap-4 pt-4 border-t border-[#222]">
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-[#3a322a]">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -157,7 +157,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold tracking-wider text-neutral-400">FPS:</span>
+            <span className="text-xs font-bold tracking-wider text-[#a09484]">FPS:</span>
             <Button
               variant="outline"
               size="sm"
@@ -166,7 +166,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
             >
               -
             </Button>
-            <span className="text-xs font-mono text-white w-8 text-center">{fps}</span>
+            <span className="text-xs font-mono text-[#f0e8dc] w-8 text-center">{fps}</span>
             <Button
               variant="outline"
               size="sm"
@@ -179,7 +179,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
         </div>
 
         {/* Frame Info */}
-        <div className="text-xs text-neutral-500 text-center">
+        <div className="text-xs text-[#6b5f52] text-center">
           Frame {currentFrame + 1} / {poses[currentPose]?.length || 0}
         </div>
       </CardContent>

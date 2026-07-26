@@ -65,13 +65,13 @@ export default function PixelStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#121010]">
+    <div className="min-h-screen bg-[#1c1915]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-wider mb-2">PIXEL STUDIO</h1>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-[#6b5f52] text-sm">
               Generate pixel art characters and sprites with AI
             </p>
           </div>
@@ -89,8 +89,8 @@ export default function PixelStudioPage() {
 
         {/* Saved Sprites Count */}
         {savedSprites.length > 0 && (
-          <div className="mb-4 p-3 border border-[#222] bg-[#111]">
-            <p className="text-xs text-neutral-400">
+          <div className="mb-4 p-3 rounded border border-[#3a322a] bg-[#241f1a]">
+            <p className="text-xs text-[#a09484]">
               {savedSprites.length} sprite{savedSprites.length !== 1 ? 's' : ''} saved to project
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function PixelStudioPage() {
               />
               
               {error && (
-                <div className="mt-4 p-4 border border-red-500 bg-red-500/10">
+                <div className="mt-4 p-4 rounded border border-red-500 bg-red-500/10">
                   <p className="text-xs font-bold text-red-500">ERROR</p>
                   <p className="text-sm text-red-400 mt-1">{error}</p>
                 </div>
@@ -119,25 +119,25 @@ export default function PixelStudioPage() {
           {/* Right Column - Preview */}
           <div className="space-y-6">
             {!sprite && !isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-500">[ ]</span>
+              <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
+                <div className="w-16 h-16 rounded border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl text-[#6b5f52]">[ ]</span>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-[#6b5f52]">
                   Describe your character and click generate to see your pixel art sprite
                 </p>
               </div>
             )}
 
             {isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">[*]</span>
+              <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
+                <div className="w-16 h-16 rounded border-2 border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse">
+                  <span className="text-2xl text-[#d9453b]">[*]</span>
                 </div>
-                <p className="text-sm text-[#00ff88] font-bold tracking-wider">
+                <p className="text-sm text-[#d9453b] font-bold tracking-wider">
                   GENERATING SPRITE...
                 </p>
-                <p className="text-xs text-neutral-500 mt-2">
+                <p className="text-xs text-[#6b5f52] mt-2">
                   Creating your pixel art character
                 </p>
               </div>
@@ -149,15 +149,15 @@ export default function PixelStudioPage() {
                 <SpriteCanvas sprite={sprite} />
 
                 {/* Description */}
-                <div className="border border-[#222] bg-[#111] p-6">
+                <div className="rounded border border-[#3a322a] bg-[#241f1a] p-6">
                   <h3 className="text-sm font-bold tracking-wider mb-2">DESCRIPTION</h3>
-                  <p className="text-sm text-neutral-400">{sprite.description}</p>
+                  <p className="text-sm text-[#a09484]">{sprite.description}</p>
                 </div>
 
                 {/* Additional Actions */}
                 <div className="grid grid-cols-2 gap-4">
                   <button
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-400 hover:border-[#00ff88] hover:text-white transition-colors text-xs font-bold tracking-wider"
+                    className="px-4 py-3 rounded border border-[#3a322a] bg-transparent text-[#a09484] hover:border-[#d9453b] hover:text-[#f0e8dc] transition-colors text-xs font-bold tracking-wider"
                     onClick={() => {
                       alert('Generate poses feature coming soon!');
                     }}
@@ -165,7 +165,7 @@ export default function PixelStudioPage() {
                     [ GENERATE POSES ]
                   </button>
                   <button
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-400 hover:border-[#00ff88] hover:text-white transition-colors text-xs font-bold tracking-wider"
+                    className="px-4 py-3 rounded border border-[#3a322a] bg-transparent text-[#a09484] hover:border-[#d9453b] hover:text-[#f0e8dc] transition-colors text-xs font-bold tracking-wider"
                     onClick={() => {
                       alert('Generate expressions feature coming soon!');
                     }}

@@ -94,7 +94,7 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Brand Name */}
       <div className="space-y-2">
-        <label htmlFor="brand-name" className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="brand-name" className="text-xs font-bold tracking-wider text-[#a09484]">
           BRAND NAME *
         </label>
         <Input
@@ -111,7 +111,7 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
 
       {/* Industry */}
       <div className="space-y-2">
-        <label htmlFor="industry" className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="industry" className="text-xs font-bold tracking-wider text-[#a09484]">
           INDUSTRY *
         </label>
         <Select
@@ -137,7 +137,7 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
 
       {/* Brand Values */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-neutral-400">
+        <label className="text-xs font-bold tracking-wider text-[#a09484]">
           BRAND VALUES * (Select 3-5)
         </label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -149,8 +149,8 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
               disabled={isGenerating}
               className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
                 formData.values.includes(value)
-                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                  ? 'bg-[#d9453b] text-white border-[#d9453b] rounded'
+                  : 'bg-transparent text-[#a09484] border rounded border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
               }`}
             >
               {value}
@@ -160,14 +160,14 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
         {errors.values && (
           <p className="text-xs text-red-500">{errors.values}</p>
         )}
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-[#6b5f52]">
           Selected: {formData.values.length} / 5
         </p>
       </div>
 
       {/* Target Audience */}
       <div className="space-y-2">
-        <label htmlFor="target-audience" className="text-xs font-bold tracking-wider text-neutral-400">
+        <label htmlFor="target-audience" className="text-xs font-bold tracking-wider text-[#a09484]">
           TARGET AUDIENCE *
         </label>
         <Textarea
@@ -201,8 +201,8 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
                 disabled={isGenerating}
                 className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
                   formData.mood?.includes(mood.value as MoodKeyword)
-                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                    ? 'bg-[#d9453b] text-white border-[#d9453b] rounded'
+                    : 'bg-transparent text-[#a09484] border rounded border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
                 }`}
               >
                 {mood.label.split(' / ')[0]}

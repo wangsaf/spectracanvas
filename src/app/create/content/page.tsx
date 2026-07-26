@@ -77,13 +77,13 @@ export default function ContentStudioPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#121010]">
+    <div className="min-h-screen bg-[#1c1915]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-wider mb-2">CONTENT STUDIO</h1>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-[#6b5f52] text-sm">
               Generate video scripts with AI-powered mood sync
             </p>
           </div>
@@ -101,8 +101,8 @@ export default function ContentStudioPage() {
 
         {/* Saved Scripts Count */}
         {savedScripts.length > 0 && (
-          <div className="mb-4 p-3 border border-[#222] bg-[#111]">
-            <p className="text-xs text-neutral-400">
+          <div className="mb-4 p-3 border border-[#3a322a] bg-[#241f1a] rounded">
+            <p className="text-xs text-[#a09484]">
               {savedScripts.length} script{savedScripts.length !== 1 ? 's' : ''} saved to project
             </p>
           </div>
@@ -120,7 +120,7 @@ export default function ContentStudioPage() {
               />
               
               {error && (
-                <div className="p-4 border border-red-500 bg-red-500/10">
+                <div className="p-4 border border-red-500 bg-red-500/10 rounded">
                   <p className="text-xs font-bold text-red-500">ERROR</p>
                   <p className="text-sm text-red-400 mt-1">{error}</p>
                 </div>
@@ -139,25 +139,25 @@ export default function ContentStudioPage() {
           {/* Right Column - Preview */}
           <div className="space-y-6">
             {!script && !isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#222] mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-neutral-500">[ ]</span>
+              <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
+                <div className="w-16 h-16 border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center rounded">
+                  <span className="text-2xl text-[#6b5f52]">[ ]</span>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-[#6b5f52]">
                   Describe your content idea and click generate to create your script
                 </p>
               </div>
             )}
 
             {isGenerating && (
-              <div className="border border-[#222] bg-[#111] p-12 text-center">
-                <div className="w-16 h-16 border-2 border-[#00ff88] mx-auto mb-4 flex items-center justify-center animate-pulse">
-                  <span className="text-2xl text-[#00ff88]">[*]</span>
+              <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
+                <div className="w-16 h-16 border-2 border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse rounded">
+                  <span className="text-2xl text-[#d9453b]">[*]</span>
                 </div>
-                <p className="text-sm text-[#00ff88] font-bold tracking-wider">
+                <p className="text-sm text-[#d9453b] font-bold tracking-wider">
                   GENERATING SCRIPT...
                 </p>
-                <p className="text-xs text-neutral-500 mt-2">
+                <p className="text-xs text-[#6b5f52] mt-2">
                   Creating your content script with hooks, body, and CTAs
                 </p>
               </div>
@@ -170,29 +170,29 @@ export default function ContentStudioPage() {
 
                 {/* Mood Adjustments */}
                 {moodAdjustments && (
-                  <div className="border border-[#222] bg-[#111] p-6 space-y-4">
-                    <h3 className="text-sm font-bold tracking-wider text-[#00ff88]">
+                  <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                    <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">
                       MOOD-BASED RECOMMENDATIONS
                     </h3>
                     
                     <div className="space-y-3 text-xs">
                       <div>
-                        <p className="text-neutral-400 font-bold mb-1">VISUAL STYLE:</p>
+                        <p className="text-[#a09484] font-bold mb-1">VISUAL STYLE:</p>
                         <p className="text-neutral-300">{moodAdjustments.visualStyle}</p>
                       </div>
                       
                       <div>
-                        <p className="text-neutral-400 font-bold mb-1">MUSIC:</p>
+                        <p className="text-[#a09484] font-bold mb-1">MUSIC:</p>
                         <p className="text-neutral-300">{moodAdjustments.musicSuggestion}</p>
                       </div>
                       
                       <div>
-                        <p className="text-neutral-400 font-bold mb-1">TEXT STYLE:</p>
+                        <p className="text-[#a09484] font-bold mb-1">TEXT STYLE:</p>
                         <p className="text-neutral-300">{moodAdjustments.textStyle}</p>
                       </div>
                       
                       <div>
-                        <p className="text-neutral-400 font-bold mb-1">PACING:</p>
+                        <p className="text-[#a09484] font-bold mb-1">PACING:</p>
                         <p className="text-neutral-300">{moodAdjustments.pacing}</p>
                       </div>
                     </div>
@@ -203,14 +203,14 @@ export default function ContentStudioPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     disabled
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider"
+                    className="px-4 py-3 border border-[#3a322a] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider rounded"
                     title="Coming soon"
                   >
                     [ STORYBOARD ]
                   </button>
                   <button
                     disabled
-                    className="px-4 py-3 border border-[#222] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider"
+                    className="px-4 py-3 border border-[#3a322a] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider rounded"
                     title="Coming soon"
                   >
                     [ CAPTIONS ]

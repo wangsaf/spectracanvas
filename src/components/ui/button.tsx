@@ -4,16 +4,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap text-xs font-bold tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00ff88] disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap text-xs font-bold tracking-wider rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#d9453b] disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-[#00ff88] text-black hover:bg-[#00cc6a]',
-        destructive: 'bg-red-600 text-white hover:bg-red-700',
-        outline: 'border border-[#222] bg-transparent hover:bg-[#111] hover:border-[#00ff88]',
-        secondary: 'bg-[#111] text-white hover:bg-[#222]',
-        ghost: 'hover:bg-[#111] hover:text-white',
-        link: 'text-[#00ff88] underline-offset-4 hover:underline',
+        default: 'bg-[#d9453b] text-white hover:bg-[#b8382f]',
+        destructive: 'bg-red-800 text-white hover:bg-red-900',
+        outline: 'border border-[#3a322a] bg-transparent hover:bg-[#241f1a] hover:border-[#d9453b]',
+        secondary: 'bg-[#241f1a] text-[#f0e8dc] hover:bg-[#2e2720]',
+        ghost: 'hover:bg-[#241f1a] hover:text-[#f0e8dc]',
+        link: 'text-[#d9453b] underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-10 px-4 py-2',

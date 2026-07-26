@@ -44,10 +44,10 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
                 key={mood.value}
                 onClick={() => toggleMood(mood.value as MoodKeyword)}
                 disabled={!isSelected && selectedMoods.length >= maxSelection}
-                className={`p-4 border transition-all ${
+                className={`p-4 border transition-all rounded ${
                   isSelected
-                    ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                    : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                    ? 'bg-[#d9453b] text-white border-[#d9453b]'
+                    : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc] disabled:opacity-50 disabled:cursor-not-allowed'
                 }`}
               >
                 <div className="text-xs font-bold tracking-wider mb-2">
@@ -63,16 +63,16 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
 
         {/* Selected Moods Info */}
         {selectedMoods.length > 0 && (
-          <div className="pt-4 border-t border-[#222] space-y-4">
+          <div className="pt-4 border-t border-[#3a322a] space-y-4">
             <div>
-              <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+              <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
                 SELECTED MOODS ({selectedMoods.length}/{maxSelection})
               </p>
               <div className="flex flex-wrap gap-2">
                 {selectedMoods.map((mood) => (
                   <span
                     key={mood}
-                    className="px-3 py-1 bg-[#00ff88] text-black text-xs font-bold tracking-wider"
+                    className="px-3 py-1 bg-[#d9453b] text-white text-xs font-bold tracking-wider rounded"
                   >
                     {mood.toUpperCase()}
                   </span>
@@ -84,14 +84,14 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
               <>
                 {/* Mood Colors */}
                 <div>
-                  <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+                  <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
                     MOOD COLORS
                   </p>
                   <div className="flex gap-1">
                     {moodColors.slice(0, 5).map((color, i) => (
                       <div
                         key={i}
-                        className="w-8 h-8 border border-[#222]"
+                        className="w-8 h-8 border border-[#3a322a] rounded"
                         style={{ backgroundColor: color }}
                         title={color}
                       />
@@ -101,20 +101,20 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
 
                 {/* Typography Style */}
                 <div>
-                  <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+                  <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
                     TYPOGRAPHY STYLE
                   </p>
-                  <span className="px-2 py-1 border border-[#222] text-xs text-neutral-400">
+                  <span className="px-2 py-1 border border-[#3a322a] text-xs text-[#a09484] rounded">
                     {moodVisuals.typographyStyle.weight} / {moodVisuals.typographyStyle.style}
                   </span>
                 </div>
 
                 {/* Pacing */}
                 <div>
-                  <p className="text-xs font-bold tracking-wider text-neutral-400 mb-2">
+                  <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
                     PACING
                   </p>
-                  <span className="px-3 py-2 bg-[#111] border border-[#222] text-sm text-white inline-block">
+                  <span className="px-3 py-2 bg-[#241f1a] border border-[#3a322a] text-sm text-[#f0e8dc] inline-block rounded">
                     {moodVisuals.pacing.toUpperCase()}
                   </span>
                 </div>

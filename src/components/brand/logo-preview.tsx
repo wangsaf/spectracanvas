@@ -76,8 +76,8 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
               onClick={() => setSelectedVariation(variation.key)}
               className={`flex-1 px-4 py-3 border transition-colors ${
                 selectedVariation === variation.key
-                  ? 'bg-[#00ff88] text-black border-[#00ff88]'
-                  : 'bg-transparent text-neutral-400 border-[#222] hover:border-[#00ff88] hover:text-white'
+                  ? 'bg-[#d9453b] text-white border-[#d9453b] rounded'
+                  : 'bg-transparent text-[#a09484] border rounded border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">{variation.label}</div>
@@ -87,7 +87,7 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
         </div>
 
         {/* Logo Display */}
-        <div className="border border-[#222] bg-[#0a0a0a] p-8 flex items-center justify-center min-h-[200px]">
+        <div className="border rounded border-[#3a322a] bg-[#1c1915] p-8 flex items-center justify-center min-h-[200px]">
           <div
             dangerouslySetInnerHTML={{ __html: sanitizeSVG(logo[selectedVariation]) }}
             className="w-full max-w-md"
@@ -98,8 +98,8 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
         <div className="grid grid-cols-3 gap-4">
           {/* Small Size */}
           <div className="space-y-2">
-            <p className="text-xs font-bold tracking-wider text-neutral-400">SMALL (200x60)</p>
-            <div className="border border-[#222] bg-white p-4 flex items-center justify-center h-20">
+            <p className="text-xs font-bold tracking-wider text-[#a09484]">SMALL (200x60)</p>
+            <div className="border rounded border-[#3a322a] bg-white p-4 flex items-center justify-center h-20">
               <div
                 dangerouslySetInnerHTML={{ __html: sanitizeSVG(logo[selectedVariation]) }}
                 className="w-full"
@@ -110,8 +110,8 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
 
           {/* Medium Size */}
           <div className="space-y-2">
-            <p className="text-xs font-bold tracking-wider text-neutral-400">MEDIUM (400x120)</p>
-            <div className="border border-[#222] bg-white p-4 flex items-center justify-center h-20">
+            <p className="text-xs font-bold tracking-wider text-[#a09484]">MEDIUM (400x120)</p>
+            <div className="border rounded border-[#3a322a] bg-white p-4 flex items-center justify-center h-20">
               <div
                 dangerouslySetInnerHTML={{ __html: sanitizeSVG(logo[selectedVariation]) }}
                 className="w-full"
@@ -122,8 +122,8 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
 
           {/* Large Size */}
           <div className="space-y-2">
-            <p className="text-xs font-bold tracking-wider text-neutral-400">LARGE (800x240)</p>
-            <div className="border border-[#222] bg-white p-4 flex items-center justify-center h-20">
+            <p className="text-xs font-bold tracking-wider text-[#a09484]">LARGE (800x240)</p>
+            <div className="border rounded border-[#3a322a] bg-white p-4 flex items-center justify-center h-20">
               <div
                 dangerouslySetInnerHTML={{ __html: sanitizeSVG(logo[selectedVariation]) }}
                 className="w-full"
@@ -134,7 +134,7 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
         </div>
 
         {/* Download Buttons */}
-        <div className="flex gap-2 pt-4 border-t border-[#222]">
+        <div className="flex gap-2 pt-4 border-t border-[#3a322a]">
           <Button
             variant="outline"
             onClick={handleDownloadSVG}
