@@ -55,8 +55,10 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
       newErrors.industry = 'Please select an industry';
     }
 
-    if (formData.values.length === 0) {
-      newErrors.values = 'Please select at least one brand value';
+    if (formData.values.length < 3) {
+      newErrors.values = 'Please select at least 3 brand values';
+    } else if (formData.values.length > 5) {
+      newErrors.values = 'Please select no more than 5 brand values';
     }
 
     if (!formData.targetAudience.trim()) {
@@ -146,12 +148,12 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
               key={value}
               type="button"
               onClick={() => toggleValue(value)}
-              disabled={isGenerating}
+              disabled={isGenerating || (!formData.values.includes(value) && formData.values.length >= 5)}
               className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
                 formData.values.includes(value)
                   ? 'bg-[#d9453b] text-white border-[#d9453b] rounded'
                   : 'bg-transparent text-[#a09484] border rounded border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
-              }`}
+              } ${!formData.values.includes(value) && formData.values.length >= 5 ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
               {value}
             </button>
@@ -161,7 +163,7 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
           <p className="text-xs text-red-500">{errors.values}</p>
         )}
         <p className="text-xs text-[#6b5f52]">
-          Selected: {formData.values.length} / 5
+          Selected: {formData.values.length} / 5 {formData.values.length < 3 && '(minimum 3)'}
         </p>
       </div>
 

@@ -26,13 +26,14 @@ function GlobeDots() {
   const radius = 1.8;
   const count = 200;
   const points = useMemo(() => fibonacciSphere(count, radius), []);
+  const startTime = useRef(performance.now());
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const color = useMemo(() => new THREE.Color('#d9453b'), []);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!meshRef.current) return;
-    const time = state.clock.getElapsedTime();
+    const time = (performance.now() - startTime.current) / 1000;
     meshRef.current.rotation.y = time * 0.08;
     meshRef.current.rotation.x = Math.sin(time * 0.05) * 0.1;
   });
@@ -58,10 +59,11 @@ function GlobeDots() {
 
 function GlowRing() {
   const ringRef = useRef<THREE.Mesh>(null);
+  const startTime = useRef(performance.now());
   
-  useFrame((state) => {
+  useFrame(() => {
     if (!ringRef.current) return;
-    const time = state.clock.getElapsedTime();
+    const time = (performance.now() - startTime.current) / 1000;
     ringRef.current.rotation.x = Math.PI / 2;
     ringRef.current.rotation.z = time * 0.05;
   });
