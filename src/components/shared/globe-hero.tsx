@@ -6,127 +6,256 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import * as THREE from 'three';
 
-// Generate points on a sphere using lat/lon grid for a clean, structured look
-function generateGlobePoints(radius: number) {
+// Generate brain-like point cloud
+function generateBrainPoints(): [number, number, number][] {
   const points: [number, number, number][] = [];
-  const latLines = 10;
-  const lonLines = 10;
-  for (let lat = 1; lat < latLines; lat++) {
-    const phi = (Math.PI * lat) / latLines;
-    const ringPoints = Math.round(lonLines * Math.sin(phi));
-    for (let lon = 0; lon < ringPoints; lon++) {
-      const theta = (2 * Math.PI * lon) / ringPoints;
-      points.push([
-        Math.sin(phi) * Math.cos(theta) * radius,
-        Math.cos(phi) * radius,
-        Math.sin(phi) * Math.sin(theta) * radius,
-      ]);
-    }
+
+  // Left hemisphere
+  for (let i = 0; i < 55; i++) {
+    const phi = Math.random() * Math.PI;
+    const theta = Math.random() * Math.PI * 2; // only left side
+    const r = 1.2 * (0.6 + Math.random() * 0.4);
+    const x = -0.5 + r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.cos(phi) * 0.9;
+    const z = r * Math.sin(phi) * Math.sin(theta) * 0.8;
+    if (x < 0.15) points.push([x, y, z]);
   }
+
+  // Right hemisphere
+  for (let i = 0; i < 55; i++) {
+    const phi = Math.random() * Math.PI;
+    const theta = Math.random() * Math.PI * 2;
+    const r = 1.2 * (0.6 + Math.random() * 0.4);
+    const x = 0.5 + r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.cos(phi) * 0.9;
+    const z = r * Math.sin(phi) * Math.sin(theta) * 0.8;
+    if (x > -0.15) points.push([x, y, z]);
+  }
+
+  // Brain stem (cylinder going down)
+  for (let i = 0; i < 20; i++) {
+    const t = i / 20;
+    const angle = Math.random() * Math.PI * 2;
+    const r = 0.25 * (1 - t * 0.5);
+    points.push([
+      Math.cos(angle) * r,
+      -1.0 - t * 0.8,
+      Math.sin(angle) * r,
+    ]);
+  }
+
+  // Cerebellum (small sphere at back-bottom)
+  for (let i = 0; i < 30; i++) {
+    const phi = Math.random() * Math.PI;
+    const theta = Math.random() * Math.PI * 2;
+    const r = 0.5 * (0.6 + Math.random() * 0.4);
+    points.push([
+      Math.cos(theta) * Math.sin(phi) * r,
+      -0.7 + r * Math.cos(phi) * 0.6,
+      -0.8 + Math.sin(theta) * Math.sin(phi) * r,
+    ]);
+  }
+
   return points;
 }
 
-// Generate wireframe sphere lines (latitude + longitude circles)
-function generateWireframeLines(radius: number) {
-  const lines: [THREE.Vector3, THREE.Vector3][] = [];
-  const segments = 48;
-
-  // Latitude circles
-  for (let lat = 1; lat < 8; lat++) {
-    const phi = (Math.PI * lat) / 8;
-    for (let i = 0; i < segments; i++) {
-      const a1 = (2 * Math.PI * i) / segments;
-      const a2 = (2 * Math.PI * (i + 1)) / segments;
-      lines.push([
-        new THREE.Vector3(
-          Math.sin(phi) * Math.cos(a1) * radius,
-          Math.cos(phi) * radius,
-          Math.sin(phi) * Math.sin(a1) * radius
-        ),
-        new THREE.Vector3(
-          Math.sin(phi) * Math.cos(a2) * radius,
-          Math.cos(phi) * radius,
-          Math.sin(phi) * Math.sin(a2) * radius
-        ),
-      ]);
+// Generate connections between nearby points
+function generateConnections(
+  points: [number, number, number][],
+  maxDist: number
+) {
+  const connections: { a: number; b: number; dist: number }[] = [];
+  for (let i = 0; i < points.length; i++) {
+    for (let j = i + 1; j < points.length; j++) {
+      const dx = points[i][0] - points[j][0];
+      const dy = points[i][1] - points[j][1];
+      const dz = points[i][2] - points[j][2];
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (dist < maxDist) {
+        connections.push({ a: i, b: j, dist });
+      }
     }
   }
-
-  // Longitude circles
-  for (let lon = 0; lon < 8; lon++) {
-    const theta = (Math.PI * lon) / 8;
-    for (let i = 0; i < segments; i++) {
-      const p1 = (Math.PI * i) / segments;
-      const p2 = (Math.PI * (i + 1)) / segments;
-      lines.push([
-        new THREE.Vector3(
-          Math.sin(p1) * Math.cos(theta) * radius,
-          Math.cos(p1) * radius,
-          Math.sin(p1) * Math.sin(theta) * radius
-        ),
-        new THREE.Vector3(
-          Math.sin(p2) * Math.cos(theta) * radius,
-          Math.cos(p2) * radius,
-          Math.sin(p2) * Math.sin(theta) * radius
-        ),
-      ]);
-    }
-  }
-
-  return lines;
+  return connections;
 }
 
-function GlobeDots() {
+function NeuralBrain() {
   const groupRef = useRef<THREE.Group>(null);
-  const radius = 1.6;
-  const points = useMemo(() => generateGlobePoints(radius), [radius]);
-  const wireframeLines = useMemo(() => generateWireframeLines(radius), [radius]);
+  const lineMatRefs = useRef<THREE.LineBasicMaterial[]>([]);
+  const thoughtParticlesRef = useRef<THREE.Mesh[]>([]);
+  const timeRef = useRef(0);
 
-  // Build a single buffer geometry for all wireframe segments
-  const wireframeGeometry = useMemo(() => {
-    const positions = new Float32Array(wireframeLines.length * 6);
-    wireframeLines.forEach(([a, b], i) => {
-      positions[i * 6 + 0] = a.x;
-      positions[i * 6 + 1] = a.y;
-      positions[i * 6 + 2] = a.z;
-      positions[i * 6 + 3] = b.x;
-      positions[i * 6 + 4] = b.y;
-      positions[i * 6 + 5] = b.z;
+  const brainPoints = useMemo(() => generateBrainPoints(), []);
+  const connections = useMemo(
+    () => generateConnections(brainPoints, 0.6),
+    [brainPoints]
+  );
+
+  // Pick some "active" connections for pulsing
+  const activeIndices = useMemo(() => {
+    const indices: number[] = [];
+    for (let i = 0; i < Math.min(15, connections.length); i++) {
+      indices.push(Math.floor(Math.random() * connections.length));
+    }
+    return indices;
+  }, [connections]);
+
+  // Pick connections for thought particles
+  const thoughtPaths = useMemo(() => {
+    const paths: number[] = [];
+    for (let i = 0; i < 5; i++) {
+      paths.push(Math.floor(Math.random() * connections.length));
+    }
+    return paths;
+  }, [connections]);
+
+  // Build wireframe geometry for all connections
+  const connectionGeometry = useMemo(() => {
+    const positions = new Float32Array(connections.length * 6);
+    const colors = new Float32Array(connections.length * 6);
+    const color = new THREE.Color('#d9453b');
+
+    connections.forEach(({ a, b, dist }, i) => {
+      const pa = brainPoints[a];
+      const pb = brainPoints[b];
+      positions[i * 6 + 0] = pa[0];
+      positions[i * 6 + 1] = pa[1];
+      positions[i * 6 + 2] = pa[2];
+      positions[i * 6 + 3] = pb[0];
+      positions[i * 6 + 4] = pb[1];
+      positions[i * 6 + 5] = pb[2];
+
+      // Closer = brighter
+      const brightness = 1 - dist / 0.6;
+      const alpha = 0.1 + brightness * 0.2;
+      colors[i * 6 + 0] = color.r * alpha;
+      colors[i * 6 + 1] = color.g * alpha;
+      colors[i * 6 + 2] = color.b * alpha;
+      colors[i * 6 + 3] = color.r * alpha;
+      colors[i * 6 + 4] = color.g * alpha;
+      colors[i * 6 + 5] = color.b * alpha;
     });
+
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     return geo;
-  }, [wireframeLines]);
+  }, [connections, brainPoints]);
+
+  // Active connection lines (separate geometry for pulsing)
+  const activeGeometry = useMemo(() => {
+    const geos: THREE.BufferGeometry[] = [];
+    activeIndices.forEach((idx) => {
+      const { a, b } = connections[idx];
+      const pa = brainPoints[a];
+      const pb = brainPoints[b];
+      const positions = new Float32Array([...pa, ...pb]);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geos.push(geo);
+    });
+    return geos;
+  }, [activeIndices, connections, brainPoints]);
+
+  // Thought particle positions
+  const thoughtStarts = useMemo(
+    () =>
+      thoughtPaths.map((idx) => {
+        const { a, b } = connections[idx];
+        return { from: brainPoints[a], to: brainPoints[b] };
+      }),
+    [thoughtPaths, connections, brainPoints]
+  );
 
   useFrame((_, delta) => {
+    timeRef.current += delta;
+    const t = timeRef.current;
+
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.06;
-      groupRef.current.rotation.x = Math.sin(Date.now() * 0.00015) * 0.08;
+      groupRef.current.rotation.y += delta * 0.03;
+      groupRef.current.rotation.x = Math.sin(t * 0.15) * 0.08;
     }
+
+    // Pulse active lines
+    lineMatRefs.current.forEach((mat, i) => {
+      if (mat) {
+        const phase = t * 2 + i * 1.3;
+        mat.opacity = 0.15 + Math.sin(phase) * 0.4 + 0.4;
+      }
+    });
+
+    // Animate thought particles along paths
+    thoughtParticlesRef.current.forEach((mesh, i) => {
+      if (mesh && thoughtStarts[i]) {
+        const { from, to } = thoughtStarts[i];
+        const progress = ((t * 0.5 + i * 0.7) % 2) / 2;
+        mesh.position.set(
+          from[0] + (to[0] - from[0]) * progress,
+          from[1] + (to[1] - from[1]) * progress,
+          from[2] + (to[2] - from[2]) * progress
+        );
+        // Pulse size
+        const scale = 0.8 + Math.sin(t * 4 + i) * 0.3;
+        mesh.scale.setScalar(scale);
+      }
+    });
   });
 
   return (
     <group ref={groupRef}>
-      {/* Wireframe sphere */}
-      <lineSegments geometry={wireframeGeometry}>
-        <lineBasicMaterial color="#d9453b" transparent opacity={0.06} />
+      {/* Neural connection lines */}
+      <lineSegments geometry={connectionGeometry}>
+        <lineBasicMaterial vertexColors transparent opacity={0.8} />
       </lineSegments>
 
-      {/* Dots on grid intersections */}
-      {points.map((pos, i) => (
-        <mesh key={`dot-${i}`} position={pos}>
-          <sphereGeometry args={[0.035, 8, 8]} />
+      {/* Active pulsing connections */}
+      {activeGeometry.map((geo, i) => (
+        <lineSegments key={`active-${i}`} geometry={geo}>
+          <lineBasicMaterial
+            ref={(el) => {
+              if (el) lineMatRefs.current[i] = el;
+            }}
+            color="#d9453b"
+            transparent
+            opacity={0.5}
+          />
+        </lineSegments>
+      ))}
+
+      {/* Brain nodes (neurons) */}
+      {brainPoints.map((pos, i) => (
+        <mesh key={`node-${i}`} position={pos}>
+          <sphereGeometry args={[0.02, 6, 6]} />
           <meshBasicMaterial color="#d9453b" />
         </mesh>
       ))}
 
-      {/* Subtle glow sphere */}
+      {/* Thought particles traveling along connections */}
+      {thoughtStarts.map((_, i) => (
+        <mesh key={`thought-${i}`} ref={(el) => {
+          if (el) thoughtParticlesRef.current[i] = el;
+        }}>
+          <sphereGeometry args={[0.035, 6, 6]} />
+          <meshBasicMaterial color="#d9453b" transparent opacity={0.9} />
+        </mesh>
+      ))}
+
+      {/* Glow effect */}
       <mesh>
-        <sphereGeometry args={[radius * 1.02, 48, 48]} />
+        <sphereGeometry args={[1.8, 32, 32]} />
         <meshBasicMaterial
           color="#d9453b"
           transparent
-          opacity={0.02}
+          opacity={0.015}
+          side={THREE.BackSide}
+        />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[1.4, 32, 32]} />
+        <meshBasicMaterial
+          color="#d9453b"
+          transparent
+          opacity={0.025}
           side={THREE.BackSide}
         />
       </mesh>
@@ -178,17 +307,17 @@ export function GlobeHero() {
         }}
       />
 
-      {/* Globe canvas - positioned right side on desktop */}
+      {/* Neural brain canvas */}
       <div className="absolute inset-0 md:left-[40%] md:w-[60%] opacity-40 md:opacity-60">
         <Canvas
           role="img"
-          aria-label="Decorative 3D globe animation"
+          aria-label="Decorative AI neural brain animation"
           camera={{ position: [0, 0, 5.5], fov: 45 }}
           style={{ background: 'transparent' }}
           gl={{ alpha: true, antialias: true }}
         >
           <ambientLight intensity={0.5} />
-          <GlobeDots />
+          <NeuralBrain />
         </Canvas>
       </div>
 
@@ -235,9 +364,7 @@ export function GlobeHero() {
               letterSpacing: '-2px',
             }}
           >
-            {['Create.',            'Design.',
-              'Ship.',
-            ].map((word, i) => (
+            {['Create.', 'Design.', 'Ship.'].map((word, i) => (
               <motion.span key={i} variants={wordVariants} className="inline-block mr-3">
                 {word === 'Ship.' ? (
                   <span style={{ color: '#d9453b' }}>{word}</span>
