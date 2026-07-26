@@ -31,7 +31,11 @@ export default function PixelStudioPage() {
           style: formData.style,
           size: formData.size,
           palette: formData.paletteMode === 'custom' ? formData.customPalette : undefined,
-          brandColors: formData.paletteMode === 'brand' && brand ? Object.values(brand.colors.primary) as string[] : undefined,
+          brandColors: formData.paletteMode === 'brand' && brand
+            ? Object.values(brand.colors.primary) as string[]
+            : brand?.colors
+              ? Object.values(brand.colors.primary) as string[]
+              : undefined,
         }),
       });
 
@@ -154,25 +158,7 @@ export default function PixelStudioPage() {
                   <p className="text-sm text-[#a09484]">{sprite.description}</p>
                 </div>
 
-                {/* Additional Actions */}
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    className="px-4 py-3 rounded border border-[#3a322a] bg-transparent text-[#a09484] hover:border-[#d9453b] hover:text-[#f0e8dc] transition-colors text-xs font-bold tracking-wider"
-                    onClick={() => {
-                      alert('Generate poses feature coming soon!');
-                    }}
-                  >
-                    [ GENERATE POSES ]
-                  </button>
-                  <button
-                    className="px-4 py-3 rounded border border-[#3a322a] bg-transparent text-[#a09484] hover:border-[#d9453b] hover:text-[#f0e8dc] transition-colors text-xs font-bold tracking-wider"
-                    onClick={() => {
-                      alert('Generate expressions feature coming soon!');
-                    }}
-                  >
-                    [ EXPRESSIONS ]
-                  </button>
-                </div>
+
               </>
             )}
           </div>

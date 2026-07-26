@@ -6,10 +6,16 @@ import { MOOD_DESIGN_MAP } from '@/lib/constants';
 // ========================================
 
 /**
- * Analyze audio and map to mood keywords
- * Placeholder: returns default moods
+ * Analyze mood from input keywords or audio data.
+ * Accepts mood keywords directly (cross-module sync) or falls back to defaults.
+ * When audio analysis is available, this can be extended to process Float32Array.
  */
-export function analyzeMood(_audioData?: Float32Array): MoodKeyword[] {
+export function analyzeMood(input?: MoodKeyword[] | Float32Array): MoodKeyword[] {
+  // If mood keywords are passed directly (e.g. from content studio → pixel pipeline)
+  if (Array.isArray(input)) {
+    return input.filter((k) => k in MOOD_DESIGN_MAP);
+  }
+  // Default moods when no input is provided
   return ['energetic', 'professional'];
 }
 

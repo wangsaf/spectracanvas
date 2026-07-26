@@ -18,6 +18,8 @@ export default function ContentStudioPage() {
   const [script, setScript] = useState<ContentScript | null>(null);
   const [selectedMoods, setSelectedMoods] = useState<MoodKeyword[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [caption, setCaption] = useState<any>(null);
+  const [calendar, setCalendar] = useState<any>(null);
 
   const handleGenerate = async (formData: ContentFormData) => {
     setIsGenerating(true);
@@ -62,6 +64,8 @@ export default function ContentStudioPage() {
         wordCount: raw.wordCount || 0,
       };
       setScript(transformed);
+      setCaption(result.data.caption || null);
+      setCalendar(result.data.calendar || null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Generation error:', err);
@@ -216,23 +220,81 @@ export default function ContentStudioPage() {
                   </div>
                 )}
 
-                {/* Additional Tools */}
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    disabled
-                    className="px-4 py-3 border border-[#3a322a] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider rounded"
-                    title="Coming soon"
-                  >
-                    [ STORYBOARD ]
-                  </button>
-                  <button
-                    disabled
-                    className="px-4 py-3 border border-[#3a322a] bg-transparent text-neutral-600 cursor-not-allowed text-xs font-bold tracking-wider rounded"
-                    title="Coming soon"
-                  >
-                    [ CAPTIONS ]
-                  </button>
-                </div>
+                {/* Captions */}
+                {caption && (
+                  <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                    <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">
+                      CAPTIONS
+                    </h3>
+
+                    {caption.main && (
+                      <div>
+                        <p className="text-[#a09484] font-bold text-xs mb-1">MAIN CAPTION:</p>
+                        <p className="text-neutral-300 text-sm">{caption.main}</p>
+                      </div>
+                    )}
+
+                    {caption.hashtags && caption.hashtags.length > 0 && (
+                      <div>
+                        <p className="text-[#a09484] font-bold text-xs mb-1">HASHTAGS:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {caption.hashtags.map((tag: string, i: number) => (
+                            <span key={i} className="text-xs px-2 py-1 border border-[#3a322a] text-neutral-400 rounded">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {caption.variations && caption.variations.length > 0 && (
+                      <div>
+                        <p className="text-[#a09484] font-bold text-xs mb-1">VARIATIONS:</p>
+                        <div className="space-y-2">
+                          {caption.variations.map((v: string, i: number) => (
+                            <p key={i} className="text-neutral-300 text-xs border-l-2 border-[#3a322a] pl-3">{v}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Posting Calendar */}
+                {calendar && calendar.length > 0 && (
+                  <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                    <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">
+                      POSTING CALENDAR
+                    </h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b border-[#3a322a]">
+                            <th className="text-left text-[#a09484] font-bold py-2 pr-4">DATE</th>
+                            <th className="text-left text-[#a09484] font-bold py-2 pr-4">PLATFORM</th>
+                            <th className="text-left text-[#a09484] font-bold py-2 pr-4">TOPIC</th>
+                            <th className="text-left text-[#a09484] font-bold py-2">TYPE</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {calendar.map((entry: any, i: number) => (
+                            <tr key={i} className="border-b border-[#3a322a]/50">
+                              <td className="py-2 pr-4 text-neutral-300">{entry.date || '—'}</td>
+                              <td className="py-2 pr-4 text-neutral-300">{entry.platform || '—'}</td>
+                              <td className="py-2 pr-4 text-neutral-300">{entry.topic || '—'}</td>
+                              <td className="py-2 text-neutral-300">{entry.type || entry.contentType || '—'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Storyboard Coming Soon */}
+                <p className="text-[10px] text-[#6b5f52] text-center tracking-wider">
+                  STORYBOARD — coming soon
+                </p>
               </>
             )}
           </div>
