@@ -44,7 +44,24 @@ export default function ContentStudioPage() {
         throw new Error(result.error || 'Failed to generate script');
       }
 
-      setScript(result.data);
+      // Transform API response to match ContentScript type
+      const raw = result.data.script || result.data;
+      const transformed = {
+        topic: formData.topic,
+        platform: formData.platform,
+        tone: formData.tone,
+        duration: formData.duration,
+        hook: (raw.hooks || []).map((h: { text: string }) => typeof h === 'string' ? h : h.text),
+        body: (raw.body || []).map((b: { text: string; timestamp: string; overlay?: string; bRoll?: string }) => ({
+          timestamp: b.timestamp,
+          content: b.text,
+          textOverlay: b.overlay,
+          brollSuggestion: b.bRoll,
+        })),
+        cta: (raw.ctas || []).map((c: { text: string } | string) => typeof c === 'string' ? c : c.text),
+        wordCount: raw.wordCount || 0,
+      };
+      setScript(transformed);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Generation error:', err);
