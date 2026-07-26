@@ -37,9 +37,9 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { letter: 'B', title: 'BRAND', desc: 'Colors, fonts, logos — define your visual identity in seconds.', href: '/create/brand' },
-            { letter: 'P', title: 'PIXEL', desc: 'Sprites, sheets, poses — game-ready assets from a description.', href: '/create/pixel' },
-            { letter: 'C', title: 'CONTENT', desc: 'Scripts for TikTok, IG, YT — with hooks, timestamps, CTAs.', href: '/create/content' },
+            { letter: 'B', title: 'BRAND', desc: 'Colors, fonts, logos — define your visual identity in seconds.', href: '/dashboard?tab=brand' },
+            { letter: 'P', title: 'PIXEL', desc: 'Sprites, sheets, poses — game-ready assets from a description.', href: '/dashboard?tab=pixel' },
+            { letter: 'C', title: 'CONTENT', desc: 'Scripts for TikTok, IG, YT — with hooks, timestamps, CTAs.', href: '/dashboard?tab=content' },
           ].map((f, i) => (
             <motion.div
               key={f.title}

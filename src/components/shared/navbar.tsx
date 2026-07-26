@@ -14,9 +14,6 @@ export function Navbar() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/create/brand', label: 'Brand' },
-    { href: '/create/pixel', label: 'Pixel' },
-    { href: '/create/content', label: 'Content' },
   ];
 
   const isHome = pathname === '/';

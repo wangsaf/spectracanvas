@@ -6,85 +6,129 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import * as THREE from 'three';
 
-// Generate points on a sphere surface
-function generateGlobePoints(count: number, radius: number) {
+// Generate points on a sphere using lat/lon grid for a clean, structured look
+function generateGlobePoints(radius: number) {
   const points: [number, number, number][] = [];
-  const phi = Math.PI * (Math.sqrt(5) - 1); // golden angle
-  for (let i = 0; i < count; i++) {
-    const y = 1 - (i / (count - 1)) * 2;
-    const r = Math.sqrt(1 - y * y);
-    const theta = phi * i;
-    points.push([
-      Math.cos(theta) * r * radius,
-      y * radius,
-      Math.sin(theta) * r * radius,
-    ]);
+  const latLines = 10;
+  const lonLines = 10;
+  for (let lat = 1; lat < latLines; lat++) {
+    const phi = (Math.PI * lat) / latLines;
+    const ringPoints = Math.round(lonLines * Math.sin(phi));
+    for (let lon = 0; lon < ringPoints; lon++) {
+      const theta = (2 * Math.PI * lon) / ringPoints;
+      points.push([
+        Math.sin(phi) * Math.cos(theta) * radius,
+        Math.cos(phi) * radius,
+        Math.sin(phi) * Math.sin(theta) * radius,
+      ]);
+    }
   }
   return points;
 }
 
-// Generate connection lines between nearby points
-function generateConnections(
-  points: [number, number, number][],
-  maxDist: number
-) {
-  const lines: [number, number, number][][] = [];
-  for (let i = 0; i < points.length; i++) {
-    for (let j = i + 1; j < points.length; j++) {
-      const dx = points[i][0] - points[j][0];
-      const dy = points[i][1] - points[j][1];
-      const dz = points[i][2] - points[j][2];
-      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      if (dist < maxDist) {
-        lines.push([points[i], points[j]]);
-      }
+// Generate wireframe sphere lines (latitude + longitude circles)
+function generateWireframeLines(radius: number) {
+  const lines: [THREE.Vector3, THREE.Vector3][] = [];
+  const segments = 48;
+
+  // Latitude circles
+  for (let lat = 1; lat < 8; lat++) {
+    const phi = (Math.PI * lat) / 8;
+    for (let i = 0; i < segments; i++) {
+      const a1 = (2 * Math.PI * i) / segments;
+      const a2 = (2 * Math.PI * (i + 1)) / segments;
+      lines.push([
+        new THREE.Vector3(
+          Math.sin(phi) * Math.cos(a1) * radius,
+          Math.cos(phi) * radius,
+          Math.sin(phi) * Math.sin(a1) * radius
+        ),
+        new THREE.Vector3(
+          Math.sin(phi) * Math.cos(a2) * radius,
+          Math.cos(phi) * radius,
+          Math.sin(phi) * Math.sin(a2) * radius
+        ),
+      ]);
     }
   }
+
+  // Longitude circles
+  for (let lon = 0; lon < 8; lon++) {
+    const theta = (Math.PI * lon) / 8;
+    for (let i = 0; i < segments; i++) {
+      const p1 = (Math.PI * i) / segments;
+      const p2 = (Math.PI * (i + 1)) / segments;
+      lines.push([
+        new THREE.Vector3(
+          Math.sin(p1) * Math.cos(theta) * radius,
+          Math.cos(p1) * radius,
+          Math.sin(p1) * Math.sin(theta) * radius
+        ),
+        new THREE.Vector3(
+          Math.sin(p2) * Math.cos(theta) * radius,
+          Math.cos(p2) * radius,
+          Math.sin(p2) * Math.sin(theta) * radius
+        ),
+      ]);
+    }
+  }
+
   return lines;
 }
 
 function GlobeDots() {
   const groupRef = useRef<THREE.Group>(null);
-  const points = useMemo(() => generateGlobePoints(180, 2), []);
-  const connections = useMemo(() => generateConnections(points, 0.65), [points]);
+  const radius = 2.4;
+  const points = useMemo(() => generateGlobePoints(radius), [radius]);
+  const wireframeLines = useMemo(() => generateWireframeLines(radius), [radius]);
+
+  // Build a single buffer geometry for all wireframe segments
+  const wireframeGeometry = useMemo(() => {
+    const positions = new Float32Array(wireframeLines.length * 6);
+    wireframeLines.forEach(([a, b], i) => {
+      positions[i * 6 + 0] = a.x;
+      positions[i * 6 + 1] = a.y;
+      positions[i * 6 + 2] = a.z;
+      positions[i * 6 + 3] = b.x;
+      positions[i * 6 + 4] = b.y;
+      positions[i * 6 + 5] = b.z;
+    });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, [wireframeLines]);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.12;
-      groupRef.current.rotation.x = Math.sin(Date.now() * 0.0002) * 0.1;
+      groupRef.current.rotation.y += delta * 0.06;
+      groupRef.current.rotation.x = Math.sin(Date.now() * 0.00015) * 0.08;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Dots */}
+      {/* Wireframe sphere */}
+      <lineSegments geometry={wireframeGeometry}>
+        <lineBasicMaterial color="#d9453b" transparent opacity={0.06} />
+      </lineSegments>
+
+      {/* Dots on grid intersections */}
       {points.map((pos, i) => (
         <mesh key={`dot-${i}`} position={pos}>
-          <sphereGeometry args={[0.03, 8, 8]} />
-          <meshBasicMaterial
-            color={i % 5 === 0 ? '#d9453b' : i % 3 === 0 ? '#f0e8dc' : '#6b5f52'}
-            transparent
-            opacity={i % 5 === 0 ? 1 : 0.6}
-          />
+          <sphereGeometry args={[0.035, 8, 8]} />
+          <meshBasicMaterial color="#d9453b" />
         </mesh>
       ))}
 
-      {/* Connection lines */}
-      {connections.map((line, i) => {
-        const geometry = new THREE.BufferGeometry().setFromPoints(
-          line.map((p) => new THREE.Vector3(...p))
-        );
-        return (
-          <lineSegments key={`line-${i}`} geometry={geometry}>
-            <lineBasicMaterial color="#3a322a" transparent opacity={0.3} />
-          </lineSegments>
-        );
-      })}
-
-      {/* Outer glow ring */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[2.1, 2.15, 64]} />
-        <meshBasicMaterial color="#d9453b" transparent opacity={0.15} side={THREE.DoubleSide} />
+      {/* Subtle glow sphere */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.02, 48, 48]} />
+        <meshBasicMaterial
+          color="#d9453b"
+          transparent
+          opacity={0.02}
+          side={THREE.BackSide}
+        />
       </mesh>
     </group>
   );

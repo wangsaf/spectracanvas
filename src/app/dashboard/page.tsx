@@ -1,13 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useProjectStore, calculateProjectCompletion, exportProjectData } from '@/lib/store/project-store';
 import { useToast } from '@/components/ui/toast';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+
+// Brand studio imports
+import { BrandForm, type BrandFormData } from '@/components/brand/brand-form';
+import { ColorPalette } from '@/components/brand/color-palette';
+import { FontPreview } from '@/components/brand/font-preview';
+import { LogoPreview } from '@/components/brand/logo-preview';
+import { PersonalityPreview } from '@/components/brand/personality-preview';
+import type { BrandIdentity } from '@/lib/types';
+import { API_ROUTES } from '@/lib/constants';
+
+// Pixel studio imports
+import { PixelForm, type PixelFormData } from '@/components/pixel/pixel-form';
+import { SpriteCanvas } from '@/components/pixel/sprite-canvas';
+import { SpriteSheet } from '@/components/pixel/sprite-sheet';
+import { AnimationPreview } from '@/components/pixel/animation-preview';
+import { LoadingSpinner } from '@/components/shared/loading-spinner';
+import type { CharacterSprite, PoseSet } from '@/lib/types';
+import { generatePosesAsync, generatePoses } from '@/lib/pixel/pose-generator';
+
+// Content studio imports
+import { ContentForm, type ContentFormData } from '@/components/content/content-form';
+import { ScriptPreview } from '@/components/content/script-preview';
+import { MoodSelector } from '@/components/content/mood-selector';
+import type { ContentScript, MoodKeyword } from '@/lib/types';
+import { suggestContentAdjustments } from '@/lib/mood/mood-mapper';
 
 // ─── SVG Icons ───────────────────────────────────────────────────────────────
 
@@ -151,10 +176,498 @@ function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string
   return <>{display}{suffix}</>;
 }
 
+// ─── Tab type ────────────────────────────────────────────────────────────────
+
+type TabId = 'overview' | 'brand' | 'pixel' | 'content';
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'overview', label: 'OVERVIEW' },
+  { id: 'brand', label: 'BRAND' },
+  { id: 'pixel', label: 'PIXEL' },
+  { id: 'content', label: 'CONTENT' },
+];
+
+// ─── Brand Studio Tab ────────────────────────────────────────────────────────
+
+function BrandStudioTab() {
+  const { brand: savedBrand, setBrand } = useProjectStore();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [brand, setBrandLocal] = useState<BrandIdentity | null>(savedBrand);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async (formData: BrandFormData) => {
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      const response = await fetch(API_ROUTES.brand.generate, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          industry: formData.industry,
+          values: formData.values,
+          targetAudience: formData.targetAudience,
+          mood: formData.mood,
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'Failed to generate brand');
+
+      setBrandLocal(result.data);
+      setBrand(result.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Generation error:', err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Left Column - Input Form */}
+      <div>
+        <div className="sticky top-20">
+          <BrandForm onGenerate={handleGenerate} isGenerating={isGenerating} />
+          {error && (
+            <div className="mt-4 p-4 border border-red-500 bg-red-500/10 rounded">
+              <p className="text-xs font-bold text-red-500">ERROR</p>
+              <p className="text-sm text-red-400 mt-1">{error}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Column - Preview */}
+      <div className="space-y-6">
+        {!brand && !isGenerating && (
+          <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
+            <div className="w-16 h-16 border-2 rounded border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
+              <span className="text-2xl text-[#6b5f52]">[ ]</span>
+            </div>
+            <p className="text-sm text-[#6b5f52]">
+              Fill in your brand details and click generate to see your identity
+            </p>
+          </div>
+        )}
+
+        {isGenerating && (
+          <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
+            <div className="w-16 h-16 border-2 rounded border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse">
+              <span className="text-2xl text-[#d9453b]">[*]</span>
+            </div>
+            <p className="text-sm text-[#d9453b] font-bold tracking-wider">GENERATING BRAND...</p>
+            <p className="text-xs text-[#6b5f52] mt-2">Creating colors, typography, and logos</p>
+          </div>
+        )}
+
+        {brand && (
+          <>
+            <ColorPalette colors={brand.colors} />
+            <FontPreview typography={brand.typography} />
+            <LogoPreview logo={brand.logo} brandName={brand.name} />
+            {brand.personality && <PersonalityPreview personality={brand.personality} />}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Pixel Studio Tab ────────────────────────────────────────────────────────
+
+function PixelStudioTab() {
+  const { brand, sprites: savedSprites, addSprite } = useProjectStore();
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingPoses, setIsGeneratingPoses] = useState(false);
+  const [sprite, setSprite] = useState<CharacterSprite | null>(null);
+  const [poses, setPoses] = useState<PoseSet | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async (formData: PixelFormData) => {
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      const response = await fetch(API_ROUTES.pixel.generate, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: formData.description,
+          style: formData.style,
+          size: formData.size,
+          palette: formData.paletteMode === 'custom' ? formData.customPalette : undefined,
+          brandColors: formData.paletteMode === 'brand' && brand
+            ? Object.values(brand.colors.primary) as string[]
+            : brand?.colors
+              ? Object.values(brand.colors.primary) as string[]
+              : undefined,
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'Failed to generate sprite');
+
+      setSprite(result.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Generation error:', err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSaveSprite = () => {
+    if (sprite) {
+      addSprite(sprite);
+      toast({ title: 'Sprite saved to project!', variant: 'success' });
+    }
+  };
+
+  useEffect(() => {
+    if (!sprite) {
+      setPoses(null);
+      return;
+    }
+    setIsGeneratingPoses(true);
+    generatePosesAsync(sprite)
+      .then((generatedPoses) => setPoses(generatedPoses))
+      .catch((err) => {
+        console.error('Pose generation failed, using template poses:', err);
+        setPoses(generatePoses(sprite));
+      })
+      .finally(() => setIsGeneratingPoses(false));
+  }, [sprite]);
+
+  return (
+    <div className="space-y-4">
+      {/* Saved Sprites Count */}
+      {savedSprites.length > 0 && (
+        <div className="p-3 rounded border border-[#3a322a] bg-[#241f1a]">
+          <p className="text-xs text-[#a09484]">
+            {savedSprites.length} sprite{savedSprites.length !== 1 ? 's' : ''} saved to project
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Input Form */}
+        <div>
+          <div className="sticky top-20">
+            <PixelForm
+              onGenerate={handleGenerate}
+              isGenerating={isGenerating}
+              brandColors={brand ? Object.values(brand.colors.primary) as string[] : undefined}
+            />
+            {error && (
+              <div className="mt-4 p-4 rounded border border-red-500 bg-red-500/10">
+                <p className="text-xs font-bold text-red-500">ERROR</p>
+                <p className="text-sm text-red-400 mt-1">{error}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Preview */}
+        <div className="space-y-6">
+          {!sprite && !isGenerating && (
+            <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
+              <div className="w-16 h-16 rounded border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
+                <span className="text-2xl text-[#6b5f52]">[ ]</span>
+              </div>
+              <p className="text-sm text-[#6b5f52]">
+                Describe your character and click generate to see your pixel art sprite
+              </p>
+            </div>
+          )}
+
+          {isGenerating && (
+            <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
+              <LoadingSpinner size="lg" label="GENERATING SPRITE..." className="mb-2" />
+              <p className="text-xs text-[#6b5f52] mt-2">Creating your pixel art character</p>
+            </div>
+          )}
+
+          {sprite && (
+            <>
+              <SpriteCanvas sprite={sprite} />
+
+              <div className="rounded border border-[#3a322a] bg-[#241f1a] p-6">
+                <h3 className="text-sm font-bold tracking-wider mb-2">DESCRIPTION</h3>
+                <p className="text-sm text-[#a09484]">{sprite.description}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleSaveSprite}>
+                  [ SAVE SPRITE ]
+                </Button>
+              </div>
+
+              {isGeneratingPoses && (
+                <div className="rounded border border-[#3a322a] bg-[#241f1a] p-8 text-center">
+                  <LoadingSpinner size="md" label="GENERATING POSES..." />
+                </div>
+              )}
+
+              {poses && <AnimationPreview poses={poses} spriteSize={sprite.size} />}
+              {poses && <SpriteSheet poses={poses} spriteSize={sprite.size} />}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Content Studio Tab ──────────────────────────────────────────────────────
+
+function ContentStudioTab() {
+  const { brand, scripts: savedScripts, addScript, setMoods } = useProjectStore();
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [script, setScript] = useState<ContentScript | null>(null);
+  const [selectedMoods, setSelectedMoods] = useState<MoodKeyword[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [caption, setCaption] = useState<any>(null);
+  const [calendar, setCalendar] = useState<any>(null);
+
+  const handleGenerate = async (formData: ContentFormData) => {
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      const response = await fetch(API_ROUTES.content.script, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: formData.topic,
+          platform: formData.platform,
+          tone: formData.tone,
+          duration: formData.duration,
+          brandContext: brand?.name || formData.brandContext,
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'Failed to generate script');
+
+      const raw = result.data.script || result.data;
+      const transformed = {
+        topic: formData.topic,
+        platform: formData.platform,
+        tone: formData.tone,
+        duration: formData.duration,
+        hook: (raw.hooks || []).map((h: { text: string }) => typeof h === 'string' ? h : h.text),
+        body: (raw.body || []).map((b: { text: string; timestamp: string; overlay?: string; bRoll?: string }) => ({
+          timestamp: b.timestamp,
+          content: b.text,
+          textOverlay: b.overlay,
+          brollSuggestion: b.bRoll,
+        })),
+        cta: (raw.ctas || []).map((c: { text: string } | string) => typeof c === 'string' ? c : c.text),
+        wordCount: raw.wordCount || 0,
+      };
+      setScript(transformed);
+      setCaption(result.data.caption || null);
+      setCalendar(result.data.calendar || null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Generation error:', err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleMoodsChange = (moods: MoodKeyword[]) => {
+    setSelectedMoods(moods);
+    setMoods(moods);
+  };
+
+  const handleSaveScript = () => {
+    if (script) {
+      addScript(script);
+      toast({ title: 'Script saved to project!', variant: 'success' });
+    }
+  };
+
+  const moodAdjustments = selectedMoods.length > 0 && script
+    ? suggestContentAdjustments(selectedMoods, script.platform)
+    : null;
+
+  return (
+    <div className="space-y-4">
+      {/* Saved Scripts Count */}
+      {savedScripts.length > 0 && (
+        <div className="p-3 border border-[#3a322a] bg-[#241f1a] rounded">
+          <p className="text-xs text-[#a09484]">
+            {savedScripts.length} script{savedScripts.length !== 1 ? 's' : ''} saved to project
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Input Form */}
+        <div className="space-y-6">
+          <div className="sticky top-20 space-y-6">
+            <ContentForm
+              onGenerate={handleGenerate}
+              isGenerating={isGenerating}
+              brandContext={brand?.name}
+            />
+
+            {error && (
+              <div className="p-4 border border-red-500 bg-red-500/10 rounded">
+                <p className="text-xs font-bold text-red-500">ERROR</p>
+                <p className="text-sm text-red-400 mt-1">{error}</p>
+              </div>
+            )}
+
+            {script && (
+              <MoodSelector
+                selectedMoods={selectedMoods}
+                onMoodsChange={handleMoodsChange}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Preview */}
+        <div className="space-y-6">
+          {!script && !isGenerating && (
+            <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
+              <div className="w-16 h-16 border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center rounded">
+                <span className="text-2xl text-[#6b5f52]">[ ]</span>
+              </div>
+              <p className="text-sm text-[#6b5f52]">
+                Describe your content idea and click generate to create your script
+              </p>
+            </div>
+          )}
+
+          {isGenerating && (
+            <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
+              <LoadingSpinner size="lg" label="GENERATING SCRIPT..." className="mb-2" />
+              <p className="text-xs text-[#6b5f52] mt-2">
+                Creating your content script with hooks, body, and CTAs
+              </p>
+            </div>
+          )}
+
+          {script && (
+            <>
+              <ScriptPreview script={script} />
+
+              {moodAdjustments && (
+                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">
+                    MOOD-BASED RECOMMENDATIONS
+                  </h3>
+                  <div className="space-y-3 text-xs">
+                    <div>
+                      <p className="text-[#a09484] font-bold mb-1">VISUAL STYLE:</p>
+                      <p className="text-neutral-300">{moodAdjustments.visualStyle}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#a09484] font-bold mb-1">MUSIC:</p>
+                      <p className="text-neutral-300">{moodAdjustments.musicSuggestion}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#a09484] font-bold mb-1">TEXT STYLE:</p>
+                      <p className="text-neutral-300">{moodAdjustments.textStyle}</p>
+                    </div>
+                    <div>
+                      <p className="text-[#a09484] font-bold mb-1">PACING:</p>
+                      <p className="text-neutral-300">{moodAdjustments.pacing}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {caption && (
+                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">CAPTIONS</h3>
+                  {caption.main && (
+                    <div>
+                      <p className="text-[#a09484] font-bold text-xs mb-1">MAIN CAPTION:</p>
+                      <p className="text-neutral-300 text-sm">{caption.main}</p>
+                    </div>
+                  )}
+                  {caption.hashtags && caption.hashtags.length > 0 && (
+                    <div>
+                      <p className="text-[#a09484] font-bold text-xs mb-1">HASHTAGS:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {caption.hashtags.map((tag: string, i: number) => (
+                          <span key={i} className="text-xs px-2 py-1 border border-[#3a322a] text-neutral-400 rounded">
+                            {tag.startsWith('#') ? tag : `#${tag}`}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {caption.variations && caption.variations.length > 0 && (
+                    <div>
+                      <p className="text-[#a09484] font-bold text-xs mb-1">VARIATIONS:</p>
+                      <div className="space-y-2">
+                        {caption.variations.map((v: string, i: number) => (
+                          <p key={i} className="text-neutral-300 text-xs border-l-2 border-[#3a322a] pl-3">{v}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {calendar && calendar.length > 0 && (
+                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">POSTING CALENDAR</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b border-[#3a322a]">
+                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">DATE</th>
+                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">PLATFORM</th>
+                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">TOPIC</th>
+                          <th className="text-left text-[#a09484] font-bold py-2">TYPE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {calendar.map((entry: any, i: number) => (
+                          <tr key={i} className="border-b border-[#3a322a]/50">
+                            <td className="py-2 pr-4 text-neutral-300">{entry.day || entry.date || '—'}</td>
+                            <td className="py-2 pr-4 text-neutral-300">{entry.platform || '—'}</td>
+                            <td className="py-2 pr-4 text-neutral-300">{entry.topic || '—'}</td>
+                            <td className="py-2 text-neutral-300">{entry.type || entry.contentType || '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              <Button variant="outline" onClick={handleSaveScript}>
+                [ SAVE SCRIPT ]
+              </Button>
+
+              <p className="text-[10px] text-[#6b5f52] text-center tracking-wider">
+                STORYBOARD — coming soon
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Dashboard Component ────────────────────────────────────────────────
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const {
     projectName,
     projectId,
@@ -169,9 +682,26 @@ export default function DashboardPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(projectName);
   const [isExporting, setIsExporting] = useState<'json' | 'zip' | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const { toast } = useToast();
 
   const completion = calculateProjectCompletion(useProjectStore.getState());
+
+  // Read tab from URL on mount
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') as TabId | null;
+    if (tabParam && TABS.some(t => t.id === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  // Update URL when tab changes
+  const handleTabChange = useCallback((tab: TabId) => {
+    setActiveTab(tab);
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
+  }, []);
 
   useEffect(() => {
     setEditedName(projectName);
@@ -292,27 +822,9 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
       color: completion === 100 ? '#22c55e' : '#d9453b',
       icon: completion === 100 ? IconCheck : IconFolder,
     },
-    {
-      label: 'SPRITES',
-      value: sprites.length,
-      suffix: '',
-      color: '#d9453b',
-      icon: IconSprite,
-    },
-    {
-      label: 'SCRIPTS',
-      value: scripts.length,
-      suffix: '',
-      color: '#d9453b',
-      icon: IconScript,
-    },
-    {
-      label: 'BRAND',
-      value: brand ? 1 : 0,
-      suffix: '',
-      color: brand ? '#22c55e' : '#6b5f52',
-      icon: IconPalette,
-    },
+    { label: 'SPRITES', value: sprites.length, suffix: '', color: '#d9453b', icon: IconSprite },
+    { label: 'SCRIPTS', value: scripts.length, suffix: '', color: '#d9453b', icon: IconScript },
+    { label: 'BRAND', value: brand ? 1 : 0, suffix: '', color: brand ? '#22c55e' : '#6b5f52', icon: IconPalette },
   ];
 
   const hasAnyContent = completion > 0;
@@ -446,308 +958,348 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
           </div>
         </div>
 
-        {/* ─── Module Cards Grid ──────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-          {/* ── Brand Identity Card ──────────────────────────────────────── */}
-          <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-            <div className="p-4 border-b border-[#3a322a]">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <IconPalette className="w-4 h-4 text-[#d9453b]" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">BRAND IDENTITY</h3>
-                </div>
-                <span
-                  className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded ${
-                    brand
-                      ? 'bg-[#22c554]/10 text-[#22c554]'
-                      : 'bg-[#3a322a] text-[#6b5f52]'
-                  }`}
-                >
-                  {brand ? 'COMPLETE' : 'PENDING'}
-                </span>
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              {brand ? (
-                <>
-                  {/* Color Palette Preview */}
-                  <div>
-                    <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">COLOR PALETTE</p>
-                    <div className="flex gap-1">
-                      {Object.values(brand.colors.primary).slice(0, 5).map((color, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 h-7 rounded-sm border border-[#3a322a]/50 hover:scale-110 transition-transform cursor-pointer"
-                          style={{ backgroundColor: color as string }}
-                          title={color as string}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Secondary colors */}
-                  <div>
-                    <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">SECONDARY</p>
-                    <div className="flex gap-1">
-                      {Object.values(brand.colors.secondary).slice(0, 5).map((color, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 h-5 rounded-sm border border-[#3a322a]/50"
-                          style={{ backgroundColor: color as string }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Typography Preview */}
-                  <div>
-                    <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">TYPOGRAPHY</p>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-[#f0e8dc]">Heading</span>
-                        <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.heading.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-[#f0e8dc]">Body</span>
-                        <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.body.name}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => router.push('/create/brand')}
-                    className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
-                  >
-                    VIEW BRAND <IconExternalLink className="w-3 h-3" />
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => router.push('/create/brand')}
-                  className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
-                >
-                  <IconPlus className="w-4 h-4" /> CREATE BRAND
-                </button>
-              )}
-            </div>
+        {/* ─── Tab Navigation ─────────────────────────────────────────────── */}
+        <div className="border-b border-[#3a322a]">
+          <div className="flex gap-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className="px-5 py-2.5 text-xs font-bold tracking-[0.15em] transition-all rounded-t"
+                style={{
+                  background: activeTab === tab.id ? '#d9453b' : 'transparent',
+                  color: activeTab === tab.id ? '#ffffff' : '#a09484',
+                  borderBottom: activeTab === tab.id ? '2px solid #d9453b' : '2px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.background = '#241f1a';
+                    e.currentTarget.style.color = '#f0e8dc';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#a09484';
+                  }
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {/* ── Pixel Art Card ───────────────────────────────────────────── */}
-          <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-            <div className="p-4 border-b border-[#3a322a]">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <IconSprite className="w-4 h-4 text-[#d9453b]" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">PIXEL ART</h3>
-                </div>
-                <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
-                  {sprites.length} sprite{sprites.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              {sprites.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-3 gap-2">
-                    {sprites.slice(0, 6).map((sprite, i) => (
-                      <div
-                        key={i}
-                        className="aspect-square border border-[#3a322a] rounded bg-[#1c1915] p-1.5 hover:border-[#d9453b] transition-colors cursor-pointer"
-                      >
-                        <img
-                          src={sprite.imageData}
-                          alt={`Sprite ${i + 1}`}
-                          className="w-full h-full"
-                          style={{ imageRendering: 'pixelated' }}
-                        />
-                      </div>
-                    ))}
+        {/* ─── Tab Content ────────────────────────────────────────────────── */}
+        {activeTab === 'overview' && (
+          <>
+            {/* ─── Module Cards Grid ──────────────────────────────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+              {/* ── Brand Identity Card ──────────────────────────────────── */}
+              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#3a322a]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <IconPalette className="w-4 h-4 text-[#d9453b]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">BRAND IDENTITY</h3>
+                    </div>
+                    <span
+                      className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded ${
+                        brand
+                          ? 'bg-[#22c554]/10 text-[#22c554]'
+                          : 'bg-[#3a322a] text-[#6b5f52]'
+                      }`}
+                    >
+                      {brand ? 'COMPLETE' : 'PENDING'}
+                    </span>
                   </div>
-
-                  {sprites.length > 6 && (
-                    <p className="text-[10px] text-[#6b5f52] text-center">
-                      +{sprites.length - 6} more
-                    </p>
-                  )}
-
-                  {/* Sprite details */}
-                  <div className="space-y-1.5">
-                    {sprites.slice(0, 2).map((sprite, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[10px]">
-                        <div className="w-5 h-5 border border-[#3a322a] rounded-sm bg-[#1c1915] overflow-hidden flex-shrink-0">
-                          <img
-                            src={sprite.imageData}
-                            alt=""
-                            className="w-full h-full"
-                            style={{ imageRendering: 'pixelated' }}
-                          />
+                </div>
+                <div className="p-4 space-y-4">
+                  {brand ? (
+                    <>
+                      {/* Color Palette Preview */}
+                      <div>
+                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">COLOR PALETTE</p>
+                        <div className="flex gap-1">
+                          {Object.values(brand.colors.primary).slice(0, 5).map((color, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 h-7 rounded-sm border border-[#3a322a]/50 hover:scale-110 transition-transform cursor-pointer"
+                              style={{ backgroundColor: color as string }}
+                              title={color as string}
+                            />
+                          ))}
                         </div>
-                        <span className="text-[#6b5f52] truncate">{sprite.description}</span>
-                        <span className="text-[#3a322a] ml-auto flex-shrink-0">{sprite.size}px</span>
                       </div>
-                    ))}
-                  </div>
 
-                  <button
-                    onClick={() => router.push('/create/pixel')}
-                    className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
-                  >
-                    MANAGE SPRITES <IconExternalLink className="w-3 h-3" />
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => router.push('/create/pixel')}
-                  className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
-                >
-                  <IconPlus className="w-4 h-4" /> CREATE SPRITES
-                </button>
-              )}
-            </div>
-          </div>
+                      {/* Secondary colors */}
+                      <div>
+                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">SECONDARY</p>
+                        <div className="flex gap-1">
+                          {Object.values(brand.colors.secondary).slice(0, 5).map((color, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 h-5 rounded-sm border border-[#3a322a]/50"
+                              style={{ backgroundColor: color as string }}
+                            />
+                          ))}
+                        </div>
+                      </div>
 
-          {/* ── Content Scripts Card ─────────────────────────────────────── */}
-          <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-            <div className="p-4 border-b border-[#3a322a]">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <IconScript className="w-4 h-4 text-[#d9453b]" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">CONTENT SCRIPTS</h3>
-                </div>
-                <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
-                  {scripts.length} script{scripts.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              {scripts.length > 0 ? (
-                <>
-                  <div className="space-y-2">
-                    {scripts.slice(0, 4).map((script, i) => (
-                      <div
-                        key={i}
-                        className="border border-[#3a322a] rounded p-3 hover:border-[#d9453b]/50 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs text-[#f0e8dc] truncate font-medium">{script.topic}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[9px] text-[#d9453b] tracking-wider font-bold uppercase">
-                                {script.platform}
-                              </span>
-                              <span className="text-[#3a322a]">·</span>
-                              <span className="text-[9px] text-[#6b5f52]">{script.duration}s</span>
-                              <span className="text-[#3a322a]">·</span>
-                              <span className="text-[9px] text-[#6b5f52]">{script.tone}</span>
-                            </div>
+                      {/* Typography Preview */}
+                      <div>
+                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">TYPOGRAPHY</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-[#f0e8dc]">Heading</span>
+                            <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.heading.name}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-[#f0e8dc]">Body</span>
+                            <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.body.name}</span>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <button
-                    onClick={() => router.push('/create/content')}
-                    className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
-                  >
-                    MANAGE SCRIPTS <IconExternalLink className="w-3 h-3" />
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => router.push('/create/content')}
-                  className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
-                >
-                  <IconPlus className="w-4 h-4" /> CREATE SCRIPTS
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ─── Quick Actions Row ──────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            { label: 'Create Brand', icon: IconPalette, path: '/create/brand', desc: 'Colors, fonts, logos', ariaLabel: 'Create brand identity' },
-            { label: 'Create Sprite', icon: IconSprite, path: '/create/pixel', desc: 'Pixel art characters', ariaLabel: 'Create pixel art sprite' },
-            { label: 'Create Script', icon: IconScript, path: '/create/content', desc: 'Social media content', ariaLabel: 'Create content script' },
-          ].map((action) => (
-            <button
-              key={action.label}
-              onClick={() => router.push(action.path)}
-              aria-label={action.ariaLabel}
-              className="border border-[#3a322a] bg-[#241f1a] rounded p-4 text-left hover:border-[#d9453b] hover:bg-[#2e2720] transition-all group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded bg-[#d9453b]/10 flex items-center justify-center group-hover:bg-[#d9453b]/20 transition-colors">
-                  <action.icon className="w-4 h-4 text-[#d9453b]" />
+                      <button
+                        onClick={() => handleTabChange('brand')}
+                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      >
+                        VIEW BRAND <IconExternalLink className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleTabChange('brand')}
+                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                    >
+                      <IconPlus className="w-4 h-4" /> CREATE BRAND
+                    </button>
+                  )}
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-[#f0e8dc] tracking-wider">{action.label.toUpperCase()}</p>
-                  <p className="text-[10px] text-[#6b5f52] mt-0.5">{action.desc}</p>
-                </div>
-                <IconPlus className="w-4 h-4 text-[#3a322a] ml-auto group-hover:text-[#d9453b] transition-colors" />
               </div>
-            </button>
-          ))}
-        </div>
 
-        {/* ─── Export Section ─────────────────────────────────────────────── */}
-        <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <IconDownload className="w-4 h-4 text-[#d9453b]" />
-              <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">EXPORT PROJECT</h3>
-            </div>
-            <p className="text-[10px] text-[#6b5f52]">
-              Download all your creative assets
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button
-              onClick={handleExportJSON}
-              aria-label="Export as JSON"
-              disabled={!hasAnyContent || isExporting === 'json'}
-              className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
-            >
-              <IconJson className="w-4 h-4" />
-              {isExporting === 'json' ? 'EXPORTING...' : 'EXPORT JSON'}
-            </button>
-            <button
-              onClick={handleExportZIP}
-              aria-label="Export as ZIP"
-              disabled={!hasAnyContent || isExporting === 'zip'}
-              className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
-            >
-              <IconArchive className="w-4 h-4" />
-              {isExporting === 'zip' ? 'EXPORTING...' : 'EXPORT ZIP'}
-            </button>
-          </div>
-          <p className="text-[9px] text-[#6b5f52] mt-3 tracking-wider">
-            ZIP includes: Brand assets (colors, fonts, logos) · Sprite PNGs with metadata · Content scripts as text files
-          </p>
-        </div>
+              {/* ── Pixel Art Card ──────────────────────────────────────── */}
+              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#3a322a]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <IconSprite className="w-4 h-4 text-[#d9453b]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">PIXEL ART</h3>
+                    </div>
+                    <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
+                      {sprites.length} sprite{sprites.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-4 space-y-4">
+                  {sprites.length > 0 ? (
+                    <>
+                      <div className="grid grid-cols-3 gap-2">
+                        {sprites.slice(0, 6).map((sprite, i) => (
+                          <div
+                            key={i}
+                            className="aspect-square border border-[#3a322a] rounded bg-[#1c1915] p-1.5 hover:border-[#d9453b] transition-colors cursor-pointer"
+                          >
+                            <img
+                              src={sprite.imageData}
+                              alt={`Sprite ${i + 1}`}
+                              className="w-full h-full"
+                              style={{ imageRendering: 'pixelated' }}
+                            />
+                          </div>
+                        ))}
+                      </div>
 
-        {/* ─── Mood Sync Section ──────────────────────────────────────────── */}
-        {selectedMoods.length > 0 && (
-          <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-[#d9453b] animate-pulse" />
-              <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">MOOD SYNC ACTIVE</h3>
+                      {sprites.length > 6 && (
+                        <p className="text-[10px] text-[#6b5f52] text-center">
+                          +{sprites.length - 6} more
+                        </p>
+                      )}
+
+                      <div className="space-y-1.5">
+                        {sprites.slice(0, 2).map((sprite, i) => (
+                          <div key={i} className="flex items-center gap-2 text-[10px]">
+                            <div className="w-5 h-5 border border-[#3a322a] rounded-sm bg-[#1c1915] overflow-hidden flex-shrink-0">
+                              <img
+                                src={sprite.imageData}
+                                alt=""
+                                className="w-full h-full"
+                                style={{ imageRendering: 'pixelated' }}
+                              />
+                            </div>
+                            <span className="text-[#6b5f52] truncate">{sprite.description}</span>
+                            <span className="text-[#3a322a] ml-auto flex-shrink-0">{sprite.size}px</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => handleTabChange('pixel')}
+                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      >
+                        MANAGE SPRITES <IconExternalLink className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleTabChange('pixel')}
+                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                    >
+                      <IconPlus className="w-4 h-4" /> CREATE SPRITES
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Content Scripts Card ────────────────────────────────── */}
+              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#3a322a]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <IconScript className="w-4 h-4 text-[#d9453b]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">CONTENT SCRIPTS</h3>
+                    </div>
+                    <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
+                      {scripts.length} script{scripts.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-4 space-y-4">
+                  {scripts.length > 0 ? (
+                    <>
+                      <div className="space-y-2">
+                        {scripts.slice(0, 4).map((script, i) => (
+                          <div
+                            key={i}
+                            className="border border-[#3a322a] rounded p-3 hover:border-[#d9453b]/50 transition-colors cursor-pointer"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs text-[#f0e8dc] truncate font-medium">{script.topic}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="text-[9px] text-[#d9453b] tracking-wider font-bold uppercase">
+                                    {script.platform}
+                                  </span>
+                                  <span className="text-[#3a322a]">·</span>
+                                  <span className="text-[9px] text-[#6b5f52]">{script.duration}s</span>
+                                  <span className="text-[#3a322a]">·</span>
+                                  <span className="text-[9px] text-[#6b5f52]">{script.tone}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => handleTabChange('content')}
+                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      >
+                        MANAGE SCRIPTS <IconExternalLink className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleTabChange('content')}
+                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                    >
+                      <IconPlus className="w-4 h-4" /> CREATE SCRIPTS
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedMoods.map((mood) => (
-                <span
-                  key={mood}
-                  className="px-3 py-1.5 bg-[#d9453b]/10 border border-[#d9453b]/30 text-[#d9453b] text-[10px] font-bold tracking-[0.15em] rounded"
+
+            {/* ─── Quick Actions Row ──────────────────────────────────────── */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { label: 'Create Brand', icon: IconPalette, tab: 'brand' as TabId, desc: 'Colors, fonts, logos', ariaLabel: 'Create brand identity' },
+                { label: 'Create Sprite', icon: IconSprite, tab: 'pixel' as TabId, desc: 'Pixel art characters', ariaLabel: 'Create pixel art sprite' },
+                { label: 'Create Script', icon: IconScript, tab: 'content' as TabId, desc: 'Social media content', ariaLabel: 'Create content script' },
+              ].map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => handleTabChange(action.tab)}
+                  aria-label={action.ariaLabel}
+                  className="border border-[#3a322a] bg-[#241f1a] rounded p-4 text-left hover:border-[#d9453b] hover:bg-[#2e2720] transition-all group"
                 >
-                  {mood.toUpperCase()}
-                </span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded bg-[#d9453b]/10 flex items-center justify-center group-hover:bg-[#d9453b]/20 transition-colors">
+                      <action.icon className="w-4 h-4 text-[#d9453b]" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#f0e8dc] tracking-wider">{action.label.toUpperCase()}</p>
+                      <p className="text-[10px] text-[#6b5f52] mt-0.5">{action.desc}</p>
+                    </div>
+                    <IconPlus className="w-4 h-4 text-[#3a322a] ml-auto group-hover:text-[#d9453b] transition-colors" />
+                  </div>
+                </button>
               ))}
             </div>
-          </div>
+
+            {/* ─── Export Section ─────────────────────────────────────────── */}
+            <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <IconDownload className="w-4 h-4 text-[#d9453b]" />
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">EXPORT PROJECT</h3>
+                </div>
+                <p className="text-[10px] text-[#6b5f52]">
+                  Download all your creative assets
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={handleExportJSON}
+                  aria-label="Export as JSON"
+                  disabled={!hasAnyContent || isExporting === 'json'}
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
+                >
+                  <IconJson className="w-4 h-4" />
+                  {isExporting === 'json' ? 'EXPORTING...' : 'EXPORT JSON'}
+                </button>
+                <button
+                  onClick={handleExportZIP}
+                  aria-label="Export as ZIP"
+                  disabled={!hasAnyContent || isExporting === 'zip'}
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
+                >
+                  <IconArchive className="w-4 h-4" />
+                  {isExporting === 'zip' ? 'EXPORTING...' : 'EXPORT ZIP'}
+                </button>
+              </div>
+              <p className="text-[9px] text-[#6b5f52] mt-3 tracking-wider">
+                ZIP includes: Brand assets (colors, fonts, logos) · Sprite PNGs with metadata · Content scripts as text files
+              </p>
+            </div>
+
+            {/* ─── Mood Sync Section ──────────────────────────────────────── */}
+            {selectedMoods.length > 0 && (
+              <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-[#d9453b] animate-pulse" />
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">MOOD SYNC ACTIVE</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedMoods.map((mood) => (
+                    <span
+                      key={mood}
+                      className="px-3 py-1.5 bg-[#d9453b]/10 border border-[#d9453b]/30 text-[#d9453b] text-[10px] font-bold tracking-[0.15em] rounded"
+                    >
+                      {mood.toUpperCase()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
+
+        {activeTab === 'brand' && <BrandStudioTab />}
+        {activeTab === 'pixel' && <PixelStudioTab />}
+        {activeTab === 'content' && <ContentStudioTab />}
 
         {/* ─── Footer Info ────────────────────────────────────────────────── */}
         <div className="text-center py-4">
@@ -757,5 +1309,19 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         </div>
       </div>
     </div>
+  );
+}
+
+// ─── Page wrapper with Suspense ──────────────────────────────────────────────
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#1c1915] flex items-center justify-center">
+        <p className="text-xs text-[#6b5f52] tracking-wider animate-pulse">LOADING...</p>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
