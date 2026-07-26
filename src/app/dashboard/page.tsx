@@ -669,13 +669,14 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         {/* ─── Quick Actions Row ──────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: 'Create Brand', icon: IconPalette, path: '/create/brand', desc: 'Colors, fonts, logos' },
-            { label: 'Create Sprite', icon: IconSprite, path: '/create/pixel', desc: 'Pixel art characters' },
-            { label: 'Create Script', icon: IconScript, path: '/create/content', desc: 'Social media content' },
+            { label: 'Create Brand', icon: IconPalette, path: '/create/brand', desc: 'Colors, fonts, logos', ariaLabel: 'Create brand identity' },
+            { label: 'Create Sprite', icon: IconSprite, path: '/create/pixel', desc: 'Pixel art characters', ariaLabel: 'Create pixel art sprite' },
+            { label: 'Create Script', icon: IconScript, path: '/create/content', desc: 'Social media content', ariaLabel: 'Create content script' },
           ].map((action) => (
             <button
               key={action.label}
               onClick={() => router.push(action.path)}
+              aria-label={action.ariaLabel}
               className="border border-[#3a322a] bg-[#241f1a] rounded p-4 text-left hover:border-[#d9453b] hover:bg-[#2e2720] transition-all group"
             >
               <div className="flex items-center gap-3">
@@ -706,6 +707,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={handleExportJSON}
+              aria-label="Export as JSON"
               disabled={!hasAnyContent || isExporting === 'json'}
               className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
             >
@@ -714,6 +716,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
             </button>
             <button
               onClick={handleExportZIP}
+              aria-label="Export as ZIP"
               disabled={!hasAnyContent || isExporting === 'zip'}
               className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
             >

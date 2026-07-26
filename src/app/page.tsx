@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { GlobeHero } from '@/components/shared/globe-hero';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const GlobeHero = dynamic(() => import('@/components/shared/globe-hero').then(m => m.GlobeHero), { ssr: false });
 
 export default function Home() {
   return (
@@ -228,6 +230,7 @@ export default function Home() {
         <div className="flex justify-center gap-1 mb-4">
           {[...Array(24)].map((_, i) => (
             <div
+              aria-hidden="true"
               key={i}
               className="w-2 h-2"
               style={{ background: i % 3 === 0 ? '#d9453b' : '#3a322a', borderRadius: '2px' }}

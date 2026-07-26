@@ -137,6 +137,8 @@ export function GlobeHero() {
       {/* Globe canvas - positioned right side on desktop */}
       <div className="absolute inset-0 md:left-[40%] md:w-[60%] opacity-40 md:opacity-60">
         <Canvas
+          role="img"
+          aria-label="Decorative 3D globe animation"
           camera={{ position: [0, 0, 5.5], fov: 45 }}
           style={{ background: 'transparent' }}
           gl={{ alpha: true, antialias: true }}
@@ -242,6 +244,7 @@ export function GlobeHero() {
             >
               Start Creating
               <svg
+                aria-hidden="true"
                 className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
