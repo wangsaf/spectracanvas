@@ -8,11 +8,14 @@ Built for **AI Builders Challenge with IBM Bob** by **Team Spectriad** (Three Mi
 
 Live: https://spectracanvas-psi.vercel.app
 
+![Homepage](docs/screenshots/01-homepage.png)
+
 ---
 
 ## Features
 
 ### Brand Identity Generator
+![Brand Studio](docs/screenshots/03-brand-studio.png)
 - Logo concepts (3 variations: text-only, icon+text, abstract)
 - Color system with primary/secondary/accent/neutral palettes
 - Typography pairing (heading + body fonts from Google Fonts)
@@ -20,6 +23,7 @@ Live: https://spectracanvas-psi.vercel.app
 - JSON + ZIP export
 
 ### Pixel Art Pipeline
+![Pixel Studio](docs/screenshots/04-pixel-studio.png)
 - Character sprite generation (8-bit, 16-bit, modern pixel)
 - AI archetype detection (knight, wizard, robot, animal, etc.)
 - Multi-pose suggestions (idle, walk, attack, defend)
@@ -27,6 +31,7 @@ Live: https://spectracanvas-psi.vercel.app
 - PNG export with transparent background
 
 ### Content Script Studio
+![Content Studio](docs/screenshots/05-content-studio.png)
 - Platform-specific scripts (TikTok, Instagram Reels, YouTube Shorts, Twitter/X)
 - 3 hook variations (pattern-interrupt, question, bold statement)
 - Body with timestamp markers + B-roll suggestions
