@@ -76,7 +76,7 @@ export function LogoPreview({ logo, brandName }: LogoPreviewProps) {
               onClick={() => setSelectedVariation(variation.key)}
               className={`flex-1 px-4 py-3 border transition-colors ${
                 selectedVariation === variation.key
-                  ? 'bg-[#ffffff] text-white border-[#ffffff] rounded'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff] rounded'
                   : 'bg-transparent text-[#a1a1aa] border rounded border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >

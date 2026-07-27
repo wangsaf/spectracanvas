@@ -113,7 +113,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               onClick={() => setSelectedHook(index)}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedHook === index
-                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                   : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >
@@ -182,7 +182,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               onClick={() => setSelectedCTA(index)}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedCTA === index
-                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                   : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >

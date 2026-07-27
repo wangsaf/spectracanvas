@@ -9,7 +9,7 @@ export function GlobeHero() {
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 70% 50%, rgba(255,255,255,0.1) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(240,232,220,0.04) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at 70% 50%, rgba(255,255,255,0.08) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.03) 0%, transparent 50%)',
         }}
       />
 
@@ -93,9 +93,9 @@ export function GlobeHero() {
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider rounded transition-all hover:-translate-y-0.5"
               style={{
                 background: '#ffffff',
-                color: '#fff',
+                color: '#000000',
                 fontFamily: "'Space Grotesk', monospace",
-                boxShadow: '0 4px 20px rgba(255,255,255,0.3)',
+                boxShadow: '0 4px 20px rgba(255,255,255,0.15)',
               }}
             >
               Start Creating

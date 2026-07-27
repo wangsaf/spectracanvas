@@ -96,7 +96,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               disabled={isGenerating}
               className={`px-4 py-3 rounded text-left border transition-colors ${
                 formData.style === style.value
-                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                   : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >
@@ -146,7 +146,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
                 disabled={isGenerating}
                 className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                   formData.paletteMode === 'brand'
-                    ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                    ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                     : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
                 }`}
               >
@@ -169,7 +169,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               disabled={isGenerating}
               className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                 formData.paletteMode === 'custom'
-                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                   : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >

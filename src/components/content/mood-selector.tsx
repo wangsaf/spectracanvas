@@ -46,7 +46,7 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
                 disabled={!isSelected && selectedMoods.length >= maxSelection}
                 className={`p-4 border transition-all rounded ${
                   isSelected
-                    ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                    ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                     : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff] disabled:opacity-50 disabled:cursor-not-allowed'
                 }`}
               >
@@ -72,7 +72,7 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
                 {selectedMoods.map((mood) => (
                   <span
                     key={mood}
-                    className="px-3 py-1 bg-[#ffffff] text-white text-xs font-bold tracking-wider rounded"
+                    className="px-3 py-1 bg-[#ffffff] text-[#000000] text-xs font-bold tracking-wider rounded"
                   >
                     {mood.toUpperCase()}
                   </span>

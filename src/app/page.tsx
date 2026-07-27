@@ -206,7 +206,7 @@ export default function Home() {
           className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-bold tracking-wider transition-all"
           style={{
             background: '#ffffff',
-            color: '#fff',
+            color: '#000000',
             borderRadius: '4px',
             fontFamily: "'Space Grotesk', monospace",
           }}

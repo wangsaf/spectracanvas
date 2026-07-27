@@ -121,7 +121,7 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
             onClick={() => setShowGrid(!showGrid)}
             className={`px-3 py-1 rounded text-xs font-bold tracking-wider border transition-colors ${
               showGrid
-                ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                ? 'bg-[#ffffff] text-[#000000] border-[#ffffff]'
                 : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff]'
             }`}
           >
