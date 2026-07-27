@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
@@ -24,54 +24,103 @@ function fibonacciSphere(count: number, radius: number): THREE.Vector3[] {
 function GlobeDots() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const radius = 1.8;
-  const count = 200;
+  const count = 400;
   const points = useMemo(() => fibonacciSphere(count, radius), []);
   const startTime = useRef(performance.now());
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const color = useMemo(() => new THREE.Color('#d9453b'), []);
+  const baseColor = useMemo(() => new THREE.Color('#d9453b'), []);
+  const dimColor = useMemo(() => new THREE.Color('#6b3a35'), []);
 
-  useFrame(() => {
-    if (!meshRef.current) return;
-    const time = (performance.now() - startTime.current) / 1000;
-    meshRef.current.rotation.y = time * 0.08;
-    meshRef.current.rotation.x = Math.sin(time * 0.05) * 0.1;
-  });
-
-  useMemo(() => {
+  useEffect(() => {
     if (!meshRef.current) return;
     points.forEach((point, i) => {
       dummy.position.copy(point);
       dummy.updateMatrix();
       meshRef.current!.setMatrixAt(i, dummy.matrix);
+      // Vary colors: brighter near equator, dimmer at poles
+      const normalizedY = Math.abs(point.y / radius);
+      const color = normalizedY < 0.6 ? baseColor : dimColor;
       meshRef.current!.setColorAt(i, color);
     });
     meshRef.current.instanceMatrix.needsUpdate = true;
-  }, [points, dummy, color]);
+  }, [points, dummy, baseColor, dimColor]);
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+    const time = (performance.now() - startTime.current) / 1000;
+    meshRef.current.rotation.y = time * 0.12;
+    meshRef.current.rotation.x = Math.sin(time * 0.08) * 0.15;
+    // Pulse effect - scale dots slightly
+    const pulse = 1 + Math.sin(time * 2) * 0.05;
+    meshRef.current.scale.setScalar(pulse);
+  });
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[0.025, 8, 8]} />
-      <meshStandardMaterial color="#d9453b" emissive="#d9453b" emissiveIntensity={0.5} />
+      <sphereGeometry args={[0.028, 12, 12]} />
+      <meshStandardMaterial 
+        color="#d9453b" 
+        emissive="#d9453b" 
+        emissiveIntensity={0.6}
+        transparent
+        opacity={0.9}
+      />
     </instancedMesh>
   );
 }
 
 function GlowRing() {
   const ringRef = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
   const startTime = useRef(performance.now());
   
   useFrame(() => {
-    if (!ringRef.current) return;
+    if (!ringRef.current || !ring2Ref.current) return;
     const time = (performance.now() - startTime.current) / 1000;
     ringRef.current.rotation.x = Math.PI / 2;
     ringRef.current.rotation.z = time * 0.05;
+    // Second ring tilted differently
+    ring2Ref.current.rotation.x = Math.PI / 3;
+    ring2Ref.current.rotation.z = -time * 0.03;
   });
 
   return (
-    <mesh ref={ringRef}>
-      <torusGeometry args={[2.2, 0.02, 16, 100]} />
-      <meshStandardMaterial color="#d9453b" transparent opacity={0.15} emissive="#d9453b" emissiveIntensity={0.3} />
+    <>
+      <mesh ref={ringRef}>
+        <torusGeometry args={[2.2, 0.015, 16, 100]} />
+        <meshStandardMaterial color="#d9453b" transparent opacity={0.12} emissive="#d9453b" emissiveIntensity={0.4} />
+      </mesh>
+      <mesh ref={ring2Ref}>
+        <torusGeometry args={[2.4, 0.01, 16, 100]} />
+        <meshStandardMaterial color="#d9453b" transparent opacity={0.06} emissive="#d9453b" emissiveIntensity={0.2} />
+      </mesh>
+    </>
+  );
+}
+
+function GlowSphere() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const startTime = useRef(performance.now());
+  
+  useFrame(() => {
+    if (!meshRef.current) return;
+    const time = (performance.now() - startTime.current) / 1000;
+    const scale = 1 + Math.sin(time * 1.5) * 0.03;
+    meshRef.current.scale.setScalar(scale);
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1.9, 32, 32]} />
+      <meshStandardMaterial 
+        color="#d9453b" 
+        transparent 
+        opacity={0.03} 
+        emissive="#d9453b" 
+        emissiveIntensity={0.15}
+        side={THREE.BackSide}
+      />
     </mesh>
   );
 }
@@ -104,10 +153,12 @@ export function GlobeHero() {
           gl={{ alpha: true, antialias: true }}
           style={{ background: 'transparent' }}
         >
-          <ambientLight intensity={0.4} />
-          <pointLight position={[10, 10, 10]} intensity={0.6} color="#d9453b" />
+          <ambientLight intensity={0.3} />
+          <pointLight position={[10, 10, 10]} intensity={0.8} color="#d9453b" />
+          <pointLight position={[-5, -5, 5]} intensity={0.3} color="#f0e8dc" />
           <GlobeDots />
           <GlowRing />
+          <GlowSphere />
         </Canvas>
       </div>
       
