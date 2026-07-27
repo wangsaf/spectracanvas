@@ -79,20 +79,20 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
-              <span className="text-[#6b5f52]">Platform:</span>
-              <p className="text-[#f0e8dc] font-bold mt-1">{script.platform.toUpperCase()}</p>
+              <span className="text-[#71717a]">Platform:</span>
+              <p className="text-[#fafafa] font-bold mt-1">{script.platform.toUpperCase()}</p>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Duration:</span>
-              <p className="text-[#f0e8dc] font-bold mt-1">{script.duration} seconds</p>
+              <span className="text-[#71717a]">Duration:</span>
+              <p className="text-[#fafafa] font-bold mt-1">{script.duration} seconds</p>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Tone:</span>
-              <p className="text-[#f0e8dc] font-bold mt-1">{script.tone.toUpperCase()}</p>
+              <span className="text-[#71717a]">Tone:</span>
+              <p className="text-[#fafafa] font-bold mt-1">{script.tone.toUpperCase()}</p>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Word Count:</span>
-              <p className="text-[#f0e8dc] font-bold mt-1">{script.wordCount} words</p>
+              <span className="text-[#71717a]">Word Count:</span>
+              <p className="text-[#fafafa] font-bold mt-1">{script.wordCount} words</p>
             </div>
           </div>
         </CardContent>
@@ -113,8 +113,8 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               onClick={() => setSelectedHook(index)}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedHook === index
-                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
+                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider mb-2">OPTION {index + 1}</div>
@@ -134,33 +134,33 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         </CardHeader>
         <CardContent className="space-y-4">
           {script.body.map((section, index) => (
-            <div key={index} className="border border-[#3a322a] p-4 space-y-3 rounded">
+            <div key={index} className="border border-[#27272a] p-4 space-y-3 rounded">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-[#d9453b]">
+                <span className="text-xs font-bold tracking-wider text-[#ffffff]">
                   {section.timestamp}
                 </span>
-                <span className="text-xs text-[#6b5f52]">SECTION {index + 1}</span>
+                <span className="text-xs text-[#71717a]">SECTION {index + 1}</span>
               </div>
               
               <div>
-                <p className="text-xs font-bold tracking-wider text-[#a09484] mb-1">
+                <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-1">
                   CONTENT:
                 </p>
-                <p className="text-sm text-[#f0e8dc]">{section.content}</p>
+                <p className="text-sm text-[#fafafa]">{section.content}</p>
               </div>
 
               <div>
-                <p className="text-xs font-bold tracking-wider text-[#a09484] mb-1">
+                <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-1">
                   B-ROLL:
                 </p>
-                <p className="text-xs text-[#6b5f52]">{section.brollSuggestion}</p>
+                <p className="text-xs text-[#71717a]">{section.brollSuggestion}</p>
               </div>
 
               <div>
-                <p className="text-xs font-bold tracking-wider text-[#a09484] mb-1">
+                <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-1">
                   TEXT OVERLAY:
                 </p>
-                <p className="text-xs text-[#6b5f52]">{section.textOverlay}</p>
+                <p className="text-xs text-[#71717a]">{section.textOverlay}</p>
               </div>
             </div>
           ))}
@@ -182,8 +182,8 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               onClick={() => setSelectedCTA(index)}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedCTA === index
-                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
+                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider mb-2">OPTION {index + 1}</div>

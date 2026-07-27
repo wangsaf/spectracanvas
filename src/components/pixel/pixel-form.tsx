@@ -64,7 +64,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Character Description */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-[#a09484]">
+        <label className="text-xs font-bold tracking-wider text-[#a1a1aa]">
           CHARACTER DESCRIPTION *
         </label>
         <Textarea
@@ -77,14 +77,14 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
         {errors.description && (
           <p className="text-xs text-red-500">{errors.description}</p>
         )}
-        <p className="text-xs text-[#6b5f52]">
+        <p className="text-xs text-[#71717a]">
           Be specific about appearance, clothing, and accessories
         </p>
       </div>
 
       {/* Pixel Art Style */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-[#a09484]">
+        <label className="text-xs font-bold tracking-wider text-[#a1a1aa]">
           PIXEL ART STYLE *
         </label>
         <div className="grid grid-cols-1 gap-2">
@@ -96,8 +96,8 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               disabled={isGenerating}
               className={`px-4 py-3 rounded text-left border transition-colors ${
                 formData.style === style.value
-                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
+                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">{style.label}</div>
@@ -108,7 +108,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
 
       {/* Sprite Size */}
       <div className="space-y-2">
-        <label className="text-xs font-bold tracking-wider text-[#a09484]">
+        <label className="text-xs font-bold tracking-wider text-[#a1a1aa]">
           SPRITE SIZE *
         </label>
         <Select
@@ -146,8 +146,8 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
                 disabled={isGenerating}
                 className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                   formData.paletteMode === 'brand'
-                    ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                    : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
+                    ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                    : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
                 }`}
               >
                 <div className="text-xs font-bold tracking-wider mb-2">FROM BRAND COLORS</div>
@@ -155,7 +155,7 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
                   {brandColors.slice(0, 8).map((color, i) => (
                     <div
                       key={i}
-                      className="w-6 h-6 rounded border border-[#3a322a]"
+                      className="w-6 h-6 rounded border border-[#27272a]"
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -169,8 +169,8 @@ export function PixelForm({ onGenerate, isGenerating = false, brandColors }: Pix
               disabled={isGenerating}
               className={`w-full px-4 py-3 rounded text-left border transition-colors ${
                 formData.paletteMode === 'custom'
-                  ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                  : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b] hover:text-[#f0e8dc]'
+                  ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">STYLE DEFAULT PALETTE</div>

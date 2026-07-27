@@ -100,7 +100,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
         {/* Configuration */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wider text-[#a09484]">
+            <span className="text-xs font-bold tracking-wider text-[#a1a1aa]">
               COLUMNS:
             </span>
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
               >
                 -
               </Button>
-              <span className="text-xs font-mono text-[#f0e8dc] w-8 text-center">
+              <span className="text-xs font-mono text-[#fafafa] w-8 text-center">
                 {columns}
               </span>
               <Button
@@ -126,7 +126,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
             </div>
           </div>
 
-          <div className="text-xs text-[#6b5f52]">
+          <div className="text-xs text-[#71717a]">
             Total frames: {totalFrames} • Grid: {columns} × {Math.ceil(totalFrames / columns)}
           </div>
         </div>
@@ -145,7 +145,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
         {/* Preview */}
         {sheetImage && (
           <>
-            <div className="rounded border border-[#3a322a] bg-[#1c1915] p-4 overflow-auto max-h-96">
+            <div className="rounded border border-[#27272a] bg-[#000000] p-4 overflow-auto max-h-96">
               <img
                 src={sheetImage}
                 alt="Sprite Sheet"
@@ -177,7 +177,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
         )}
 
         {/* Info */}
-        <div className="pt-4 border-t border-[#3a322a] text-xs text-[#6b5f52]">
+        <div className="pt-4 border-t border-[#27272a] text-xs text-[#71717a]">
           <p className="mb-2">The sprite sheet includes:</p>
           <ul className="space-y-1 ml-4">
             {Object.entries(poses).map(([pose, frames]) => (

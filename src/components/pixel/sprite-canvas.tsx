@@ -24,9 +24,9 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
       width: sprite.size * zoom,
       height: sprite.size * zoom,
       scale: zoom,
-      backgroundColor: '#1c1915',
+      backgroundColor: '#000000',
       gridEnabled: showGrid,
-      gridColor: '#3a322a',
+      gridColor: '#27272a',
     });
 
     setEngine(canvasEngine);
@@ -84,7 +84,7 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Canvas Display */}
-        <div className="rounded border border-[#3a322a] bg-[#1c1915] p-4 flex items-center justify-center">
+        <div className="rounded border border-[#27272a] bg-[#000000] p-4 flex items-center justify-center">
           <canvas
             ref={canvasRef}
             className="image-rendering-pixelated"
@@ -96,7 +96,7 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
         <div className="flex items-center justify-between gap-4">
           {/* Zoom Controls */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold tracking-wider text-[#a09484]">ZOOM:</span>
+            <span className="text-xs font-bold tracking-wider text-[#a1a1aa]">ZOOM:</span>
             <Button
               variant="outline"
               size="sm"
@@ -105,7 +105,7 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
             >
               -
             </Button>
-            <span className="text-xs font-mono text-[#f0e8dc] w-12 text-center">{zoom}x</span>
+            <span className="text-xs font-mono text-[#fafafa] w-12 text-center">{zoom}x</span>
             <Button
               variant="outline"
               size="sm"
@@ -121,8 +121,8 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
             onClick={() => setShowGrid(!showGrid)}
             className={`px-3 py-1 rounded text-xs font-bold tracking-wider border transition-colors ${
               showGrid
-                ? 'bg-[#d9453b] text-white border-[#d9453b]'
-                : 'bg-transparent text-[#a09484] border-[#3a322a] hover:border-[#d9453b]'
+                ? 'bg-[#ffffff] text-white border-[#ffffff]'
+                : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff]'
             }`}
           >
             GRID
@@ -130,35 +130,35 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
         </div>
 
         {/* Sprite Info */}
-        <div className="pt-4 border-t border-[#3a322a] space-y-2 text-xs">
+        <div className="pt-4 border-t border-[#27272a] space-y-2 text-xs">
           <div className="flex justify-between">
-            <span className="text-[#6b5f52]">Size:</span>
-            <span className="text-[#f0e8dc] font-mono">{sprite.size}x{sprite.size}px</span>
+            <span className="text-[#71717a]">Size:</span>
+            <span className="text-[#fafafa] font-mono">{sprite.size}x{sprite.size}px</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6b5f52]">Style:</span>
-            <span className="text-[#f0e8dc]">{sprite.style}</span>
+            <span className="text-[#71717a]">Style:</span>
+            <span className="text-[#fafafa]">{sprite.style}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6b5f52]">Colors:</span>
-            <span className="text-[#f0e8dc]">{sprite.metadata.colorCount}</span>
+            <span className="text-[#71717a]">Colors:</span>
+            <span className="text-[#fafafa]">{sprite.metadata.colorCount}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6b5f52]">Transparent:</span>
-            <span className="text-[#f0e8dc]">{sprite.metadata.transparent ? 'Yes' : 'No'}</span>
+            <span className="text-[#71717a]">Transparent:</span>
+            <span className="text-[#fafafa]">{sprite.metadata.transparent ? 'Yes' : 'No'}</span>
           </div>
         </div>
 
         {/* Color Palette */}
-        <div className="pt-4 border-t border-[#3a322a]">
-          <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
+        <div className="pt-4 border-t border-[#27272a]">
+          <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-2">
             COLOR PALETTE
           </p>
           <div className="flex flex-wrap gap-1">
             {sprite.palette.map((color, i) => (
               <div
                 key={i}
-                className="w-8 h-8 rounded border border-[#3a322a] cursor-pointer hover:scale-110 transition-transform"
+                className="w-8 h-8 rounded border border-[#27272a] cursor-pointer hover:scale-110 transition-transform"
                 style={{ backgroundColor: color }}
                 title={color}
                 onClick={() => {

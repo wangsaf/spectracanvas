@@ -22,8 +22,8 @@ export function Navbar() {
     <nav
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        borderBottom: '1px solid rgba(58,50,42,0.5)',
-        background: 'rgba(28,25,21,0.7)',
+        borderBottom: '1px solid rgba(39,39,42,0.5)',
+        background: 'rgba(0,0,0,0.7)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       }}
@@ -34,13 +34,13 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2.5">
             <div
               className="w-7 h-7 flex items-center justify-center"
-              style={{ background: '#d9453b', borderRadius: '6px' }}
+              style={{ background: '#ffffff', borderRadius: '6px' }}
             >
               <span className="font-bold text-sm text-white" style={{ fontFamily: "'Space Grotesk', monospace" }}>S</span>
             </div>
             <span
               className="font-bold text-sm tracking-widest hidden sm:inline"
-              style={{ color: '#f0e8dc', fontFamily: "'Space Grotesk', monospace" }}
+              style={{ color: '#fafafa', fontFamily: "'Space Grotesk', monospace" }}
             >
               SPECTRACANVAS
             </span>
@@ -58,18 +58,18 @@ export function Navbar() {
                   style={{
                     borderRadius: '6px',
                     fontFamily: "'DM Sans', sans-serif",
-                    background: isActive ? 'rgba(217,69,59,0.15)' : 'transparent',
-                    color: isActive ? '#d9453b' : '#a09484',
+                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    color: isActive ? '#ffffff' : '#a1a1aa',
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) {
-                      e.currentTarget.style.color = '#f0e8dc';
-                      e.currentTarget.style.background = 'rgba(58,50,42,0.3)';
+                      e.currentTarget.style.color = '#fafafa';
+                      e.currentTarget.style.background = 'rgba(39,39,42,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) {
-                      e.currentTarget.style.color = '#a09484';
+                      e.currentTarget.style.color = '#a1a1aa';
                       e.currentTarget.style.background = 'transparent';
                     }
                   }}
@@ -85,25 +85,25 @@ export function Navbar() {
             <div className="text-right">
               <p
                 className="text-[9px] tracking-[2px]"
-                style={{ color: '#6b5f52', fontFamily: "'Space Grotesk', monospace" }}
+                style={{ color: '#71717a', fontFamily: "'Space Grotesk', monospace" }}
               >
                 PROJECT
               </p>
-              <p className="text-xs font-medium" style={{ color: '#f0e8dc' }}>
+              <p className="text-xs font-medium" style={{ color: '#fafafa' }}>
                 {projectName}
               </p>
             </div>
             <div
               className="w-9 h-9 flex items-center justify-center"
               style={{
-                border: '1px solid #3a322a',
+                border: '1px solid #27272a',
                 borderRadius: '6px',
-                background: 'rgba(36,31,26,0.5)',
+                background: 'rgba(10,10,10,0.5)',
               }}
             >
               <span
                 className="text-[10px] font-bold"
-                style={{ color: '#d9453b', fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: '#ffffff', fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {completion}%
               </span>
@@ -113,7 +113,7 @@ export function Navbar() {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 transition-colors"
-            style={{ color: '#f0e8dc', borderRadius: '6px' }}
+            style={{ color: '#fafafa', borderRadius: '6px' }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
@@ -130,7 +130,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-1" style={{ borderTop: '1px solid rgba(58,50,42,0.5)' }}>
+          <div className="md:hidden py-4 space-y-1" style={{ borderTop: '1px solid rgba(39,39,42,0.5)' }}>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -142,17 +142,17 @@ export function Navbar() {
                   style={{
                     borderRadius: '6px',
                     fontFamily: "'DM Sans', sans-serif",
-                    background: isActive ? 'rgba(217,69,59,0.15)' : 'transparent',
-                    color: isActive ? '#d9453b' : '#a09484',
+                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    color: isActive ? '#ffffff' : '#a1a1aa',
                   }}
                 >
                   {item.label}
                 </Link>
               );
             })}
-            <div className="px-4 pt-3 mt-3" style={{ borderTop: '1px solid rgba(58,50,42,0.5)' }}>
-              <p className="text-xs" style={{ color: '#6b5f52' }}>PROJECT: {projectName}</p>
-              <p className="text-xs font-bold" style={{ color: '#d9453b' }}>{completion}%</p>
+            <div className="px-4 pt-3 mt-3" style={{ borderTop: '1px solid rgba(39,39,42,0.5)' }}>
+              <p className="text-xs" style={{ color: '#71717a' }}>PROJECT: {projectName}</p>
+              <p className="text-xs font-bold" style={{ color: '#ffffff' }}>{completion}%</p>
             </div>
           </div>
         )}

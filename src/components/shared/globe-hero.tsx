@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 
 export function GlobeHero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: '#1c1915' }}>
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: '#000000' }}>
       {/* Animated gradient background */}
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 70% 50%, rgba(217,69,59,0.1) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(240,232,220,0.04) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at 70% 50%, rgba(255,255,255,0.1) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(240,232,220,0.04) 0%, transparent 50%)',
         }}
       />
 
@@ -17,17 +17,17 @@ export function GlobeHero() {
       <div
         className="absolute inset-0 opacity-15"
         style={{
-          backgroundImage: 'radial-gradient(circle at center, #3a322a 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle at center, #27272a 1px, transparent 1px)',
           backgroundSize: '32px 32px',
         }}
       />
 
       {/* Decorative floating shapes */}
       <div className="absolute right-10 top-1/4 w-64 h-64 opacity-10" style={{ filter: 'blur(60px)' }}>
-        <div className="w-full h-full rounded-full" style={{ background: '#d9453b' }} />
+        <div className="w-full h-full rounded-full" style={{ background: '#ffffff' }} />
       </div>
       <div className="absolute right-40 bottom-1/4 w-40 h-40 opacity-5" style={{ filter: 'blur(40px)' }}>
-        <div className="w-full h-full rounded-full" style={{ background: '#d9453b' }} />
+        <div className="w-full h-full rounded-full" style={{ background: '#ffffff' }} />
       </div>
 
       {/* Content */}
@@ -45,12 +45,12 @@ export function GlobeHero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
             style={{
-              background: 'rgba(217,69,59,0.1)',
-              border: '1px solid rgba(217,69,59,0.2)',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
             }}
           >
-            <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#d9453b', animation: 'pulse 2s infinite' }} />
-            <span className="text-xs font-bold tracking-wider" style={{ color: '#d9453b', fontFamily: "'Space Grotesk', monospace" }}>
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#ffffff', animation: 'pulse 2s infinite' }} />
+            <span className="text-xs font-bold tracking-wider" style={{ color: '#ffffff', fontFamily: "'Space Grotesk', monospace" }}>
               AI-POWERED CREATIVE SUITE
             </span>
           </motion.div>
@@ -62,11 +62,11 @@ export function GlobeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
               className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight"
-              style={{ fontFamily: "'Instrument Serif', serif", color: '#f0e8dc' }}
+              style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}
             >
               Create.{' '}
-              <span style={{ color: '#a09484' }}>Design.</span>{' '}
-              <span style={{ color: '#d9453b' }}>Ship.</span>
+              <span style={{ color: '#a1a1aa' }}>Design.</span>{' '}
+              <span style={{ color: '#ffffff' }}>Ship.</span>
             </motion.h1>
           </div>
 
@@ -76,7 +76,7 @@ export function GlobeHero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-lg md:text-xl max-w-lg"
-            style={{ color: '#a09484', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+            style={{ color: '#a1a1aa', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
           >
             Brand identity, pixel art, and content scripts — all in one canvas. Powered by IBM watsonx.
           </motion.p>
@@ -92,10 +92,10 @@ export function GlobeHero() {
               href="/dashboard"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider rounded transition-all hover:-translate-y-0.5"
               style={{
-                background: '#d9453b',
+                background: '#ffffff',
                 color: '#fff',
                 fontFamily: "'Space Grotesk', monospace",
-                boxShadow: '0 4px 20px rgba(217,69,59,0.3)',
+                boxShadow: '0 4px 20px rgba(255,255,255,0.3)',
               }}
             >
               Start Creating
@@ -107,8 +107,8 @@ export function GlobeHero() {
               href="/demo"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider rounded transition-all hover:-translate-y-0.5"
               style={{
-                border: '1px solid #3a322a',
-                color: '#a09484',
+                border: '1px solid #27272a',
+                color: '#a1a1aa',
                 fontFamily: "'Space Grotesk', monospace",
                 background: 'transparent',
               }}

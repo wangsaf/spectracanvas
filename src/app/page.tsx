@@ -6,7 +6,7 @@ import { GlobeHero } from '@/components/shared/globe-hero';
 
 export default function Home() {
   return (
-    <div className="min-h-screen" style={{ background: '#1c1915', color: '#f0e8dc', fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
+    <div className="min-h-screen" style={{ background: '#000000', color: '#fafafa', fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
       {/* Globe Hero */}
       <GlobeHero />
 
@@ -21,13 +21,13 @@ export default function Home() {
         >
           <p
             className="text-[10px] font-bold tracking-[3px] mb-3"
-            style={{ color: '#d9453b', fontFamily: "'Space Grotesk', monospace" }}
+            style={{ color: '#ffffff', fontFamily: "'Space Grotesk', monospace" }}
           >
             THREE STUDIOS
           </p>
           <h2
             className="text-3xl md:text-4xl font-bold"
-            style={{ fontFamily: "'Instrument Serif', serif", color: '#f0e8dc' }}
+            style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}
           >
             Everything you need to build a brand
           </h2>
@@ -50,41 +50,41 @@ export default function Home() {
                 href={f.href}
                 className="block p-7 transition-all group h-full"
                 style={{
-                  border: '1px solid #3a322a',
+                  border: '1px solid #27272a',
                   borderRadius: '8px',
-                  background: '#241f1a',
+                  background: '#0a0a0a',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#d9453b';
-                  e.currentTarget.style.background = '#2e2720';
+                  e.currentTarget.style.borderColor = '#ffffff';
+                  e.currentTarget.style.background = '#171717';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                   e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#3a322a';
-                  e.currentTarget.style.background = '#241f1a';
+                  e.currentTarget.style.borderColor = '#27272a';
+                  e.currentTarget.style.background = '#0a0a0a';
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div
                   className="w-10 h-10 flex items-center justify-center mb-5"
-                  style={{ border: '1px solid #d9453b', borderRadius: '6px', background: 'rgba(217,69,59,0.1)' }}
+                  style={{ border: '1px solid #ffffff', borderRadius: '6px', background: 'rgba(255,255,255,0.1)' }}
                 >
                   <span
                     className="font-bold text-lg"
-                    style={{ color: '#d9453b', fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ color: '#ffffff', fontFamily: "'JetBrains Mono', monospace" }}
                   >
                     {f.letter}
                   </span>
                 </div>
                 <h3
                   className="text-sm font-bold tracking-wider mb-2"
-                  style={{ fontFamily: "'Space Grotesk', monospace", color: '#f0e8dc' }}
+                  style={{ fontFamily: "'Space Grotesk', monospace", color: '#fafafa' }}
                 >
                   {f.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#6b5f52' }}>
+                <p className="text-sm leading-relaxed" style={{ color: '#71717a' }}>
                   {f.desc}
                 </p>
               </Link>
@@ -104,13 +104,13 @@ export default function Home() {
         >
           <p
             className="text-[10px] font-bold tracking-[3px] mb-3"
-            style={{ color: '#d9453b', fontFamily: "'Space Grotesk', monospace" }}
+            style={{ color: '#ffffff', fontFamily: "'Space Grotesk', monospace" }}
           >
             HOW IT WORKS
           </p>
           <h2
             className="text-3xl md:text-4xl font-bold"
-            style={{ fontFamily: "'Instrument Serif', serif", color: '#f0e8dc' }}
+            style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}
           >
             From idea to output in three steps
           </h2>
@@ -132,14 +132,14 @@ export default function Home() {
             >
               <div
                 className="text-3xl font-bold mb-3"
-                style={{ color: '#d9453b', fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: '#ffffff', fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {s.step}
               </div>
-              <h3 className="text-base font-bold mb-2" style={{ color: '#f0e8dc' }}>
+              <h3 className="text-base font-bold mb-2" style={{ color: '#fafafa' }}>
                 {s.title}
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#6b5f52' }}>
+              <p className="text-sm leading-relaxed" style={{ color: '#71717a' }}>
                 {s.desc}
               </p>
             </motion.div>
@@ -156,9 +156,9 @@ export default function Home() {
           transition={{ duration: 0.5 }}
           className="p-8 md:p-10"
           style={{
-            border: '1px solid #3a322a',
+            border: '1px solid #27272a',
             borderRadius: '8px',
-            background: '#241f1a',
+            background: '#0a0a0a',
           }}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -171,13 +171,13 @@ export default function Home() {
               <div key={s.label}>
                 <div
                   className="text-3xl md:text-4xl font-bold mb-1"
-                  style={{ color: '#d9453b', fontFamily: "'Instrument Serif', serif" }}
+                  style={{ color: '#ffffff', fontFamily: "'Instrument Serif', serif" }}
                 >
                   {s.value}
                 </div>
                 <div
                   className="text-[10px] tracking-[3px]"
-                  style={{ color: '#6b5f52', fontFamily: "'Space Grotesk', monospace" }}
+                  style={{ color: '#71717a', fontFamily: "'Space Grotesk', monospace" }}
                 >
                   {s.label}
                 </div>
@@ -195,27 +195,27 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="max-w-5xl mx-auto px-6 pb-20 text-center"
       >
-        <p className="text-lg mb-2" style={{ color: '#f0e8dc', fontFamily: "'Instrument Serif', serif" }}>
+        <p className="text-lg mb-2" style={{ color: '#fafafa', fontFamily: "'Instrument Serif', serif" }}>
           Ready to create?
         </p>
-        <p className="text-sm mb-6" style={{ color: '#6b5f52' }}>
+        <p className="text-sm mb-6" style={{ color: '#71717a' }}>
           No sign-up required. Start building your brand right now.
         </p>
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-bold tracking-wider transition-all"
           style={{
-            background: '#d9453b',
+            background: '#ffffff',
             color: '#fff',
             borderRadius: '4px',
             fontFamily: "'Space Grotesk', monospace",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#b8382f';
+            e.currentTarget.style.background = '#e4e4e7';
             e.currentTarget.style.transform = 'translateY(-1px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#d9453b';
+            e.currentTarget.style.background = '#ffffff';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
@@ -224,20 +224,20 @@ export default function Home() {
       </motion.div>
 
       {/* Footer */}
-      <footer className="py-8 text-center" style={{ borderTop: '1px solid #3a322a' }}>
+      <footer className="py-8 text-center" style={{ borderTop: '1px solid #27272a' }}>
         <div className="flex justify-center gap-1 mb-4">
           {[...Array(24)].map((_, i) => (
             <div
               aria-hidden="true"
               key={i}
               className="w-2 h-2"
-              style={{ background: i % 3 === 0 ? '#d9453b' : '#3a322a', borderRadius: '2px' }}
+              style={{ background: i % 3 === 0 ? '#ffffff' : '#27272a', borderRadius: '2px' }}
             />
           ))}
         </div>
         <p
           className="text-xs"
-          style={{ color: '#6b5f52', fontFamily: "'Space Grotesk', monospace" }}
+          style={{ color: '#71717a', fontFamily: "'Space Grotesk', monospace" }}
         >
           Team Spectriad - Three Mind One Solution - IBM AI Builders Challenge 2026
         </p>

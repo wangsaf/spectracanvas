@@ -25,7 +25,7 @@ export default function ProjectPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#1c1915] text-white font-mono p-4 md:p-8">
+      <div className="min-h-screen bg-[#000000] text-white font-mono p-4 md:p-8">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm text-neutral-500 animate-pulse">Loading project...</p>
         </div>
@@ -36,7 +36,7 @@ export default function ProjectPage() {
   const projectId = params?.id as string;
 
   return (
-    <div className="min-h-screen bg-[#1c1915] text-white font-mono p-4 md:p-8">
+    <div className="min-h-screen bg-[#000000] text-white font-mono p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         <Link href="/dashboard" className="text-xs text-neutral-500 hover:text-white">
           ← BACK TO DASHBOARD

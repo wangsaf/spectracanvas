@@ -243,23 +243,23 @@ function BrandStudioTab() {
       {/* Right Column - Preview */}
       <div className="space-y-6">
         {!brand && !isGenerating && (
-          <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
-            <div className="w-16 h-16 border-2 rounded border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
-              <span className="text-2xl text-[#6b5f52]">[ ]</span>
+          <div className="border rounded border-[#27272a] bg-[#0a0a0a] p-12 text-center">
+            <div className="w-16 h-16 border-2 rounded border-[#27272a] mx-auto mb-4 flex items-center justify-center">
+              <span className="text-2xl text-[#71717a]">[ ]</span>
             </div>
-            <p className="text-sm text-[#6b5f52]">
+            <p className="text-sm text-[#71717a]">
               Fill in your brand details and click generate to see your identity
             </p>
           </div>
         )}
 
         {isGenerating && (
-          <div className="border rounded border-[#3a322a] bg-[#241f1a] p-12 text-center">
-            <div className="w-16 h-16 border-2 rounded border-[#d9453b] mx-auto mb-4 flex items-center justify-center animate-pulse">
-              <span className="text-2xl text-[#d9453b]">[*]</span>
+          <div className="border rounded border-[#27272a] bg-[#0a0a0a] p-12 text-center">
+            <div className="w-16 h-16 border-2 rounded border-[#ffffff] mx-auto mb-4 flex items-center justify-center animate-pulse">
+              <span className="text-2xl text-[#ffffff]">[*]</span>
             </div>
-            <p className="text-sm text-[#d9453b] font-bold tracking-wider">GENERATING BRAND...</p>
-            <p className="text-xs text-[#6b5f52] mt-2">Creating colors, typography, and logos</p>
+            <p className="text-sm text-[#ffffff] font-bold tracking-wider">GENERATING BRAND...</p>
+            <p className="text-xs text-[#71717a] mt-2">Creating colors, typography, and logos</p>
           </div>
         )}
 
@@ -346,8 +346,8 @@ function PixelStudioTab() {
     <div className="space-y-4">
       {/* Saved Sprites Count */}
       {savedSprites.length > 0 && (
-        <div className="p-3 rounded border border-[#3a322a] bg-[#241f1a]">
-          <p className="text-xs text-[#a09484]">
+        <div className="p-3 rounded border border-[#27272a] bg-[#0a0a0a]">
+          <p className="text-xs text-[#a1a1aa]">
             {savedSprites.length} sprite{savedSprites.length !== 1 ? 's' : ''} saved to project
           </p>
         </div>
@@ -374,20 +374,20 @@ function PixelStudioTab() {
         {/* Right Column - Preview */}
         <div className="space-y-6">
           {!sprite && !isGenerating && (
-            <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
-              <div className="w-16 h-16 rounded border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl text-[#6b5f52]">[ ]</span>
+            <div className="rounded border border-[#27272a] bg-[#0a0a0a] p-12 text-center">
+              <div className="w-16 h-16 rounded border-2 border-[#27272a] mx-auto mb-4 flex items-center justify-center">
+                <span className="text-2xl text-[#71717a]">[ ]</span>
               </div>
-              <p className="text-sm text-[#6b5f52]">
+              <p className="text-sm text-[#71717a]">
                 Describe your character and click generate to see your pixel art sprite
               </p>
             </div>
           )}
 
           {isGenerating && (
-            <div className="rounded border border-[#3a322a] bg-[#241f1a] p-12 text-center">
+            <div className="rounded border border-[#27272a] bg-[#0a0a0a] p-12 text-center">
               <LoadingSpinner size="lg" label="GENERATING SPRITE..." className="mb-2" />
-              <p className="text-xs text-[#6b5f52] mt-2">Creating your pixel art character</p>
+              <p className="text-xs text-[#71717a] mt-2">Creating your pixel art character</p>
             </div>
           )}
 
@@ -395,9 +395,9 @@ function PixelStudioTab() {
             <>
               <SpriteCanvas sprite={sprite} />
 
-              <div className="rounded border border-[#3a322a] bg-[#241f1a] p-6">
+              <div className="rounded border border-[#27272a] bg-[#0a0a0a] p-6">
                 <h3 className="text-sm font-bold tracking-wider mb-2">DESCRIPTION</h3>
-                <p className="text-sm text-[#a09484]">{sprite.description}</p>
+                <p className="text-sm text-[#a1a1aa]">{sprite.description}</p>
               </div>
 
               <div className="flex gap-2">
@@ -407,7 +407,7 @@ function PixelStudioTab() {
               </div>
 
               {isGeneratingPoses && (
-                <div className="rounded border border-[#3a322a] bg-[#241f1a] p-8 text-center">
+                <div className="rounded border border-[#27272a] bg-[#0a0a0a] p-8 text-center">
                   <LoadingSpinner size="md" label="GENERATING POSES..." />
                 </div>
               )}
@@ -501,8 +501,8 @@ function ContentStudioTab() {
     <div className="space-y-4">
       {/* Saved Scripts Count */}
       {savedScripts.length > 0 && (
-        <div className="p-3 border border-[#3a322a] bg-[#241f1a] rounded">
-          <p className="text-xs text-[#a09484]">
+        <div className="p-3 border border-[#27272a] bg-[#0a0a0a] rounded">
+          <p className="text-xs text-[#a1a1aa]">
             {savedScripts.length} script{savedScripts.length !== 1 ? 's' : ''} saved to project
           </p>
         </div>
@@ -537,20 +537,20 @@ function ContentStudioTab() {
         {/* Right Column - Preview */}
         <div className="space-y-6">
           {!script && !isGenerating && (
-            <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
-              <div className="w-16 h-16 border-2 border-[#3a322a] mx-auto mb-4 flex items-center justify-center rounded">
-                <span className="text-2xl text-[#6b5f52]">[ ]</span>
+            <div className="border border-[#27272a] bg-[#0a0a0a] p-12 text-center rounded">
+              <div className="w-16 h-16 border-2 border-[#27272a] mx-auto mb-4 flex items-center justify-center rounded">
+                <span className="text-2xl text-[#71717a]">[ ]</span>
               </div>
-              <p className="text-sm text-[#6b5f52]">
+              <p className="text-sm text-[#71717a]">
                 Describe your content idea and click generate to create your script
               </p>
             </div>
           )}
 
           {isGenerating && (
-            <div className="border border-[#3a322a] bg-[#241f1a] p-12 text-center rounded">
+            <div className="border border-[#27272a] bg-[#0a0a0a] p-12 text-center rounded">
               <LoadingSpinner size="lg" label="GENERATING SCRIPT..." className="mb-2" />
-              <p className="text-xs text-[#6b5f52] mt-2">
+              <p className="text-xs text-[#71717a] mt-2">
                 Creating your content script with hooks, body, and CTAs
               </p>
             </div>
@@ -561,25 +561,25 @@ function ContentStudioTab() {
               <ScriptPreview script={script} />
 
               {moodAdjustments && (
-                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
-                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">
+                <div className="border border-[#27272a] bg-[#0a0a0a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#ffffff]">
                     MOOD-BASED RECOMMENDATIONS
                   </h3>
                   <div className="space-y-3 text-xs">
                     <div>
-                      <p className="text-[#a09484] font-bold mb-1">VISUAL STYLE:</p>
+                      <p className="text-[#a1a1aa] font-bold mb-1">VISUAL STYLE:</p>
                       <p className="text-neutral-300">{moodAdjustments.visualStyle}</p>
                     </div>
                     <div>
-                      <p className="text-[#a09484] font-bold mb-1">MUSIC:</p>
+                      <p className="text-[#a1a1aa] font-bold mb-1">MUSIC:</p>
                       <p className="text-neutral-300">{moodAdjustments.musicSuggestion}</p>
                     </div>
                     <div>
-                      <p className="text-[#a09484] font-bold mb-1">TEXT STYLE:</p>
+                      <p className="text-[#a1a1aa] font-bold mb-1">TEXT STYLE:</p>
                       <p className="text-neutral-300">{moodAdjustments.textStyle}</p>
                     </div>
                     <div>
-                      <p className="text-[#a09484] font-bold mb-1">PACING:</p>
+                      <p className="text-[#a1a1aa] font-bold mb-1">PACING:</p>
                       <p className="text-neutral-300">{moodAdjustments.pacing}</p>
                     </div>
                   </div>
@@ -587,20 +587,20 @@ function ContentStudioTab() {
               )}
 
               {caption && (
-                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
-                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">CAPTIONS</h3>
+                <div className="border border-[#27272a] bg-[#0a0a0a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#ffffff]">CAPTIONS</h3>
                   {caption.main && (
                     <div>
-                      <p className="text-[#a09484] font-bold text-xs mb-1">MAIN CAPTION:</p>
+                      <p className="text-[#a1a1aa] font-bold text-xs mb-1">MAIN CAPTION:</p>
                       <p className="text-neutral-300 text-sm">{caption.main}</p>
                     </div>
                   )}
                   {caption.hashtags && caption.hashtags.length > 0 && (
                     <div>
-                      <p className="text-[#a09484] font-bold text-xs mb-1">HASHTAGS:</p>
+                      <p className="text-[#a1a1aa] font-bold text-xs mb-1">HASHTAGS:</p>
                       <div className="flex flex-wrap gap-2">
                         {caption.hashtags.map((tag: string, i: number) => (
-                          <span key={i} className="text-xs px-2 py-1 border border-[#3a322a] text-neutral-400 rounded">
+                          <span key={i} className="text-xs px-2 py-1 border border-[#27272a] text-neutral-400 rounded">
                             {tag.startsWith('#') ? tag : `#${tag}`}
                           </span>
                         ))}
@@ -609,10 +609,10 @@ function ContentStudioTab() {
                   )}
                   {caption.variations && caption.variations.length > 0 && (
                     <div>
-                      <p className="text-[#a09484] font-bold text-xs mb-1">VARIATIONS:</p>
+                      <p className="text-[#a1a1aa] font-bold text-xs mb-1">VARIATIONS:</p>
                       <div className="space-y-2">
                         {caption.variations.map((v: string, i: number) => (
-                          <p key={i} className="text-neutral-300 text-xs border-l-2 border-[#3a322a] pl-3">{v}</p>
+                          <p key={i} className="text-neutral-300 text-xs border-l-2 border-[#27272a] pl-3">{v}</p>
                         ))}
                       </div>
                     </div>
@@ -621,21 +621,21 @@ function ContentStudioTab() {
               )}
 
               {calendar && calendar.length > 0 && (
-                <div className="border border-[#3a322a] bg-[#241f1a] p-6 space-y-4 rounded">
-                  <h3 className="text-sm font-bold tracking-wider text-[#d9453b]">POSTING CALENDAR</h3>
+                <div className="border border-[#27272a] bg-[#0a0a0a] p-6 space-y-4 rounded">
+                  <h3 className="text-sm font-bold tracking-wider text-[#ffffff]">POSTING CALENDAR</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="border-b border-[#3a322a]">
-                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">DATE</th>
-                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">PLATFORM</th>
-                          <th className="text-left text-[#a09484] font-bold py-2 pr-4">TOPIC</th>
-                          <th className="text-left text-[#a09484] font-bold py-2">TYPE</th>
+                        <tr className="border-b border-[#27272a]">
+                          <th className="text-left text-[#a1a1aa] font-bold py-2 pr-4">DATE</th>
+                          <th className="text-left text-[#a1a1aa] font-bold py-2 pr-4">PLATFORM</th>
+                          <th className="text-left text-[#a1a1aa] font-bold py-2 pr-4">TOPIC</th>
+                          <th className="text-left text-[#a1a1aa] font-bold py-2">TYPE</th>
                         </tr>
                       </thead>
                       <tbody>
                         {calendar.map((entry: any, i: number) => (
-                          <tr key={i} className="border-b border-[#3a322a]/50">
+                          <tr key={i} className="border-b border-[#27272a]/50">
                             <td className="py-2 pr-4 text-neutral-300">{entry.day || entry.date || '—'}</td>
                             <td className="py-2 pr-4 text-neutral-300">{entry.platform || '—'}</td>
                             <td className="py-2 pr-4 text-neutral-300">{entry.topic || '—'}</td>
@@ -652,7 +652,7 @@ function ContentStudioTab() {
                 [ SAVE SCRIPT ]
               </Button>
 
-              <p className="text-[10px] text-[#6b5f52] text-center tracking-wider">
+              <p className="text-[10px] text-[#71717a] text-center tracking-wider">
                 STORYBOARD — coming soon
               </p>
             </>
@@ -819,23 +819,23 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
       label: 'COMPLETION',
       value: completion,
       suffix: '%',
-      color: completion === 100 ? '#22c55e' : '#d9453b',
+      color: completion === 100 ? '#22c55e' : '#ffffff',
       icon: completion === 100 ? IconCheck : IconFolder,
     },
-    { label: 'SPRITES', value: sprites.length, suffix: '', color: '#d9453b', icon: IconSprite },
-    { label: 'SCRIPTS', value: scripts.length, suffix: '', color: '#d9453b', icon: IconScript },
-    { label: 'BRAND', value: brand ? 1 : 0, suffix: '', color: brand ? '#22c55e' : '#6b5f52', icon: IconPalette },
+    { label: 'SPRITES', value: sprites.length, suffix: '', color: '#ffffff', icon: IconSprite },
+    { label: 'SCRIPTS', value: scripts.length, suffix: '', color: '#ffffff', icon: IconScript },
+    { label: 'BRAND', value: brand ? 1 : 0, suffix: '', color: brand ? '#22c55e' : '#71717a', icon: IconPalette },
   ];
 
   const hasAnyContent = completion > 0;
 
   return (
-    <div className="min-h-screen bg-[#1c1915]" style={{ fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-[#000000]" style={{ fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
       {/* ─── Top Bar ──────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#3a322a]">
+      <div className="border-b border-[#27272a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-[#d9453b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded bg-[#ffffff] flex items-center justify-center">
               <IconFolder className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -860,17 +860,17 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-bold tracking-wide text-[#f0e8dc]">{projectName}</h1>
+                  <h1 className="text-base font-bold tracking-wide text-[#fafafa]">{projectName}</h1>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="text-[#6b5f52] hover:text-[#f0e8dc] transition-colors p-1"
+                    className="text-[#71717a] hover:text-[#fafafa] transition-colors p-1"
                     aria-label="Edit project name"
                   >
                     <IconPencil className="w-3.5 h-3.5" />
                   </button>
                 </div>
               )}
-              <p className="text-[10px] text-[#6b5f52] tracking-wider mt-0.5">
+              <p className="text-[10px] text-[#71717a] tracking-wider mt-0.5">
                 {projectId}
               </p>
             </div>
@@ -892,13 +892,13 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
             return (
               <div
                 key={stat.label}
-                className="border border-[#3a322a] bg-[#241f1a] rounded p-4 flex items-start justify-between group hover:border-[#4a3f35] transition-colors"
+                className="border border-[#27272a] bg-[#0a0a0a] rounded p-4 flex items-start justify-between group hover:border-[#4a3f35] transition-colors"
               >
                 <div>
-                  <p className="text-[10px] text-[#6b5f52] tracking-[0.15em] font-medium mb-1.5">
+                  <p className="text-[10px] text-[#71717a] tracking-[0.15em] font-medium mb-1.5">
                     {stat.label}
                   </p>
-                  <p className="text-2xl font-bold text-[#f0e8dc] tabular-nums">
+                  <p className="text-2xl font-bold text-[#fafafa] tabular-nums">
                     <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                   </p>
                 </div>
@@ -914,23 +914,23 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         </div>
 
         {/* ─── Progress Bar ───────────────────────────────────────────────── */}
-        <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
+        <div className="border border-[#27272a] bg-[#0a0a0a] rounded p-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] text-[#6b5f52] tracking-[0.15em] font-medium">
+            <p className="text-[10px] text-[#71717a] tracking-[0.15em] font-medium">
               PROJECT PROGRESS
             </p>
-            <p className="text-xs text-[#f0e8dc] font-bold tabular-nums">
+            <p className="text-xs text-[#fafafa] font-bold tabular-nums">
               {completion}%
             </p>
           </div>
-          <div className="h-1.5 bg-[#1c1915] rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[#000000] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
                 width: `${completion}%`,
                 background: completion === 100
                   ? 'linear-gradient(90deg, #22c55e, #16a34a)'
-                  : 'linear-gradient(90deg, #d9453b, #e05545)',
+                  : 'linear-gradient(90deg, #ffffff, #e05545)',
               }}
             />
           </div>
@@ -945,12 +945,12 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   className={`w-3 h-3 rounded-sm flex items-center justify-center ${
                     step.done
                       ? 'bg-[#22c554]'
-                      : 'border border-[#3a322a] bg-transparent'
+                      : 'border border-[#27272a] bg-transparent'
                   }`}
                 >
                   {step.done && <IconCheck className="w-2 h-2 text-white" />}
                 </div>
-                <span className={`text-[10px] tracking-wider ${step.done ? 'text-[#f0e8dc]' : 'text-[#6b5f52]'}`}>
+                <span className={`text-[10px] tracking-wider ${step.done ? 'text-[#fafafa]' : 'text-[#71717a]'}`}>
                   {step.label}
                 </span>
               </div>
@@ -959,7 +959,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
         </div>
 
         {/* ─── Tab Navigation ─────────────────────────────────────────────── */}
-        <div className="border-b border-[#3a322a]">
+        <div className="border-b border-[#27272a]">
           <div className="flex gap-1">
             {TABS.map((tab) => (
               <button
@@ -967,20 +967,20 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 onClick={() => handleTabChange(tab.id)}
                 className="px-5 py-2.5 text-xs font-bold tracking-[0.15em] transition-all rounded-t"
                 style={{
-                  background: activeTab === tab.id ? '#d9453b' : 'transparent',
-                  color: activeTab === tab.id ? '#ffffff' : '#a09484',
-                  borderBottom: activeTab === tab.id ? '2px solid #d9453b' : '2px solid transparent',
+                  background: activeTab === tab.id ? '#ffffff' : 'transparent',
+                  color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
+                  borderBottom: activeTab === tab.id ? '2px solid #ffffff' : '2px solid transparent',
                 }}
                 onMouseEnter={(e) => {
                   if (activeTab !== tab.id) {
-                    e.currentTarget.style.background = '#241f1a';
-                    e.currentTarget.style.color = '#f0e8dc';
+                    e.currentTarget.style.background = '#0a0a0a';
+                    e.currentTarget.style.color = '#fafafa';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (activeTab !== tab.id) {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#a09484';
+                    e.currentTarget.style.color = '#a1a1aa';
                   }
                 }}
               >
@@ -997,18 +997,18 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
               {/* ── Brand Identity Card ──────────────────────────────────── */}
-              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-                <div className="p-4 border-b border-[#3a322a]">
+              <div className="border border-[#27272a] bg-[#0a0a0a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#27272a]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <IconPalette className="w-4 h-4 text-[#d9453b]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">BRAND IDENTITY</h3>
+                      <IconPalette className="w-4 h-4 text-[#ffffff]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">BRAND IDENTITY</h3>
                     </div>
                     <span
                       className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded ${
                         brand
                           ? 'bg-[#22c554]/10 text-[#22c554]'
-                          : 'bg-[#3a322a] text-[#6b5f52]'
+                          : 'bg-[#27272a] text-[#71717a]'
                       }`}
                     >
                       {brand ? 'COMPLETE' : 'PENDING'}
@@ -1020,12 +1020,12 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                     <>
                       {/* Color Palette Preview */}
                       <div>
-                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">COLOR PALETTE</p>
+                        <p className="text-[9px] text-[#71717a] tracking-[0.15em] mb-2 font-medium">COLOR PALETTE</p>
                         <div className="flex gap-1">
                           {Object.values(brand.colors.primary).slice(0, 5).map((color, i) => (
                             <div
                               key={i}
-                              className="flex-1 h-7 rounded-sm border border-[#3a322a]/50 hover:scale-110 transition-transform cursor-pointer"
+                              className="flex-1 h-7 rounded-sm border border-[#27272a]/50 hover:scale-110 transition-transform cursor-pointer"
                               style={{ backgroundColor: color as string }}
                               title={color as string}
                             />
@@ -1035,12 +1035,12 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       {/* Secondary colors */}
                       <div>
-                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">SECONDARY</p>
+                        <p className="text-[9px] text-[#71717a] tracking-[0.15em] mb-2 font-medium">SECONDARY</p>
                         <div className="flex gap-1">
                           {Object.values(brand.colors.secondary).slice(0, 5).map((color, i) => (
                             <div
                               key={i}
-                              className="flex-1 h-5 rounded-sm border border-[#3a322a]/50"
+                              className="flex-1 h-5 rounded-sm border border-[#27272a]/50"
                               style={{ backgroundColor: color as string }}
                             />
                           ))}
@@ -1049,22 +1049,22 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       {/* Typography Preview */}
                       <div>
-                        <p className="text-[9px] text-[#6b5f52] tracking-[0.15em] mb-2 font-medium">TYPOGRAPHY</p>
+                        <p className="text-[9px] text-[#71717a] tracking-[0.15em] mb-2 font-medium">TYPOGRAPHY</p>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#f0e8dc]">Heading</span>
-                            <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.heading.name}</span>
+                            <span className="text-xs text-[#fafafa]">Heading</span>
+                            <span className="text-[10px] text-[#71717a] font-mono">{brand.typography.heading.name}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#f0e8dc]">Body</span>
-                            <span className="text-[10px] text-[#6b5f52] font-mono">{brand.typography.body.name}</span>
+                            <span className="text-xs text-[#fafafa]">Body</span>
+                            <span className="text-[10px] text-[#71717a] font-mono">{brand.typography.body.name}</span>
                           </div>
                         </div>
                       </div>
 
                       <button
                         onClick={() => handleTabChange('brand')}
-                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         VIEW BRAND <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1072,7 +1072,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   ) : (
                     <button
                       onClick={() => handleTabChange('brand')}
-                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      className="w-full py-6 border border-dashed border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#71717a] hover:border-[#ffffff] hover:text-[#ffffff] transition-all flex items-center justify-center gap-2"
                     >
                       <IconPlus className="w-4 h-4" /> CREATE BRAND
                     </button>
@@ -1081,14 +1081,14 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               </div>
 
               {/* ── Pixel Art Card ──────────────────────────────────────── */}
-              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-                <div className="p-4 border-b border-[#3a322a]">
+              <div className="border border-[#27272a] bg-[#0a0a0a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#27272a]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <IconSprite className="w-4 h-4 text-[#d9453b]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">PIXEL ART</h3>
+                      <IconSprite className="w-4 h-4 text-[#ffffff]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">PIXEL ART</h3>
                     </div>
-                    <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
+                    <span className="text-[10px] text-[#71717a] tabular-nums font-bold">
                       {sprites.length} sprite{sprites.length !== 1 ? 's' : ''}
                     </span>
                   </div>
@@ -1100,7 +1100,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                         {sprites.slice(0, 6).map((sprite, i) => (
                           <div
                             key={i}
-                            className="aspect-square border border-[#3a322a] rounded bg-[#1c1915] p-1.5 hover:border-[#d9453b] transition-colors cursor-pointer"
+                            className="aspect-square border border-[#27272a] rounded bg-[#000000] p-1.5 hover:border-[#ffffff] transition-colors cursor-pointer"
                           >
                             <img
                               src={sprite.imageData}
@@ -1113,7 +1113,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                       </div>
 
                       {sprites.length > 6 && (
-                        <p className="text-[10px] text-[#6b5f52] text-center">
+                        <p className="text-[10px] text-[#71717a] text-center">
                           +{sprites.length - 6} more
                         </p>
                       )}
@@ -1121,7 +1121,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                       <div className="space-y-1.5">
                         {sprites.slice(0, 2).map((sprite, i) => (
                           <div key={i} className="flex items-center gap-2 text-[10px]">
-                            <div className="w-5 h-5 border border-[#3a322a] rounded-sm bg-[#1c1915] overflow-hidden flex-shrink-0">
+                            <div className="w-5 h-5 border border-[#27272a] rounded-sm bg-[#000000] overflow-hidden flex-shrink-0">
                               <img
                                 src={sprite.imageData}
                                 alt=""
@@ -1129,15 +1129,15 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                                 style={{ imageRendering: 'pixelated' }}
                               />
                             </div>
-                            <span className="text-[#6b5f52] truncate">{sprite.description}</span>
-                            <span className="text-[#3a322a] ml-auto flex-shrink-0">{sprite.size}px</span>
+                            <span className="text-[#71717a] truncate">{sprite.description}</span>
+                            <span className="text-[#27272a] ml-auto flex-shrink-0">{sprite.size}px</span>
                           </div>
                         ))}
                       </div>
 
                       <button
                         onClick={() => handleTabChange('pixel')}
-                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         MANAGE SPRITES <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1145,7 +1145,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   ) : (
                     <button
                       onClick={() => handleTabChange('pixel')}
-                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      className="w-full py-6 border border-dashed border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#71717a] hover:border-[#ffffff] hover:text-[#ffffff] transition-all flex items-center justify-center gap-2"
                     >
                       <IconPlus className="w-4 h-4" /> CREATE SPRITES
                     </button>
@@ -1154,14 +1154,14 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               </div>
 
               {/* ── Content Scripts Card ────────────────────────────────── */}
-              <div className="border border-[#3a322a] bg-[#241f1a] rounded overflow-hidden group">
-                <div className="p-4 border-b border-[#3a322a]">
+              <div className="border border-[#27272a] bg-[#0a0a0a] rounded overflow-hidden group">
+                <div className="p-4 border-b border-[#27272a]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <IconScript className="w-4 h-4 text-[#d9453b]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">CONTENT SCRIPTS</h3>
+                      <IconScript className="w-4 h-4 text-[#ffffff]" />
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">CONTENT SCRIPTS</h3>
                     </div>
-                    <span className="text-[10px] text-[#6b5f52] tabular-nums font-bold">
+                    <span className="text-[10px] text-[#71717a] tabular-nums font-bold">
                       {scripts.length} script{scripts.length !== 1 ? 's' : ''}
                     </span>
                   </div>
@@ -1173,19 +1173,19 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                         {scripts.slice(0, 4).map((script, i) => (
                           <div
                             key={i}
-                            className="border border-[#3a322a] rounded p-3 hover:border-[#d9453b]/50 transition-colors cursor-pointer"
+                            className="border border-[#27272a] rounded p-3 hover:border-[#ffffff]/50 transition-colors cursor-pointer"
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs text-[#f0e8dc] truncate font-medium">{script.topic}</p>
+                                <p className="text-xs text-[#fafafa] truncate font-medium">{script.topic}</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                  <span className="text-[9px] text-[#d9453b] tracking-wider font-bold uppercase">
+                                  <span className="text-[9px] text-[#ffffff] tracking-wider font-bold uppercase">
                                     {script.platform}
                                   </span>
-                                  <span className="text-[#3a322a]">·</span>
-                                  <span className="text-[9px] text-[#6b5f52]">{script.duration}s</span>
-                                  <span className="text-[#3a322a]">·</span>
-                                  <span className="text-[9px] text-[#6b5f52]">{script.tone}</span>
+                                  <span className="text-[#27272a]">·</span>
+                                  <span className="text-[9px] text-[#71717a]">{script.duration}s</span>
+                                  <span className="text-[#27272a]">·</span>
+                                  <span className="text-[9px] text-[#71717a]">{script.tone}</span>
                                 </div>
                               </div>
                             </div>
@@ -1195,7 +1195,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       <button
                         onClick={() => handleTabChange('content')}
-                        className="w-full mt-2 py-2.5 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:bg-[#3a322a]/50 hover:border-[#d9453b] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         MANAGE SCRIPTS <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1203,7 +1203,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   ) : (
                     <button
                       onClick={() => handleTabChange('content')}
-                      className="w-full py-6 border border-dashed border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#6b5f52] hover:border-[#d9453b] hover:text-[#d9453b] transition-all flex items-center justify-center gap-2"
+                      className="w-full py-6 border border-dashed border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#71717a] hover:border-[#ffffff] hover:text-[#ffffff] transition-all flex items-center justify-center gap-2"
                     >
                       <IconPlus className="w-4 h-4" /> CREATE SCRIPTS
                     </button>
@@ -1223,30 +1223,30 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   key={action.label}
                   onClick={() => handleTabChange(action.tab)}
                   aria-label={action.ariaLabel}
-                  className="border border-[#3a322a] bg-[#241f1a] rounded p-4 text-left hover:border-[#d9453b] hover:bg-[#2e2720] transition-all group"
+                  className="border border-[#27272a] bg-[#0a0a0a] rounded p-4 text-left hover:border-[#ffffff] hover:bg-[#171717] transition-all group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded bg-[#d9453b]/10 flex items-center justify-center group-hover:bg-[#d9453b]/20 transition-colors">
-                      <action.icon className="w-4 h-4 text-[#d9453b]" />
+                    <div className="w-9 h-9 rounded bg-[#ffffff]/10 flex items-center justify-center group-hover:bg-[#ffffff]/20 transition-colors">
+                      <action.icon className="w-4 h-4 text-[#ffffff]" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-[#f0e8dc] tracking-wider">{action.label.toUpperCase()}</p>
-                      <p className="text-[10px] text-[#6b5f52] mt-0.5">{action.desc}</p>
+                      <p className="text-xs font-bold text-[#fafafa] tracking-wider">{action.label.toUpperCase()}</p>
+                      <p className="text-[10px] text-[#71717a] mt-0.5">{action.desc}</p>
                     </div>
-                    <IconPlus className="w-4 h-4 text-[#3a322a] ml-auto group-hover:text-[#d9453b] transition-colors" />
+                    <IconPlus className="w-4 h-4 text-[#27272a] ml-auto group-hover:text-[#ffffff] transition-colors" />
                   </div>
                 </button>
               ))}
             </div>
 
             {/* ─── Export Section ─────────────────────────────────────────── */}
-            <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
+            <div className="border border-[#27272a] bg-[#0a0a0a] rounded p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <IconDownload className="w-4 h-4 text-[#d9453b]" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">EXPORT PROJECT</h3>
+                  <IconDownload className="w-4 h-4 text-[#ffffff]" />
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">EXPORT PROJECT</h3>
                 </div>
-                <p className="text-[10px] text-[#6b5f52]">
+                <p className="text-[10px] text-[#71717a]">
                   Download all your creative assets
                 </p>
               </div>
@@ -1255,7 +1255,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   onClick={handleExportJSON}
                   aria-label="Export as JSON"
                   disabled={!hasAnyContent || isExporting === 'json'}
-                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
                 >
                   <IconJson className="w-4 h-4" />
                   {isExporting === 'json' ? 'EXPORTING...' : 'EXPORT JSON'}
@@ -1264,29 +1264,29 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   onClick={handleExportZIP}
                   aria-label="Export as ZIP"
                   disabled={!hasAnyContent || isExporting === 'zip'}
-                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#3a322a] rounded text-[10px] font-bold tracking-[0.15em] text-[#f0e8dc] hover:border-[#d9453b] hover:bg-[#1c1915] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#3a322a] disabled:hover:bg-transparent"
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
                 >
                   <IconArchive className="w-4 h-4" />
                   {isExporting === 'zip' ? 'EXPORTING...' : 'EXPORT ZIP'}
                 </button>
               </div>
-              <p className="text-[9px] text-[#6b5f52] mt-3 tracking-wider">
+              <p className="text-[9px] text-[#71717a] mt-3 tracking-wider">
                 ZIP includes: Brand assets (colors, fonts, logos) · Sprite PNGs with metadata · Content scripts as text files
               </p>
             </div>
 
             {/* ─── Mood Sync Section ──────────────────────────────────────── */}
             {selectedMoods.length > 0 && (
-              <div className="border border-[#3a322a] bg-[#241f1a] rounded p-4">
+              <div className="border border-[#27272a] bg-[#0a0a0a] rounded p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-2 h-2 rounded-full bg-[#d9453b] animate-pulse" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#f0e8dc]">MOOD SYNC ACTIVE</h3>
+                  <div className="w-2 h-2 rounded-full bg-[#ffffff] animate-pulse" />
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">MOOD SYNC ACTIVE</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {selectedMoods.map((mood) => (
                     <span
                       key={mood}
-                      className="px-3 py-1.5 bg-[#d9453b]/10 border border-[#d9453b]/30 text-[#d9453b] text-[10px] font-bold tracking-[0.15em] rounded"
+                      className="px-3 py-1.5 bg-[#ffffff]/10 border border-[#ffffff]/30 text-[#ffffff] text-[10px] font-bold tracking-[0.15em] rounded"
                     >
                       {mood.toUpperCase()}
                     </span>
@@ -1303,7 +1303,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
         {/* ─── Footer Info ────────────────────────────────────────────────── */}
         <div className="text-center py-4">
-          <p className="text-[9px] text-[#3a322a] tracking-[0.2em]">
+          <p className="text-[9px] text-[#27272a] tracking-[0.2em]">
             SPECTRACANVAS · ALL ASSETS STORED LOCALLY IN YOUR BROWSER
           </p>
         </div>
@@ -1317,8 +1317,8 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 export default function DashboardPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#1c1915] flex items-center justify-center">
-        <p className="text-xs text-[#6b5f52] tracking-wider animate-pulse">LOADING...</p>
+      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+        <p className="text-xs text-[#71717a] tracking-wider animate-pulse">LOADING...</p>
       </div>
     }>
       <DashboardContent />

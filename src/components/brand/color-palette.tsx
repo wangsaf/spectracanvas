@@ -14,12 +14,12 @@ export function ColorPalette({ colors }: ColorPaletteProps) {
     shades: { base: string; lighter: string; light: string; dark: string; darker: string }
   ) => (
     <div className="space-y-2">
-      <p className="text-xs font-bold tracking-wider text-[#a09484]">{label}</p>
+      <p className="text-xs font-bold tracking-wider text-[#a1a1aa]">{label}</p>
       <div className="grid grid-cols-5 gap-1">
         {Object.entries(shades).map(([shade, color]) => (
           <div key={shade} className="space-y-1">
             <div
-              className="h-16 border rounded border-[#3a322a] flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+              className="h-16 border rounded border-[#27272a] flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
               style={{ backgroundColor: color }}
               onClick={() => {
                 navigator.clipboard.writeText(color);
@@ -34,7 +34,7 @@ export function ColorPalette({ colors }: ColorPaletteProps) {
               </span>
             </div>
             <div className="text-center">
-              <p className="text-[10px] font-mono text-[#6b5f52]">{color}</p>
+              <p className="text-[10px] font-mono text-[#71717a]">{color}</p>
             </div>
           </div>
         ))}
@@ -57,26 +57,26 @@ export function ColorPalette({ colors }: ColorPaletteProps) {
         {renderColorShades('NEUTRAL', colors.neutral)}
 
         {/* Color Codes Export */}
-        <div className="pt-4 border-t border-[#3a322a]">
-          <p className="text-xs font-bold tracking-wider text-[#a09484] mb-2">
+        <div className="pt-4 border-t border-[#27272a]">
+          <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-2">
             QUICK REFERENCE
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div>
-              <span className="text-[#6b5f52]">Primary:</span>{' '}
-              <span className="text-[#f0e8dc]">{colors.primary.base}</span>
+              <span className="text-[#71717a]">Primary:</span>{' '}
+              <span className="text-[#fafafa]">{colors.primary.base}</span>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Secondary:</span>{' '}
-              <span className="text-[#f0e8dc]">{colors.secondary.base}</span>
+              <span className="text-[#71717a]">Secondary:</span>{' '}
+              <span className="text-[#fafafa]">{colors.secondary.base}</span>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Accent:</span>{' '}
-              <span className="text-[#f0e8dc]">{colors.accent.base}</span>
+              <span className="text-[#71717a]">Accent:</span>{' '}
+              <span className="text-[#fafafa]">{colors.accent.base}</span>
             </div>
             <div>
-              <span className="text-[#6b5f52]">Neutral:</span>{' '}
-              <span className="text-[#f0e8dc]">{colors.neutral.base}</span>
+              <span className="text-[#71717a]">Neutral:</span>{' '}
+              <span className="text-[#fafafa]">{colors.neutral.base}</span>
             </div>
           </div>
         </div>

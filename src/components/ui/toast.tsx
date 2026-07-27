@@ -86,22 +86,22 @@ function ToastItem({
     toast.variant === 'success'
       ? '#22c55e'
       : toast.variant === 'error'
-        ? '#d9453b'
-        : '#3a322a';
+        ? '#ffffff'
+        : '#27272a';
 
   const accentColor =
     toast.variant === 'success'
       ? '#22c55e'
       : toast.variant === 'error'
-        ? '#d9453b'
-        : '#a09484';
+        ? '#ffffff'
+        : '#a1a1aa';
 
   return (
     <div
       role="alert"
       style={{
         pointerEvents: 'auto',
-        background: '#1c1915',
+        background: '#000000',
         border: `1px solid ${borderColor}`,
         borderRadius: 8,
         padding: '12px 20px',
@@ -119,7 +119,7 @@ function ToastItem({
           fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif",
           fontSize: 13,
           fontWeight: 600,
-          color: '#f0e8dc',
+          color: '#fafafa',
           letterSpacing: 0.5,
         }}
       >
