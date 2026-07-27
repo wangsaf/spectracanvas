@@ -1,0 +1,158 @@
+SPECTRACANVAS DEMO VIDEO SCRIPT
+Duration: 3 minutes
+Generated with inspiration from SpectraCanvas content engine
+
+========================================
+HOOK (0:00-0:05)
+========================================
+
+Option A (Pattern Interrupt):
+"What if I told you can go from zero to a complete brand identity, pixel art game assets, and social media scripts — all in under 5 minutes?"
+
+Option B (Question):
+"Ever wished you had a design team, an artist, and a content writer — all in one tab?"
+
+Option C (Bold Statement):
+"This is SpectraCanvas. One platform. Three creative studios. Zero friction."
+
+========================================
+INTRO (0:05-0:15)
+========================================
+
+[Camera: You talking to camera]
+
+"I'm from team Spectriad, and we built SpectraCanvas for the IBM AI Builders Challenge. It's an AI-powered creative suite that handles brand identity, pixel art, and content scripts — all synced together. Let me show you."
+
+[Overlay: SPECTRACANVAS — Your Creative Spectrum, One Canvas]
+[B-Roll: Open spectracanvas-psi.vercel.app]
+
+========================================
+BRAND STUDIO (0:15-0:50)
+========================================
+
+[Screen: Navigate to Dashboard > Brand tab]
+
+"First up — Brand Studio. I'll create a brand for an indie game studio."
+
+[Screen: Fill in form]
+- Brand name: "PixelForge Studios"
+- Industry: Gaming
+- Values: Creative, Innovative, Bold
+- Target audience: "Indie game enthusiasts aged 18-35"
+
+"Watch this — AI analyzes our inputs and generates a complete brand identity."
+
+[Screen: Click Generate]
+
+"Boom. We get logo concepts, a color palette with primary, secondary, and accent colors, typography pairing — Montserrat for headings, Merriweather for body — and a brand personality with tone, style, and even a tagline."
+
+[Screen: Scroll through results]
+
+"Everything is exportable as JSON or ZIP. One click, your entire brand package downloads."
+
+[Overlay: Brand Identity in Seconds]
+
+========================================
+PIXEL STUDIO (0:50-1:30)
+========================================
+
+[Screen: Navigate to Pixel tab]
+
+"Now let's create game assets. I'll describe a character."
+
+[Screen: Fill in form]
+- Description: "A brave knight with silver armor and a red cape"
+- Style: 16-bit
+- Size: 32x32
+
+"AI detects this as a knight archetype — courageous and determined. It suggests poses: idle, attack, defend, walk."
+
+[Screen: Click Generate]
+
+"And there it is — a pixel art sprite rendered right in the browser. No external tools, no Photoshop. Pure AI + Canvas rendering."
+
+[Screen: Show sprite canvas, zoom in]
+
+"The sprite is transparent PNG-ready. You can download it directly or add it to your project for the sprite sheet."
+
+[Overlay: Pixel Art from Text Descriptions]
+
+========================================
+CONTENT STUDIO (1:30-2:15)
+========================================
+
+[Screen: Navigate to Content tab]
+
+"Time to create content for our game launch. TikTok script, 30 seconds, casual tone."
+
+[Screen: Fill in form]
+- Topic: "Indie pixel game launch"
+- Platform: TikTok
+- Tone: Casual
+- Duration: 30 seconds
+
+"AI generates a complete script with three hook options, body sections with timestamps and B-roll suggestions, and CTAs."
+
+[Screen: Show script output]
+
+"Look at this — the hook is 'Stop scrolling if you love retro games!' — that's a pattern interrupt. Body has timestamps, camera directions, even text overlay suggestions."
+
+[Screen: Scroll to caption]
+
+"Plus a caption with 10 relevant hashtags and A/B testing variations. One input, complete content package."
+
+[Overlay: Scripts, Captions, Calendar — All AI-Generated]
+
+========================================
+DEMO PAGE (2:15-2:35)
+========================================
+
+[Screen: Navigate to /demo]
+
+"Don't want to fill forms? We have a demo page with pre-filled examples. One click — instant results."
+
+[Screen: Click TRY IT on each demo]
+
+"Brand identity, pixel art, content script — all generated in seconds. This is what SpectraCanvas does."
+
+========================================
+CLOSING (2:35-3:00)
+========================================
+
+[Camera: You talking to camera]
+
+"SpectraCanvas. Brand identity. Pixel art. Content creation. All in one platform, all AI-powered, all synced together."
+
+"We built this with IBM watsonx Granite 3-8B for the AI Builders Challenge. The entire creative pipeline — from idea to export — happens in one canvas."
+
+"Link in the description. Try it yourself. No sign-up required."
+
+[Overlay: spectracanvas-psi.vercel.app]
+[Overlay: Team Spectriad — Three Mind One Solution]
+
+========================================
+CTAs
+========================================
+
+Soft CTA: "Follow for more AI creative tools and demos!"
+Hard CTA: "Try SpectraCanvas free — link in description!"
+
+========================================
+CAPTION (for YouTube/TikTok)
+========================================
+
+SpectraCanvas — an AI-powered creative suite that transforms ideas into brand identity, pixel art, and content scripts. Built with IBM watsonx for the AI Builders Challenge.
+
+One platform. Three studios. Zero friction.
+
+#SpectraCanvas #AICreative #BrandIdentity #PixelArt #ContentCreation #IBMwatsonx #GameDev #IndieGame #AIArt #CreativeSuite
+
+========================================
+NOTES
+========================================
+
+- Total duration: ~3 minutes
+- Screen recording + face camera (picture-in-picture)
+- Music: Lo-fi or ambient (match the "creative flow" vibe)
+- Transitions: Smooth cuts, no flashy effects (keep it professional)
+- Key message: "All-in-one" is the differentiator
