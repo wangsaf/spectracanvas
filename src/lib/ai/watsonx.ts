@@ -28,6 +28,9 @@ export async function generateWithAI(prompt: string, maxTokens = 800): Promise<s
   const projectId = process.env.WATSONX_PROJECT_ID;
   if (!token || !projectId) return null;
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
+    
     const resp = await fetch(WATSONX_GENERATE_URL, {
       method: 'POST',
       headers: {
@@ -40,7 +43,10 @@ export async function generateWithAI(prompt: string, maxTokens = 800): Promise<s
         parameters: { max_new_tokens: maxTokens, decoding_method: 'greedy' },
         project_id: projectId,
       }),
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeout);
     const data = await resp.json();
     return data.results?.[0]?.generated_text || null;
   } catch {

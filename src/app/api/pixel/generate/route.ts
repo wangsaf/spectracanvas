@@ -91,7 +91,7 @@ Return ONLY this JSON (no markdown, no explanation):
   "suggestedPoses": ["<4 pose names like idle, attack, walk, jump>"]
 }`;
 
-  const result = await generateWithAI(prompt, 300);
+  const result = await generateWithAI(prompt, 200);
   if (!result) return null;
 
   const parsed = extractJSON(result);
