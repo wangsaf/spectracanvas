@@ -127,7 +127,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
                 className={`px-3 py-2 rounded border transition-colors ${
                   currentPose === pose.key
                     ? 'bg-[#ffffff] text-white border-[#ffffff]'
-                    : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                    : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
                 }`}
               >
                 <div className="text-xs font-bold">{pose.icon}</div>
@@ -166,7 +166,7 @@ export function AnimationPreview({ poses, spriteSize }: AnimationPreviewProps) {
             >
               -
             </Button>
-            <span className="text-xs font-mono text-[#fafafa] w-8 text-center">{fps}</span>
+            <span className="text-xs font-mono text-[#ffffff] w-8 text-center">{fps}</span>
             <Button
               variant="outline"
               size="sm"

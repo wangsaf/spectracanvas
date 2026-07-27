@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen bg-[#000000] text-[#fafafa] p-4 md:p-8" style={{ fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-[#000000] text-[#ffffff] p-4 md:p-8" style={{ fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
       <div className="max-w-5xl mx-auto">
-        <Link href="/" className="text-xs text-[#71717a] hover:text-[#fafafa]">← HOME</Link>
+        <Link href="/" className="text-xs text-[#71717a] hover:text-[#ffffff]">← HOME</Link>
         <h1 className="text-2xl tracking-wider mt-4">DEMO</h1>
         <p className="text-sm text-[#a1a1aa] mt-2">Try SpectraCanvas with pre-filled examples.</p>
         

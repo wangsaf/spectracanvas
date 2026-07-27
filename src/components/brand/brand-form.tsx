@@ -151,8 +151,8 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
               disabled={isGenerating || (!formData.values.includes(value) && formData.values.length >= 5)}
               className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
                 formData.values.includes(value)
-                  ? 'bg-[#ffffff] text-white border-[#ffffff] rounded'
-                  : 'bg-transparent text-[#a1a1aa] border rounded border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                  ? 'bg-[#ffffff] text-[#000000] border-[#ffffff] rounded'
+                  : 'bg-transparent text-[#a1a1aa] border rounded border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               } ${!formData.values.includes(value) && formData.values.length >= 5 ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
               {value}
@@ -203,8 +203,8 @@ export function BrandForm({ onGenerate, isGenerating = false }: BrandFormProps) 
                 disabled={isGenerating}
                 className={`px-3 py-2 text-xs font-bold tracking-wider border transition-colors ${
                   formData.mood?.includes(mood.value as MoodKeyword)
-                    ? 'bg-[#ffffff] text-white border-[#ffffff] rounded'
-                    : 'bg-transparent text-[#a1a1aa] border rounded border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                    ? 'bg-[#ffffff] text-[#000000] border-[#ffffff] rounded'
+                    : 'bg-transparent text-[#a1a1aa] border rounded border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
                 }`}
               >
                 {mood.label.split(' / ')[0]}

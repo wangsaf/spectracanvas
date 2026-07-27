@@ -119,7 +119,7 @@ function ToastItem({
           fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif",
           fontSize: 13,
           fontWeight: 600,
-          color: '#fafafa',
+          color: '#ffffff',
           letterSpacing: 0.5,
         }}
       >

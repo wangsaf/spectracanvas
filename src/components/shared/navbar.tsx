@@ -16,16 +16,15 @@ export function Navbar() {
     { href: '/dashboard', label: 'Dashboard' },
   ];
 
-  const isHome = pathname === '/';
+  const isActive = (href: string) => pathname === href;
+  const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard');
 
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        borderBottom: '1px solid rgba(39,39,42,0.5)',
-        background: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderBottom: '1px solid #27272a',
+        background: '#000000',
       }}
     >
       <div className="max-w-7xl mx-auto px-6">
@@ -36,11 +35,11 @@ export function Navbar() {
               className="w-7 h-7 flex items-center justify-center"
               style={{ background: '#ffffff', borderRadius: '6px' }}
             >
-              <span className="font-bold text-sm text-white" style={{ fontFamily: "'Space Grotesk', monospace" }}>S</span>
+              <span className="font-bold text-sm" style={{ color: '#000000', fontFamily: "'Space Grotesk', monospace" }}>S</span>
             </div>
             <span
               className="font-bold text-sm tracking-widest hidden sm:inline"
-              style={{ color: '#fafafa', fontFamily: "'Space Grotesk', monospace" }}
+              style={{ color: '#ffffff', fontFamily: "'Space Grotesk', monospace" }}
             >
               SPECTRACANVAS
             </span>
@@ -49,7 +48,7 @@ export function Navbar() {
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
@@ -58,18 +57,18 @@ export function Navbar() {
                   style={{
                     borderRadius: '6px',
                     fontFamily: "'DM Sans', sans-serif",
-                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                    color: isActive ? '#ffffff' : '#a1a1aa',
+                    background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    color: active ? '#ffffff' : '#71717a',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = '#fafafa';
-                      e.currentTarget.style.background = 'rgba(39,39,42,0.3)';
+                    if (!active) {
+                      e.currentTarget.style.color = '#ffffff';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = '#a1a1aa';
+                    if (!active) {
+                      e.currentTarget.style.color = '#71717a';
                       e.currentTarget.style.background = 'transparent';
                     }
                   }}
@@ -80,40 +79,42 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Right side: Project info + CTA */}
-          <div className="hidden lg:flex items-center gap-4">
-            <div className="text-right">
-              <p
-                className="text-[9px] tracking-[2px]"
-                style={{ color: '#71717a', fontFamily: "'Space Grotesk', monospace" }}
+          {/* Right side: Project info — only on dashboard */}
+          {isDashboard && (
+            <div className="hidden lg:flex items-center gap-4">
+              <div className="text-right">
+                <p
+                  className="text-[9px] tracking-[2px]"
+                  style={{ color: '#52525b', fontFamily: "'Space Grotesk', monospace" }}
+                >
+                  PROJECT
+                </p>
+                <p className="text-xs font-medium" style={{ color: '#ffffff' }}>
+                  {projectName}
+                </p>
+              </div>
+              <div
+                className="w-9 h-9 flex items-center justify-center"
+                style={{
+                  border: '1px solid #27272a',
+                  borderRadius: '6px',
+                  background: '#0a0a0a',
+                }}
               >
-                PROJECT
-              </p>
-              <p className="text-xs font-medium" style={{ color: '#fafafa' }}>
-                {projectName}
-              </p>
+                <span
+                  className="text-[10px] font-bold"
+                  style={{ color: '#ffffff', fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  {completion}%
+                </span>
+              </div>
             </div>
-            <div
-              className="w-9 h-9 flex items-center justify-center"
-              style={{
-                border: '1px solid #27272a',
-                borderRadius: '6px',
-                background: 'rgba(10,10,10,0.5)',
-              }}
-            >
-              <span
-                className="text-[10px] font-bold"
-                style={{ color: '#ffffff', fontFamily: "'JetBrains Mono', monospace" }}
-              >
-                {completion}%
-              </span>
-            </div>
-          </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 transition-colors"
-            style={{ color: '#fafafa', borderRadius: '6px' }}
+            style={{ color: '#ffffff', borderRadius: '6px' }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
@@ -130,9 +131,9 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-1" style={{ borderTop: '1px solid rgba(39,39,42,0.5)' }}>
+          <div className="md:hidden py-4 space-y-1" style={{ borderTop: '1px solid #27272a' }}>
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
@@ -142,18 +143,20 @@ export function Navbar() {
                   style={{
                     borderRadius: '6px',
                     fontFamily: "'DM Sans', sans-serif",
-                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                    color: isActive ? '#ffffff' : '#a1a1aa',
+                    background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    color: active ? '#ffffff' : '#71717a',
                   }}
                 >
                   {item.label}
                 </Link>
               );
             })}
-            <div className="px-4 pt-3 mt-3" style={{ borderTop: '1px solid rgba(39,39,42,0.5)' }}>
-              <p className="text-xs" style={{ color: '#71717a' }}>PROJECT: {projectName}</p>
-              <p className="text-xs font-bold" style={{ color: '#ffffff' }}>{completion}%</p>
-            </div>
+            {isDashboard && (
+              <div className="px-4 pt-3 mt-3" style={{ borderTop: '1px solid #27272a' }}>
+                <p className="text-xs" style={{ color: '#52525b' }}>PROJECT: {projectName}</p>
+                <p className="text-xs font-bold" style={{ color: '#ffffff' }}>{completion}%</p>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -11,9 +11,9 @@ function stripEmoji(text: string): string {
     .trim();
 }
 
-function generateFallbackScript(input: any) {
-  const topic = input.topic;
-  const duration = input.duration || 30;
+function generateFallbackScript(input: Record<string, unknown>) {
+  const topic = String(String(input.topic) || "");
+  const duration = Number(input.duration) || 30;
   
   return {
     hooks: [
@@ -51,8 +51,8 @@ function generateFallbackScript(input: any) {
   };
 }
 
-function generateFallbackCaption(input: any) {
-  const topic = input.topic;
+function generateFallbackCaption(input: Record<string, unknown>) {
+  const topic = String(String(input.topic) || "");
   const industry = input.industry || 'Tech';
   return {
     main: `Breaking down ${topic} so you can actually use it. No fluff, just the good stuff.`,
@@ -70,16 +70,16 @@ function generateFallbackCaption(input: any) {
 export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
-    if (!input.topic) {
+    if (!String(input.topic)) {
       return NextResponse.json({ success: false, error: 'Topic required' }, { status: 400 });
     }
 
     // Try AI generation
-    const aiPrompt = `You are a real ${input.platform} creator making a video about: "${input.topic}"
+    const aiPrompt = `You are a real ${String(input.platform || 'TikTok')} creator making a video about: "${String(String(input.topic))}"
 
-Write a ${input.duration || 30}-second script that sounds like YOU'RE ACTUALLY TALKING to the camera.
+Write a ${Number(input.duration) || 30}-second script that sounds like YOU'RE ACTUALLY TALKING to the camera.
 
-TONE: ${input.tone || 'casual'} — like you're chatting with a friend, not presenting a TED talk.
+TONE: ${String(input.tone || 'casual')} — like you're chatting with a friend, not presenting a TED talk.
 
 CRITICAL RULES:
 1. Write EXACTLY how you'd speak — use "like", "honestly", "okay so", "listen", contractions ("it's", "don't", "you're")
@@ -127,10 +127,10 @@ Return ONLY JSON:
 
     // Try AI caption generation
     let caption;
-    const captionPrompt = `Write a social media caption for a ${input.platform} post about: ${input.topic}
-Tone: ${input.tone || 'casual'}
-Audience: ${input.audience || 'general'}
-Industry: ${input.industry || 'general'}
+    const captionPrompt = `Write a social media caption for a ${String(input.platform || 'TikTok')} post about: ${String(input.topic)}
+Tone: ${String(input.tone || 'casual')}
+Audience: ${String(input.audience || 'general')}
+Industry: ${String(input.industry || 'general')}
 
 Return ONLY JSON with these fields:
 {
@@ -152,8 +152,8 @@ Rules:
       if (captionData && typeof captionData.main === 'string') {
         caption = {
           main: stripEmoji(String(captionData.main)),
-          hashtags: Array.isArray(captionData.hashtags) ? captionData.hashtags.map((h: any) => stripEmoji(String(h))) : [],
-          variations: Array.isArray(captionData.variations) ? captionData.variations.map((v: any) => stripEmoji(String(v))) : [],
+          hashtags: Array.isArray(captionData.hashtags) ? captionData.hashtags.map((h: unknown) => stripEmoji(String(h))) : [],
+          variations: Array.isArray(captionData.variations) ? captionData.variations.map((v: unknown) => stripEmoji(String(v))) : [],
           emojis: ['[point_up]', '[eyes]', '[bulb]', '[memo]', '[check_mark]'],
           aiGenerated: true,
         };
@@ -168,12 +168,12 @@ Rules:
       day: day.substring(0, 3),
       contentType: ['educational', 'entertaining', 'promotional', 'educational', 'engagement', 'entertaining', 'promotional'][i],
       bestTime: ['10:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '9:00 AM', '11:00 AM', '4:00 PM'][i],
-      topic: input.topic,
-      platform: input.platform,
+      topic: String(input.topic),
+      platform: String(input.platform || 'TikTok'),
     }));
 
     return NextResponse.json({ success: true, data: { script, caption, calendar } });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : String(error)) || 'Failed' }, { status: 500 });
   }
 }

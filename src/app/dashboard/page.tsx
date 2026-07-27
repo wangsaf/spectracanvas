@@ -860,10 +860,10 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-bold tracking-wide text-[#fafafa]">{projectName}</h1>
+                  <h1 className="text-base font-bold tracking-wide text-[#ffffff]">{projectName}</h1>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="text-[#71717a] hover:text-[#fafafa] transition-colors p-1"
+                    className="text-[#71717a] hover:text-[#ffffff] transition-colors p-1"
                     aria-label="Edit project name"
                   >
                     <IconPencil className="w-3.5 h-3.5" />
@@ -898,7 +898,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   <p className="text-[10px] text-[#71717a] tracking-[0.15em] font-medium mb-1.5">
                     {stat.label}
                   </p>
-                  <p className="text-2xl font-bold text-[#fafafa] tabular-nums">
+                  <p className="text-2xl font-bold text-[#ffffff] tabular-nums">
                     <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                   </p>
                 </div>
@@ -919,7 +919,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
             <p className="text-[10px] text-[#71717a] tracking-[0.15em] font-medium">
               PROJECT PROGRESS
             </p>
-            <p className="text-xs text-[#fafafa] font-bold tabular-nums">
+            <p className="text-xs text-[#ffffff] font-bold tabular-nums">
               {completion}%
             </p>
           </div>
@@ -950,7 +950,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 >
                   {step.done && <IconCheck className="w-2 h-2 text-white" />}
                 </div>
-                <span className={`text-[10px] tracking-wider ${step.done ? 'text-[#fafafa]' : 'text-[#71717a]'}`}>
+                <span className={`text-[10px] tracking-wider ${step.done ? 'text-[#ffffff]' : 'text-[#71717a]'}`}>
                   {step.label}
                 </span>
               </div>
@@ -960,21 +960,23 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
         {/* ─── Tab Navigation ─────────────────────────────────────────────── */}
         <div className="border-b border-[#27272a]">
-          <div className="flex gap-1">
+          <div className="flex gap-1" role="tablist">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
                 onClick={() => handleTabChange(tab.id)}
                 className="px-5 py-2.5 text-xs font-bold tracking-[0.15em] transition-all rounded-t"
                 style={{
-                  background: activeTab === tab.id ? '#ffffff' : 'transparent',
+                  background: activeTab === tab.id ? '#0a0a0a' : 'transparent',
                   color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
                   borderBottom: activeTab === tab.id ? '2px solid #ffffff' : '2px solid transparent',
                 }}
                 onMouseEnter={(e) => {
                   if (activeTab !== tab.id) {
                     e.currentTarget.style.background = '#0a0a0a';
-                    e.currentTarget.style.color = '#fafafa';
+                    e.currentTarget.style.color = '#ffffff';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -1002,7 +1004,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <IconPalette className="w-4 h-4 text-[#ffffff]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">BRAND IDENTITY</h3>
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#ffffff]">BRAND IDENTITY</h3>
                     </div>
                     <span
                       className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded ${
@@ -1052,11 +1054,11 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                         <p className="text-[9px] text-[#71717a] tracking-[0.15em] mb-2 font-medium">TYPOGRAPHY</p>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#fafafa]">Heading</span>
+                            <span className="text-xs text-[#ffffff]">Heading</span>
                             <span className="text-[10px] text-[#71717a] font-mono">{brand.typography.heading.name}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#fafafa]">Body</span>
+                            <span className="text-xs text-[#ffffff]">Body</span>
                             <span className="text-[10px] text-[#71717a] font-mono">{brand.typography.body.name}</span>
                           </div>
                         </div>
@@ -1064,7 +1066,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       <button
                         onClick={() => handleTabChange('brand')}
-                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#ffffff] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         VIEW BRAND <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1086,7 +1088,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <IconSprite className="w-4 h-4 text-[#ffffff]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">PIXEL ART</h3>
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#ffffff]">PIXEL ART</h3>
                     </div>
                     <span className="text-[10px] text-[#71717a] tabular-nums font-bold">
                       {sprites.length} sprite{sprites.length !== 1 ? 's' : ''}
@@ -1137,7 +1139,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       <button
                         onClick={() => handleTabChange('pixel')}
-                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#ffffff] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         MANAGE SPRITES <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1159,7 +1161,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <IconScript className="w-4 h-4 text-[#ffffff]" />
-                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">CONTENT SCRIPTS</h3>
+                      <h3 className="text-xs font-bold tracking-[0.15em] text-[#ffffff]">CONTENT SCRIPTS</h3>
                     </div>
                     <span className="text-[10px] text-[#71717a] tabular-nums font-bold">
                       {scripts.length} script{scripts.length !== 1 ? 's' : ''}
@@ -1177,7 +1179,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs text-[#fafafa] truncate font-medium">{script.topic}</p>
+                                <p className="text-xs text-[#ffffff] truncate font-medium">{script.topic}</p>
                                 <div className="flex items-center gap-2 mt-1">
                                   <span className="text-[9px] text-[#ffffff] tracking-wider font-bold uppercase">
                                     {script.platform}
@@ -1195,7 +1197,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
                       <button
                         onClick={() => handleTabChange('content')}
-                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
+                        className="w-full mt-2 py-2.5 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#ffffff] hover:bg-[#27272a]/50 hover:border-[#ffffff] transition-all flex items-center justify-center gap-2"
                       >
                         MANAGE SCRIPTS <IconExternalLink className="w-3 h-3" />
                       </button>
@@ -1230,7 +1232,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                       <action.icon className="w-4 h-4 text-[#ffffff]" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-[#fafafa] tracking-wider">{action.label.toUpperCase()}</p>
+                      <p className="text-xs font-bold text-[#ffffff] tracking-wider">{action.label.toUpperCase()}</p>
                       <p className="text-[10px] text-[#71717a] mt-0.5">{action.desc}</p>
                     </div>
                     <IconPlus className="w-4 h-4 text-[#27272a] ml-auto group-hover:text-[#ffffff] transition-colors" />
@@ -1244,7 +1246,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <IconDownload className="w-4 h-4 text-[#ffffff]" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">EXPORT PROJECT</h3>
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#ffffff]">EXPORT PROJECT</h3>
                 </div>
                 <p className="text-[10px] text-[#71717a]">
                   Download all your creative assets
@@ -1255,7 +1257,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   onClick={handleExportJSON}
                   aria-label="Export as JSON"
                   disabled={!hasAnyContent || isExporting === 'json'}
-                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#ffffff] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
                 >
                   <IconJson className="w-4 h-4" />
                   {isExporting === 'json' ? 'EXPORTING...' : 'EXPORT JSON'}
@@ -1264,7 +1266,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                   onClick={handleExportZIP}
                   aria-label="Export as ZIP"
                   disabled={!hasAnyContent || isExporting === 'zip'}
-                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#fafafa] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
+                  className="flex items-center justify-center gap-2.5 py-3 px-4 border border-[#27272a] rounded text-[10px] font-bold tracking-[0.15em] text-[#ffffff] hover:border-[#ffffff] hover:bg-[#000000] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#27272a] disabled:hover:bg-transparent"
                 >
                   <IconArchive className="w-4 h-4" />
                   {isExporting === 'zip' ? 'EXPORTING...' : 'EXPORT ZIP'}
@@ -1280,7 +1282,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               <div className="border border-[#27272a] bg-[#0a0a0a] rounded p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-[#ffffff] animate-pulse" />
-                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#fafafa]">MOOD SYNC ACTIVE</h3>
+                  <h3 className="text-xs font-bold tracking-[0.15em] text-[#ffffff]">MOOD SYNC ACTIVE</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {selectedMoods.map((mood) => (

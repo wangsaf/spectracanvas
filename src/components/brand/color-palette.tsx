@@ -21,8 +21,16 @@ export function ColorPalette({ colors }: ColorPaletteProps) {
             <div
               className="h-16 border rounded border-[#27272a] flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
               style={{ backgroundColor: color }}
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 navigator.clipboard.writeText(color);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigator.clipboard.writeText(color);
+                }
               }}
               title={`Click to copy ${color}`}
             >
@@ -64,19 +72,19 @@ export function ColorPalette({ colors }: ColorPaletteProps) {
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div>
               <span className="text-[#71717a]">Primary:</span>{' '}
-              <span className="text-[#fafafa]">{colors.primary.base}</span>
+              <span className="text-[#ffffff]">{colors.primary.base}</span>
             </div>
             <div>
               <span className="text-[#71717a]">Secondary:</span>{' '}
-              <span className="text-[#fafafa]">{colors.secondary.base}</span>
+              <span className="text-[#ffffff]">{colors.secondary.base}</span>
             </div>
             <div>
               <span className="text-[#71717a]">Accent:</span>{' '}
-              <span className="text-[#fafafa]">{colors.accent.base}</span>
+              <span className="text-[#ffffff]">{colors.accent.base}</span>
             </div>
             <div>
               <span className="text-[#71717a]">Neutral:</span>{' '}
-              <span className="text-[#fafafa]">{colors.neutral.base}</span>
+              <span className="text-[#ffffff]">{colors.neutral.base}</span>
             </div>
           </div>
         </div>

@@ -80,19 +80,19 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
               <span className="text-[#71717a]">Platform:</span>
-              <p className="text-[#fafafa] font-bold mt-1">{script.platform.toUpperCase()}</p>
+              <p className="text-[#ffffff] font-bold mt-1">{script.platform.toUpperCase()}</p>
             </div>
             <div>
               <span className="text-[#71717a]">Duration:</span>
-              <p className="text-[#fafafa] font-bold mt-1">{script.duration} seconds</p>
+              <p className="text-[#ffffff] font-bold mt-1">{script.duration} seconds</p>
             </div>
             <div>
               <span className="text-[#71717a]">Tone:</span>
-              <p className="text-[#fafafa] font-bold mt-1">{script.tone.toUpperCase()}</p>
+              <p className="text-[#ffffff] font-bold mt-1">{script.tone.toUpperCase()}</p>
             </div>
             <div>
               <span className="text-[#71717a]">Word Count:</span>
-              <p className="text-[#fafafa] font-bold mt-1">{script.wordCount} words</p>
+              <p className="text-[#ffffff] font-bold mt-1">{script.wordCount} words</p>
             </div>
           </div>
         </CardContent>
@@ -114,7 +114,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedHook === index
                   ? 'bg-[#ffffff] text-white border-[#ffffff]'
-                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider mb-2">OPTION {index + 1}</div>
@@ -146,7 +146,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
                 <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-1">
                   CONTENT:
                 </p>
-                <p className="text-sm text-[#fafafa]">{section.content}</p>
+                <p className="text-sm text-[#ffffff]">{section.content}</p>
               </div>
 
               <div>
@@ -183,7 +183,7 @@ ${script.cta.map((c, i) => `${i + 1}. ${c}`).join('\n')}
               className={`w-full p-4 text-left border transition-colors rounded ${
                 selectedCTA === index
                   ? 'bg-[#ffffff] text-white border-[#ffffff]'
-                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider mb-2">OPTION {index + 1}</div>

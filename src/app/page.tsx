@@ -6,7 +6,7 @@ import { GlobeHero } from '@/components/shared/globe-hero';
 
 export default function Home() {
   return (
-    <div className="min-h-screen" style={{ background: '#000000', color: '#fafafa', fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
+    <div className="min-h-screen" style={{ background: '#000000', color: '#ffffff', fontFamily: "'DM Sans', 'Space Grotesk', system-ui, sans-serif" }}>
       {/* Globe Hero */}
       <GlobeHero />
 
@@ -27,7 +27,7 @@ export default function Home() {
           </p>
           <h2
             className="text-3xl md:text-4xl font-bold"
-            style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}
+            style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
           >
             Everything you need to build a brand
           </h2>
@@ -80,7 +80,7 @@ export default function Home() {
                 </div>
                 <h3
                   className="text-sm font-bold tracking-wider mb-2"
-                  style={{ fontFamily: "'Space Grotesk', monospace", color: '#fafafa' }}
+                  style={{ fontFamily: "'Space Grotesk', monospace", color: '#ffffff' }}
                 >
                   {f.title}
                 </h3>
@@ -110,7 +110,7 @@ export default function Home() {
           </p>
           <h2
             className="text-3xl md:text-4xl font-bold"
-            style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}
+            style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
           >
             From idea to output in three steps
           </h2>
@@ -136,7 +136,7 @@ export default function Home() {
               >
                 {s.step}
               </div>
-              <h3 className="text-base font-bold mb-2" style={{ color: '#fafafa' }}>
+              <h3 className="text-base font-bold mb-2" style={{ color: '#ffffff' }}>
                 {s.title}
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: '#71717a' }}>
@@ -195,7 +195,7 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="max-w-5xl mx-auto px-6 pb-20 text-center"
       >
-        <p className="text-lg mb-2" style={{ color: '#fafafa', fontFamily: "'Instrument Serif', serif" }}>
+        <p className="text-lg mb-2" style={{ color: '#ffffff', fontFamily: "'Instrument Serif', serif" }}>
           Ready to create?
         </p>
         <p className="text-sm mb-6" style={{ color: '#71717a' }}>

@@ -20,7 +20,7 @@ export function PersonalityPreview({ personality }: PersonalityPreviewProps) {
       {personality.tagline && (
         <div className="border-l-2 border-[#ffffff] pl-4">
           <p className="text-xs text-[#71717a] font-bold tracking-wider mb-1">TAGLINE</p>
-          <p className="text-lg font-bold" style={{ fontFamily: "'Instrument Serif', serif", color: '#fafafa' }}>
+          <p className="text-lg font-bold" style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}>
             &ldquo;{personality.tagline}&rdquo;
           </p>
         </div>
@@ -36,11 +36,11 @@ export function PersonalityPreview({ personality }: PersonalityPreviewProps) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-xs text-[#71717a] font-bold tracking-wider mb-1">TONE</p>
-          <p className="text-sm text-[#fafafa] font-bold">{personality.tone}</p>
+          <p className="text-sm text-[#ffffff] font-bold">{personality.tone}</p>
         </div>
         <div>
           <p className="text-xs text-[#71717a] font-bold tracking-wider mb-1">STYLE</p>
-          <p className="text-sm text-[#fafafa] font-bold">{personality.style}</p>
+          <p className="text-sm text-[#ffffff] font-bold">{personality.style}</p>
         </div>
       </div>
 

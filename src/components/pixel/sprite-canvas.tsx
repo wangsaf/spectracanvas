@@ -105,7 +105,7 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
             >
               -
             </Button>
-            <span className="text-xs font-mono text-[#fafafa] w-12 text-center">{zoom}x</span>
+            <span className="text-xs font-mono text-[#ffffff] w-12 text-center">{zoom}x</span>
             <Button
               variant="outline"
               size="sm"
@@ -133,19 +133,19 @@ export function SpriteCanvas({ sprite, onDownload }: SpriteCanvasProps) {
         <div className="pt-4 border-t border-[#27272a] space-y-2 text-xs">
           <div className="flex justify-between">
             <span className="text-[#71717a]">Size:</span>
-            <span className="text-[#fafafa] font-mono">{sprite.size}x{sprite.size}px</span>
+            <span className="text-[#ffffff] font-mono">{sprite.size}x{sprite.size}px</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[#71717a]">Style:</span>
-            <span className="text-[#fafafa]">{sprite.style}</span>
+            <span className="text-[#ffffff]">{sprite.style}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[#71717a]">Colors:</span>
-            <span className="text-[#fafafa]">{sprite.metadata.colorCount}</span>
+            <span className="text-[#ffffff]">{sprite.metadata.colorCount}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[#71717a]">Transparent:</span>
-            <span className="text-[#fafafa]">{sprite.metadata.transparent ? 'Yes' : 'No'}</span>
+            <span className="text-[#ffffff]">{sprite.metadata.transparent ? 'Yes' : 'No'}</span>
           </div>
         </div>
 

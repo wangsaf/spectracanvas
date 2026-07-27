@@ -47,7 +47,7 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
                 className={`p-4 border transition-all rounded ${
                   isSelected
                     ? 'bg-[#ffffff] text-white border-[#ffffff]'
-                    : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa] disabled:opacity-50 disabled:cursor-not-allowed'
+                    : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff] disabled:opacity-50 disabled:cursor-not-allowed'
                 }`}
               >
                 <div className="text-xs font-bold tracking-wider mb-2">
@@ -114,7 +114,7 @@ export function MoodSelector({ selectedMoods, onMoodsChange, maxSelection = 3 }:
                   <p className="text-xs font-bold tracking-wider text-[#a1a1aa] mb-2">
                     PACING
                   </p>
-                  <span className="px-3 py-2 bg-[#0a0a0a] border border-[#27272a] text-sm text-[#fafafa] inline-block rounded">
+                  <span className="px-3 py-2 bg-[#0a0a0a] border border-[#27272a] text-sm text-[#ffffff] inline-block rounded">
                     {moodVisuals.pacing.toUpperCase()}
                   </span>
                 </div>

@@ -112,7 +112,7 @@ export function SpriteSheet({ poses, spriteSize }: SpriteSheetProps) {
               >
                 -
               </Button>
-              <span className="text-xs font-mono text-[#fafafa] w-8 text-center">
+              <span className="text-xs font-mono text-[#ffffff] w-8 text-center">
                 {columns}
               </span>
               <Button

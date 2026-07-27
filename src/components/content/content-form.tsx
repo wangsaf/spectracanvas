@@ -124,7 +124,7 @@ export function ContentForm({ onGenerate, isGenerating = false, brandContext }: 
               className={`px-4 py-3 text-left border transition-colors rounded ${
                 formData.tone === tone.value
                   ? 'bg-[#ffffff] text-white border-[#ffffff]'
-                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#fafafa]'
+                  : 'bg-transparent text-[#a1a1aa] border-[#27272a] hover:border-[#ffffff] hover:text-[#ffffff]'
               }`}
             >
               <div className="text-xs font-bold tracking-wider">{tone.label}</div>
