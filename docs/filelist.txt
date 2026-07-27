@@ -1,0 +1,13 @@
+file 'screenshots/01-homepage.png'
+duration 24
+file 'screenshots/03-brand-studio.png'
+duration 24
+file 'screenshots/04-pixel-studio.png'
+duration 24
+file 'screenshots/05-content-studio.png'
+duration 24
+file 'screenshots/06-demo.png'
+duration 24
+file 'screenshots/02-dashboard-overview.png'
+duration 25
+file 'screenshots/02-dashboard-overview.png'
