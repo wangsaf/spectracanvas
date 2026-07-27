@@ -1,185 +1,143 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef, useEffect } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
 
-function GlobeParticles() {
-  const pointsRef = useRef<THREE.Points>(null);
-  const radius = 1.8;
-  const count = 600;
+function GlobeScene() {
+  const groupRef = useRef<THREE.Group>(null);
+  const { scene } = useThree();
 
-  const { positions, colors, sizes } = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
+  useEffect(() => {
+    const group = new THREE.Group();
+    const radius = 1.8;
+    const dotCount = 500;
     const phi = Math.PI * (Math.sqrt(5) - 1);
+
+    // Create dot geometry
+    const dotGeometry = new THREE.BufferGeometry();
+    const dotPositions = new Float32Array(dotCount * 3);
+    const dotColors = new Float32Array(dotCount * 3);
     const baseColor = new THREE.Color('#d9453b');
     const dimColor = new THREE.Color('#6b3a35');
 
-    for (let i = 0; i < count; i++) {
-      const y = 1 - (i / (count - 1)) * 2;
+    for (let i = 0; i < dotCount; i++) {
+      const y = 1 - (i / (dotCount - 1)) * 2;
       const radiusAtY = Math.sqrt(1 - y * y);
       const theta = phi * i;
 
-      positions[i * 3] = Math.cos(theta) * radiusAtY * radius;
-      positions[i * 3 + 1] = y * radius;
-      positions[i * 3 + 2] = Math.sin(theta) * radiusAtY * radius;
+      dotPositions[i * 3] = Math.cos(theta) * radiusAtY * radius;
+      dotPositions[i * 3 + 1] = y * radius;
+      dotPositions[i * 3 + 2] = Math.sin(theta) * radiusAtY * radius;
 
       const normalizedY = Math.abs(y);
       const color = normalizedY < 0.6 ? baseColor : dimColor;
-      colors[i * 3] = color.r;
-      colors[i * 3 + 1] = color.g;
-      colors[i * 3 + 2] = color.b;
-
-      sizes[i] = normalizedY < 0.4 ? 0.08 : 0.05;
+      dotColors[i * 3] = color.r;
+      dotColors[i * 3 + 1] = color.g;
+      dotColors[i * 3 + 2] = color.b;
     }
 
-    return { positions, colors, sizes };
-  }, []);
+    dotGeometry.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
+    dotGeometry.setAttribute('color', new THREE.BufferAttribute(dotColors, 3));
 
-  useFrame(({ clock }) => {
-    if (!pointsRef.current) return;
-    const t = clock.getElapsedTime();
-    pointsRef.current.rotation.y = t * 0.12;
-    pointsRef.current.rotation.x = Math.sin(t * 0.08) * 0.15;
-  });
+    const dotMaterial = new THREE.PointsMaterial({
+      size: 0.08,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
 
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          count={count}
-          array={colors}
-          itemSize={3}
-        />
-        <bufferAttribute
-          attach="attributes-size"
-          count={count}
-          array={sizes}
-          itemSize={1}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.06}
-        vertexColors
-        transparent
-        opacity={0.9}
-        sizeAttenuation
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
+    const dots = new THREE.Points(dotGeometry, dotMaterial);
+    group.add(dots);
 
-function GlowRing() {
-  const ringRef = useRef<THREE.Mesh>(null);
-  const ring2Ref = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (!ringRef.current || !ring2Ref.current) return;
-    const t = clock.getElapsedTime();
-    ringRef.current.rotation.x = Math.PI / 2;
-    ringRef.current.rotation.z = t * 0.05;
-    ring2Ref.current.rotation.x = Math.PI / 3;
-    ring2Ref.current.rotation.z = -t * 0.03;
-  });
-
-  return (
-    <>
-      <mesh ref={ringRef}>
-        <torusGeometry args={[2.2, 0.015, 16, 100]} />
-        <meshBasicMaterial color="#d9453b" transparent opacity={0.15} />
-      </mesh>
-      <mesh ref={ring2Ref}>
-        <torusGeometry args={[2.4, 0.01, 16, 100]} />
-        <meshBasicMaterial color="#d9453b" transparent opacity={0.08} />
-      </mesh>
-    </>
-  );
-}
-
-function InnerGlow() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return;
-    const t = clock.getElapsedTime();
-    const scale = 1 + Math.sin(t * 1.5) * 0.03;
-    meshRef.current.scale.setScalar(scale);
-  });
-
-  return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1.6, 32, 32]} />
-      <meshBasicMaterial
-        color="#d9453b"
-        transparent
-        opacity={0.04}
-        side={THREE.BackSide}
-      />
-    </mesh>
-  );
-}
-
-function ConnectionLines() {
-  const linesRef = useRef<THREE.LineSegments>(null);
-  const radius = 1.8;
-  const lineCount = 80;
-
-  const geometry = useMemo(() => {
-    const positions = new Float32Array(lineCount * 6);
-    const phi = Math.PI * (Math.sqrt(5) - 1);
-    const pts: THREE.Vector3[] = [];
-
-    for (let i = 0; i < lineCount * 2; i++) {
-      const y = 1 - (i / (lineCount * 2 - 1)) * 2;
-      const r = Math.sqrt(1 - y * y);
-      const theta = phi * i;
-      pts.push(new THREE.Vector3(
-        Math.cos(theta) * r * radius,
-        y * radius,
-        Math.sin(theta) * r * radius
-      ));
-    }
+    // Create connection lines
+    const lineCount = 60;
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(lineCount * 6);
 
     for (let i = 0; i < lineCount; i++) {
-      const a = pts[i * 2];
-      const b = pts[i * 2 + 1];
-      positions[i * 6] = a.x;
-      positions[i * 6 + 1] = a.y;
-      positions[i * 6 + 2] = a.z;
-      positions[i * 6 + 3] = b.x;
-      positions[i * 6 + 4] = b.y;
-      positions[i * 6 + 5] = b.z;
+      const y1 = 1 - (i / lineCount) * 2;
+      const y2 = 1 - ((i + lineCount) / (lineCount * 2)) * 2;
+      const r1 = Math.sqrt(1 - y1 * y1);
+      const r2 = Math.sqrt(1 - y2 * y2);
+      const theta1 = phi * i;
+      const theta2 = phi * (i + lineCount);
+
+      linePositions[i * 6] = Math.cos(theta1) * r1 * radius;
+      linePositions[i * 6 + 1] = y1 * radius;
+      linePositions[i * 6 + 2] = Math.sin(theta1) * r1 * radius;
+      linePositions[i * 6 + 3] = Math.cos(theta2) * r2 * radius;
+      linePositions[i * 6 + 4] = y2 * radius;
+      linePositions[i * 6 + 5] = Math.sin(theta2) * r2 * radius;
     }
 
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    return geo;
-  }, []);
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: '#d9453b',
+      transparent: true,
+      opacity: 0.06,
+    });
+    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+    group.add(lines);
+
+    // Create orbit rings
+    const ring1 = new THREE.Mesh(
+      new THREE.TorusGeometry(2.2, 0.015, 16, 100),
+      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.12 })
+    );
+    ring1.rotation.x = Math.PI / 2;
+    group.add(ring1);
+
+    const ring2 = new THREE.Mesh(
+      new THREE.TorusGeometry(2.4, 0.01, 16, 100),
+      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.06 })
+    );
+    ring2.rotation.x = Math.PI / 3;
+    group.add(ring2);
+
+    // Create inner glow sphere
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(1.6, 32, 32),
+      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.04, side: THREE.BackSide })
+    );
+    group.add(glow);
+
+    scene.add(group);
+    groupRef.current = group;
+
+    return () => {
+      scene.remove(group);
+      dotGeometry.dispose();
+      dotMaterial.dispose();
+      lineGeometry.dispose();
+      lineMaterial.dispose();
+      ring1.geometry.dispose();
+      (ring1.material as THREE.Material).dispose();
+      ring2.geometry.dispose();
+      (ring2.material as THREE.Material).dispose();
+      glow.geometry.dispose();
+      (glow.material as THREE.Material).dispose();
+    };
+  }, [scene]);
 
   useFrame(({ clock }) => {
-    if (!linesRef.current) return;
+    if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    linesRef.current.rotation.y = t * 0.12;
-    linesRef.current.rotation.x = Math.sin(t * 0.08) * 0.15;
+    groupRef.current.rotation.y = t * 0.12;
+    groupRef.current.rotation.x = Math.sin(t * 0.08) * 0.15;
+
+    // Pulse rings
+    const rings = groupRef.current.children.filter(c => c instanceof THREE.Mesh && c.geometry.type === 'TorusGeometry');
+    rings.forEach((ring, i) => {
+      ring.rotation.z = (i === 1 ? -1 : 1) * t * 0.05;
+    });
   });
 
-  return (
-    <lineSegments ref={linesRef} geometry={geometry}>
-      <lineBasicMaterial color="#d9453b" transparent opacity={0.08} />
-    </lineSegments>
-  );
+  return null;
 }
 
 export function GlobeHero() {
@@ -209,10 +167,7 @@ export function GlobeHero() {
           gl={{ alpha: true, antialias: true }}
           style={{ background: 'transparent' }}
         >
-          <GlobeParticles />
-          <GlowRing />
-          <InnerGlow />
-          <ConnectionLines />
+          <GlobeScene />
         </Canvas>
       </div>
 
