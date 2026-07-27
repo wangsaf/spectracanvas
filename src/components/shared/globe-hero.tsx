@@ -1,144 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
 import { motion } from 'framer-motion';
-
-function GlobeScene() {
-  const groupRef = useRef<THREE.Group>(null);
-  const { scene } = useThree();
-
-  useEffect(() => {
-    const group = new THREE.Group();
-    const radius = 1.8;
-    const dotCount = 500;
-    const phi = Math.PI * (Math.sqrt(5) - 1);
-
-    // Create dot geometry
-    const dotGeometry = new THREE.BufferGeometry();
-    const dotPositions = new Float32Array(dotCount * 3);
-    const dotColors = new Float32Array(dotCount * 3);
-    const baseColor = new THREE.Color('#d9453b');
-    const dimColor = new THREE.Color('#6b3a35');
-
-    for (let i = 0; i < dotCount; i++) {
-      const y = 1 - (i / (dotCount - 1)) * 2;
-      const radiusAtY = Math.sqrt(1 - y * y);
-      const theta = phi * i;
-
-      dotPositions[i * 3] = Math.cos(theta) * radiusAtY * radius;
-      dotPositions[i * 3 + 1] = y * radius;
-      dotPositions[i * 3 + 2] = Math.sin(theta) * radiusAtY * radius;
-
-      const normalizedY = Math.abs(y);
-      const color = normalizedY < 0.6 ? baseColor : dimColor;
-      dotColors[i * 3] = color.r;
-      dotColors[i * 3 + 1] = color.g;
-      dotColors[i * 3 + 2] = color.b;
-    }
-
-    dotGeometry.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
-    dotGeometry.setAttribute('color', new THREE.BufferAttribute(dotColors, 3));
-
-    const dotMaterial = new THREE.PointsMaterial({
-      size: 0.08,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.95,
-      sizeAttenuation: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-
-    const dots = new THREE.Points(dotGeometry, dotMaterial);
-    group.add(dots);
-
-    // Create connection lines
-    const lineCount = 60;
-    const lineGeometry = new THREE.BufferGeometry();
-    const linePositions = new Float32Array(lineCount * 6);
-
-    for (let i = 0; i < lineCount; i++) {
-      const y1 = 1 - (i / lineCount) * 2;
-      const y2 = 1 - ((i + lineCount) / (lineCount * 2)) * 2;
-      const r1 = Math.sqrt(1 - y1 * y1);
-      const r2 = Math.sqrt(1 - y2 * y2);
-      const theta1 = phi * i;
-      const theta2 = phi * (i + lineCount);
-
-      linePositions[i * 6] = Math.cos(theta1) * r1 * radius;
-      linePositions[i * 6 + 1] = y1 * radius;
-      linePositions[i * 6 + 2] = Math.sin(theta1) * r1 * radius;
-      linePositions[i * 6 + 3] = Math.cos(theta2) * r2 * radius;
-      linePositions[i * 6 + 4] = y2 * radius;
-      linePositions[i * 6 + 5] = Math.sin(theta2) * r2 * radius;
-    }
-
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: '#d9453b',
-      transparent: true,
-      opacity: 0.06,
-    });
-    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-    group.add(lines);
-
-    // Create orbit rings
-    const ring1 = new THREE.Mesh(
-      new THREE.TorusGeometry(2.2, 0.015, 16, 100),
-      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.12 })
-    );
-    ring1.rotation.x = Math.PI / 2;
-    group.add(ring1);
-
-    const ring2 = new THREE.Mesh(
-      new THREE.TorusGeometry(2.4, 0.01, 16, 100),
-      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.06 })
-    );
-    ring2.rotation.x = Math.PI / 3;
-    group.add(ring2);
-
-    // Create inner glow sphere
-    const glow = new THREE.Mesh(
-      new THREE.SphereGeometry(1.6, 32, 32),
-      new THREE.MeshBasicMaterial({ color: '#d9453b', transparent: true, opacity: 0.04, side: THREE.BackSide })
-    );
-    group.add(glow);
-
-    scene.add(group);
-    groupRef.current = group;
-
-    return () => {
-      scene.remove(group);
-      dotGeometry.dispose();
-      dotMaterial.dispose();
-      lineGeometry.dispose();
-      lineMaterial.dispose();
-      ring1.geometry.dispose();
-      (ring1.material as THREE.Material).dispose();
-      ring2.geometry.dispose();
-      (ring2.material as THREE.Material).dispose();
-      glow.geometry.dispose();
-      (glow.material as THREE.Material).dispose();
-    };
-  }, [scene]);
-
-  useFrame(({ clock }) => {
-    if (!groupRef.current) return;
-    const t = clock.getElapsedTime();
-    groupRef.current.rotation.y = t * 0.12;
-    groupRef.current.rotation.x = Math.sin(t * 0.08) * 0.15;
-
-    // Pulse rings
-    const rings = groupRef.current.children.filter(c => c instanceof THREE.Mesh && c.geometry.type === 'TorusGeometry');
-    rings.forEach((ring, i) => {
-      ring.rotation.z = (i === 1 ? -1 : 1) * t * 0.05;
-    });
-  });
-
-  return null;
-}
 
 export function GlobeHero() {
   return (
@@ -147,32 +9,29 @@ export function GlobeHero() {
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 70% 50%, rgba(217,69,59,0.08) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(240,232,220,0.03) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse at 70% 50%, rgba(217,69,59,0.1) 0%, transparent 60%), radial-gradient(ellipse at 30% 50%, rgba(240,232,220,0.04) 0%, transparent 50%)',
         }}
       />
 
       {/* Dot grid overlay */}
       <div
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-15"
         style={{
           backgroundImage: 'radial-gradient(circle at center, #3a322a 1px, transparent 1px)',
           backgroundSize: '32px 32px',
         }}
       />
 
-      {/* 3D Globe */}
-      <div className="absolute right-0 top-0 w-full h-full lg:w-1/2" style={{ zIndex: 1 }}>
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 45 }}
-          gl={{ alpha: true, antialias: true }}
-          style={{ background: 'transparent' }}
-        >
-          <GlobeScene />
-        </Canvas>
+      {/* Decorative floating shapes */}
+      <div className="absolute right-10 top-1/4 w-64 h-64 opacity-10" style={{ filter: 'blur(60px)' }}>
+        <div className="w-full h-full rounded-full" style={{ background: '#d9453b' }} />
+      </div>
+      <div className="absolute right-40 bottom-1/4 w-40 h-40 opacity-5" style={{ filter: 'blur(40px)' }}>
+        <div className="w-full h-full rounded-full" style={{ background: '#d9453b' }} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-2xl mx-auto px-6 py-20 lg:ml-20 xl:ml-32">
+      <div className="relative z-10 max-w-3xl mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

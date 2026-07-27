@@ -2,9 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
-
-const GlobeHero = dynamic(() => import('@/components/shared/globe-hero').then(m => m.GlobeHero), { ssr: false });
+import { GlobeHero } from '@/components/shared/globe-hero';
 
 export default function Home() {
   return (
